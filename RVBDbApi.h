@@ -29,41 +29,8 @@
 
 /**
 
- createTables() - Create one or more tables.
- Post body should be a single table definition or an array of table definitions.
- @param body Array of tables to create.
- @param check_exist If true, the request fails when the table to create already exists.
- @param X-HTTP-METHOD Override request using POST to tunnel other http request, such as DELETE.
- */
--(void) createTablesWithCompletionBlock :(RVBRVBTables**) body 
-        check_exist:(RVBNSNumber**) check_exist 
-        X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD 
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock;
-
-/**
-
- updateTableProperties() - Update properties of one or more tables.
- Post body should be a single table definition or an array of table definitions.
- @param body Array of tables with properties to update.
- */
--(void) updateTablePropertiesWithCompletionBlock :(RVBRVBTables**) body 
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock;
-
-/**
-
- deleteTables() - Delete one or more tables.
- Set the names of the tables to delete or set 'force' to true to clear the database.Alternatively, to delete by table definitions or a large list of names, use the POST request with X-HTTP-METHOD = DELETE header and post array of definitions or names.
- @param names Comma-delimited list of the table names to delete.
- @param force Set force to true to delete all tables in this database, otherwise 'names' parameter is required.
- */
--(void) deleteTablesWithCompletionBlock :(RVBNSString**) names 
-        force:(RVBNSNumber**) force 
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock;
-
-/**
-
  getRecords() - Retrieve one or more records.
- Use the 'ids' or 'filter' parameter to limit resources that are returned. Use the 'fields' parameter to limit properties returned for each resource. By default, all fields are returned for all resources. Alternatively, to send the 'ids' or 'filter' as posted data use the POST request with X-HTTP-METHOD = GET header and post array of ids or a filter.
+ Use the 'ids' or 'filter' parameter to limit resources that are returned. Use the 'fields' parameter to limit properties returned for each resource. By default, all fields are returned for all resources. Use the 'related' parameter to return related records for each resource. By default, no related records are returned. Alternatively, to send the 'ids' or 'filter' as posted data use the POST request with X-HTTP-METHOD = GET header and post array of ids or a filter.
  @param table_name Name of the table to perform operations on.
  @param ids Comma-delimited list of the identifiers of the resources to retrieve.
  @param filter SQL-like filter to limit the resources to retrieve.
@@ -71,7 +38,9 @@
  @param offset Set to offset the filter results to a particular record count.
  @param order SQL-like order containing field and direction for filter results.
  @param fields Comma-delimited list of field names to retrieve for each record.
- @param include_count Include the total number of filter results.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
+ @param include_count Include the total number of filter results as meta data.
+ @param include_schema Include the table schema as meta data.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  */
 -(void) getRecordsWithCompletionBlock :(RVBNSString**) table_name 
@@ -81,7 +50,9 @@
         offset:(RVBNSNumber**) offset 
         order:(RVBNSString**) order 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         include_count:(RVBNSNumber**) include_count 
+        include_schema:(RVBNSNumber**) include_schema 
         id_field:(RVBNSString**) id_field 
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock;
 
@@ -93,12 +64,14 @@
  @param body Data containing name-value pairs of records to create.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  @param X-HTTP-METHOD Override request using POST to tunnel other http request, such as DELETE.
  */
 -(void) createRecordsWithCompletionBlock :(RVBNSString**) table_name 
         body:(RVBRVBRecords**) body 
         id_field:(RVBNSString**) id_field 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD 
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock;
 
@@ -112,6 +85,7 @@
  @param filter SQL-like filter to limit the resources to modify.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) updateRecordsWithCompletionBlock :(RVBNSString**) table_name 
         body:(RVBRVBRecords**) body 
@@ -119,6 +93,7 @@
         filter:(RVBNSString**) filter 
         id_field:(RVBNSString**) id_field 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock;
 
 /**
@@ -131,6 +106,7 @@
  @param force Set force to true to delete all records in this table, otherwise 'ids' parameter is required.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) deleteRecordsWithCompletionBlock :(RVBNSString**) table_name 
         ids:(RVBNSString**) ids 
@@ -138,23 +114,24 @@
         force:(RVBNSNumber**) force 
         id_field:(RVBNSString**) id_field 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock;
 
 /**
 
  getRecord() - Retrieve one record by identifier.
- Use the 'fields' parameter to limit properties that are returned. By default, all fields are returned.
+ Use the 'fields' parameter to limit properties that are returned. By default, all fields are returned. Use the 'related' parameter to return related records. By default, no related records are returned.
  @param table_name Name of the table to perform operations on.
  @param _id Identifier of the resource to retrieve.
- @param properties_only Return just the properties of the record.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) getRecordWithCompletionBlock :(RVBNSString**) table_name 
         _id:(RVBNSString**) _id 
-        properties_only:(RVBNSNumber**) properties_only 
         id_field:(RVBNSString**) id_field 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock;
 
 /**
@@ -166,12 +143,14 @@
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param body Data containing name-value pairs of the record to create.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) createRecordWithCompletionBlock :(RVBNSString**) table_name 
         _id:(RVBNSString**) _id 
         id_field:(RVBNSString**) id_field 
         body:(RVBRVBRecord**) body 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock;
 
 /**
@@ -183,12 +162,14 @@
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param body Data containing name-value pairs of the fields to update.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) updateRecordWithCompletionBlock :(RVBNSString**) table_name 
         _id:(RVBNSString**) _id 
         id_field:(RVBNSString**) id_field 
         body:(RVBRVBRecord**) body 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock;
 
 /**
@@ -199,11 +180,13 @@
  @param _id Identifier of the resource to delete.
  @param id_field Comma-delimited list of the fields used as identifiers or primary keys for the table.
  @param fields Comma-delimited list of field names to retrieve for each record.
+ @param related Comma-delimited list of relationship names to retrieve for each record.
  */
 -(void) deleteRecordWithCompletionBlock :(RVBNSString**) table_name 
         _id:(RVBNSString**) _id 
         id_field:(RVBNSString**) id_field 
         fields:(RVBNSString**) fields 
+        related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock;
 
 @end

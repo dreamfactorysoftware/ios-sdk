@@ -5,6 +5,7 @@
 #import "RVBResources.h"
 #import "RVBTableSchema.h"
 #import "RVBSuccess.h"
+#import "RVBTables.h"
 
 
 
@@ -67,7 +68,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) createTablesWithCompletionBlock: (void (^)(RVBResources* output, NSError* error))completionBlock{
+-(void) createTablesWithCompletionBlock:(RVBRVBTables**) body
+        completionHandler: (void (^)(RVBResources* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/schema", basePath];
 
@@ -81,7 +83,36 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-        [_api dictionary:requestUrl 
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
               method:@"POST" 
          queryParams:queryParams 
                 body:bodyDictionary 
@@ -97,7 +128,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) updateTablesWithCompletionBlock: (void (^)(RVBResources* output, NSError* error))completionBlock{
+-(void) updateTablesWithCompletionBlock:(RVBRVBTables**) body
+        completionHandler: (void (^)(RVBResources* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/schema", basePath];
 
@@ -111,7 +143,36 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-        [_api dictionary:requestUrl 
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
               method:@"PUT" 
          queryParams:queryParams 
                 body:bodyDictionary 
@@ -521,7 +582,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) createTablesAsJsonWithCompletionBlock :
+-(void) createTablesAsJsonWithCompletionBlock :(RVBRVBTables**) body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -536,6 +597,31 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"POST" 
          queryParams:queryParams 
@@ -565,7 +651,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) updateTablesAsJsonWithCompletionBlock :
+-(void) updateTablesAsJsonWithCompletionBlock :(RVBRVBTables**) body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -580,6 +666,31 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"PUT" 
          queryParams:queryParams 

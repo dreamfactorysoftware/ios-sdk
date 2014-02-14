@@ -6,6 +6,8 @@
 -(id)open_reg_role_id: (NSNumber*) open_reg_role_id
     open_reg_email_service_id: (NSNumber*) open_reg_email_service_id
     open_reg_email_template_id: (NSNumber*) open_reg_email_template_id
+    invite_email_service_id: (NSNumber*) invite_email_service_id
+    invite_email_template_id: (NSNumber*) invite_email_template_id
     password_email_service_id: (NSNumber*) password_email_service_id
     password_email_template_id: (NSNumber*) password_email_template_id
     guest_role_id: (NSNumber*) guest_role_id
@@ -17,6 +19,8 @@
   _open_reg_role_id = open_reg_role_id;
   _open_reg_email_service_id = open_reg_email_service_id;
   _open_reg_email_template_id = open_reg_email_template_id;
+  _invite_email_service_id = invite_email_service_id;
+  _invite_email_template_id = invite_email_template_id;
   _password_email_service_id = password_email_service_id;
   _password_email_template_id = password_email_template_id;
   _guest_role_id = guest_role_id;
@@ -34,6 +38,8 @@
         _open_reg_role_id = dict[@"open_reg_role_id"]; 
         _open_reg_email_service_id = dict[@"open_reg_email_service_id"]; 
         _open_reg_email_template_id = dict[@"open_reg_email_template_id"]; 
+        _invite_email_service_id = dict[@"invite_email_service_id"]; 
+        _invite_email_template_id = dict[@"invite_email_template_id"]; 
         _password_email_service_id = dict[@"password_email_service_id"]; 
         _password_email_template_id = dict[@"password_email_template_id"]; 
         _guest_role_id = dict[@"guest_role_id"]; 
@@ -71,6 +77,8 @@
     if(_open_reg_role_id != nil) dict[@"open_reg_role_id"] = _open_reg_role_id ;
     if(_open_reg_email_service_id != nil) dict[@"open_reg_email_service_id"] = _open_reg_email_service_id ;
     if(_open_reg_email_template_id != nil) dict[@"open_reg_email_template_id"] = _open_reg_email_template_id ;
+    if(_invite_email_service_id != nil) dict[@"invite_email_service_id"] = _invite_email_service_id ;
+    if(_invite_email_template_id != nil) dict[@"invite_email_template_id"] = _invite_email_template_id ;
     if(_password_email_service_id != nil) dict[@"password_email_service_id"] = _password_email_service_id ;
     if(_password_email_template_id != nil) dict[@"password_email_template_id"] = _password_email_template_id ;
     if(_guest_role_id != nil) dict[@"guest_role_id"] = _guest_role_id ;

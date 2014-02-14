@@ -3,7 +3,7 @@
 
 @implementation RVBRecord
 
--(id)_field_: (NSArray*) _field_
+-(id)_field_: (NSString*) _field_
 {
   __field_ = _field_;
   return self;

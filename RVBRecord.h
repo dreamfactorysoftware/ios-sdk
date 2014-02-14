@@ -3,8 +3,8 @@
 
 @interface RVBRecord : NIKSwaggerObject
 
-@property(nonatomic) NSArray* _field_;
-- (id) _field_: (NSArray*) _field_;
+@property(nonatomic) NSString* _field_;
+- (id) _field_: (NSString*) _field_;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

@@ -2375,6 +2375,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         related:(RVBNSString**) related
         include_count:(RVBNSNumber**) include_count
         include_schema:(RVBNSNumber**) include_schema
+        file:(RVBNSString**) file
         completionHandler: (void (^)(RVBUsersResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/user", basePath];
@@ -2405,6 +2406,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"include_count"] = include_count;
     if(include_schema != nil)
         queryParams[@"include_schema"] = include_schema;
+    if(file != nil)
+        queryParams[@"file"] = file;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         [_api dictionary:requestUrl 
@@ -2492,7 +2495,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) putUsersWithCompletionBlock:(RVBRVBUsersRequest**) body
+-(void) updateUsersWithCompletionBlock:(RVBRVBUsersRequest**) body
         fields:(RVBNSString**) fields
         related:(RVBNSString**) related
         completionHandler: (void (^)(RVBUsersResponse* output, NSError* error))completionBlock{
@@ -2543,7 +2546,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         // error
     }
     [_api dictionary:requestUrl 
-              method:@"PUT" 
+              method:@"PATCH" 
          queryParams:queryParams 
                 body:bodyDictionary 
         headerParams:headerParams
@@ -5571,6 +5574,7 @@ fields:(RVBNSString**) fields
 related:(RVBNSString**) related 
 include_count:(RVBNSNumber**) include_count 
 include_schema:(RVBNSNumber**) include_schema 
+file:(RVBNSString**) file 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -5601,6 +5605,8 @@ include_schema:(RVBNSNumber**) include_schema
         queryParams[@"include_count"] = include_count;
     if(include_schema != nil)
         queryParams[@"include_schema"] = include_schema;
+    if(file != nil)
+        queryParams[@"file"] = file;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     [_api dictionary:requestUrl 
@@ -5710,7 +5716,7 @@ X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD
 
 }
 
--(void) putUsersAsJsonWithCompletionBlock :(RVBRVBUsersRequest**) body 
+-(void) updateUsersAsJsonWithCompletionBlock :(RVBRVBUsersRequest**) body 
 fields:(RVBNSString**) fields 
 related:(RVBNSString**) related 
 
@@ -5757,7 +5763,7 @@ related:(RVBNSString**) related
         // error
     }
     [_api dictionary:requestUrl 
-              method:@"PUT" 
+              method:@"PATCH" 
          queryParams:queryParams 
                 body:bodyDictionary 
         headerParams:headerParams

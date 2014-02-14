@@ -71,168 +71,6 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) createTablesWithCompletionBlock:(RVBRVBTables**) body
-        check_exist:(RVBNSNumber**) check_exist
-        X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
-
-    NSString* contentType = @"application/json";
-
-
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(check_exist != nil)
-        queryParams[@"check_exist"] = check_exist;
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
-    id bodyDictionary = nil;
-        if(body != nil && [body isKindOfClass:[NSArray class]]){
-        NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)body) {
-            if([dict respondsToSelector:@selector(asDictionary)]) {
-                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
-            }
-            else{
-                [objs addObject:dict];
-            }
-        }
-        bodyDictionary = objs;
-    }
-    else if([body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
-    }
-    else if([body isKindOfClass:[NSString class]]) {
-        bodyDictionary = body;
-    }
-    else if([body isKindOfClass: [NIKFile class]]) {
-        contentType = @"form-data";
-        bodyDictionary = body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", body);
-    }
-
-    if(body == nil) {
-        // error
-    }
-    [_api dictionary:requestUrl 
-              method:@"POST" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        completionBlock( [[RVBTables alloc]initWithValues: data], nil);}];
-    
-
-}
-
--(void) updateTablePropertiesWithCompletionBlock:(RVBRVBTables**) body
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
-
-    NSString* contentType = @"application/json";
-
-
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    id bodyDictionary = nil;
-        if(body != nil && [body isKindOfClass:[NSArray class]]){
-        NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)body) {
-            if([dict respondsToSelector:@selector(asDictionary)]) {
-                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
-            }
-            else{
-                [objs addObject:dict];
-            }
-        }
-        bodyDictionary = objs;
-    }
-    else if([body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
-    }
-    else if([body isKindOfClass:[NSString class]]) {
-        bodyDictionary = body;
-    }
-    else if([body isKindOfClass: [NIKFile class]]) {
-        contentType = @"form-data";
-        bodyDictionary = body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", body);
-    }
-
-    if(body == nil) {
-        // error
-    }
-    [_api dictionary:requestUrl 
-              method:@"PATCH" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        completionBlock( [[RVBTables alloc]initWithValues: data], nil);}];
-    
-
-}
-
--(void) deleteTablesWithCompletionBlock:(RVBNSString**) names
-        force:(RVBNSNumber**) force
-        completionHandler: (void (^)(RVBTables* output, NSError* error))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
-
-    NSString* contentType = @"application/json";
-
-
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(names != nil)
-        queryParams[@"names"] = names;
-    if(force != nil)
-        queryParams[@"force"] = force;
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    id bodyDictionary = nil;
-        [_api dictionary:requestUrl 
-              method:@"DELETE" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        completionBlock( [[RVBTables alloc]initWithValues: data], nil);}];
-    
-
-}
-
 -(void) getRecordsWithCompletionBlock:(RVBNSString**) table_name
         ids:(RVBNSString**) ids
         filter:(RVBNSString**) filter
@@ -240,7 +78,9 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         offset:(RVBNSNumber**) offset
         order:(RVBNSString**) order
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         include_count:(RVBNSNumber**) include_count
+        include_schema:(RVBNSNumber**) include_schema
         id_field:(RVBNSString**) id_field
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock{
 
@@ -267,8 +107,12 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"order"] = order;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     if(include_count != nil)
         queryParams[@"include_count"] = include_count;
+    if(include_schema != nil)
+        queryParams[@"include_schema"] = include_schema;
     if(id_field != nil)
         queryParams[@"id_field"] = id_field;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -296,6 +140,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         body:(RVBRVBRecords**) body
         id_field:(RVBNSString**) id_field
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock{
 
@@ -314,6 +159,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     if(X-HTTP-METHOD != nil)
         headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
@@ -372,6 +219,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         filter:(RVBNSString**) filter
         id_field:(RVBNSString**) id_field
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}", basePath];
@@ -393,6 +241,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -449,6 +299,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         force:(RVBNSNumber**) force
         id_field:(RVBNSString**) id_field
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecords* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}", basePath];
@@ -472,6 +323,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(table_name == nil) {
@@ -495,9 +348,9 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 -(void) getRecordWithCompletionBlock:(RVBNSString**) table_name
         _id:(RVBNSString**) _id
-        properties_only:(RVBNSNumber**) properties_only
         id_field:(RVBNSString**) id_field
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}/{id}", basePath];
@@ -512,12 +365,12 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(properties_only != nil)
-        queryParams[@"properties_only"] = properties_only;
     if(id_field != nil)
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(table_name == nil) {
@@ -547,6 +400,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         id_field:(RVBNSString**) id_field
         body:(RVBRVBRecord**) body
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}/{id}", basePath];
@@ -565,6 +419,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -623,6 +479,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         id_field:(RVBNSString**) id_field
         body:(RVBRVBRecord**) body
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}/{id}", basePath];
@@ -641,6 +498,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -698,6 +557,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         _id:(RVBNSString**) _id
         id_field:(RVBNSString**) id_field
         fields:(RVBNSString**) fields
+        related:(RVBNSString**) related
         completionHandler: (void (^)(RVBRecord* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}/{id}", basePath];
@@ -716,6 +576,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(table_name == nil) {
@@ -789,199 +651,6 @@ names:(RVBNSString**) names
 
 }
 
--(void) createTablesAsJsonWithCompletionBlock :(RVBRVBTables**) body 
-check_exist:(RVBNSNumber**) check_exist 
-X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD 
-
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
-
-    NSString* contentType = @"application/json";
-
-    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(check_exist != nil)
-        queryParams[@"check_exist"] = check_exist;
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
-    id bodyDictionary = nil;
-    if(body != nil && [body isKindOfClass:[NSArray class]]){
-        NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)body) {
-            if([dict respondsToSelector:@selector(asDictionary)]) {
-                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
-            }
-            else{
-                [objs addObject:dict];
-            }
-        }
-        bodyDictionary = objs;
-    }
-    else if([body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
-    }
-    else if([body isKindOfClass:[NSString class]]) {
-        bodyDictionary = body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", body);
-    }
-
-    if(body == nil) {
-        // error
-    }
-    [_api dictionary:requestUrl 
-              method:@"POST" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        NSData * responseData = nil;
-            if([data isKindOfClass:[NSDictionary class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            else if ([data isKindOfClass:[NSArray class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
-            completionBlock(json, nil);
-        
-
-    }];
-
-
-}
-
--(void) updateTablePropertiesAsJsonWithCompletionBlock :(RVBRVBTables**) body 
-
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
-
-    NSString* contentType = @"application/json";
-
-    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    id bodyDictionary = nil;
-    if(body != nil && [body isKindOfClass:[NSArray class]]){
-        NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)body) {
-            if([dict respondsToSelector:@selector(asDictionary)]) {
-                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
-            }
-            else{
-                [objs addObject:dict];
-            }
-        }
-        bodyDictionary = objs;
-    }
-    else if([body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
-    }
-    else if([body isKindOfClass:[NSString class]]) {
-        bodyDictionary = body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", body);
-    }
-
-    if(body == nil) {
-        // error
-    }
-    [_api dictionary:requestUrl 
-              method:@"PATCH" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        NSData * responseData = nil;
-            if([data isKindOfClass:[NSDictionary class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            else if ([data isKindOfClass:[NSArray class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
-            completionBlock(json, nil);
-        
-
-    }];
-
-
-}
-
--(void) deleteTablesAsJsonWithCompletionBlock :(RVBNSString**) names 
-force:(RVBNSNumber**) force 
-
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
-
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
-
-    // remove format in URL if needed
-    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
-        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
-
-    NSString* contentType = @"application/json";
-
-    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(names != nil)
-        queryParams[@"names"] = names;
-    if(force != nil)
-        queryParams[@"force"] = force;
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    id bodyDictionary = nil;
-    [_api dictionary:requestUrl 
-              method:@"DELETE" 
-         queryParams:queryParams 
-                body:bodyDictionary 
-        headerParams:headerParams
-         contentType:contentType
-     completionBlock:^(NSDictionary *data, NSError *error) {
-        if (error) {
-            completionBlock(nil, error);return;
-        }
-
-        NSData * responseData = nil;
-            if([data isKindOfClass:[NSDictionary class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            else if ([data isKindOfClass:[NSArray class]]){
-                responseData = [NSJSONSerialization dataWithJSONObject:data
-                                                               options:kNilOptions error:&error];
-            }
-            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
-            completionBlock(json, nil);
-        
-
-    }];
-
-
-}
-
 -(void) getRecordsAsJsonWithCompletionBlock :(RVBNSString**) table_name 
 ids:(RVBNSString**) ids 
 filter:(RVBNSString**) filter 
@@ -989,7 +658,9 @@ limit:(RVBNSNumber**) limit
 offset:(RVBNSNumber**) offset 
 order:(RVBNSString**) order 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 include_count:(RVBNSNumber**) include_count 
+include_schema:(RVBNSNumber**) include_schema 
 id_field:(RVBNSString**) id_field 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -1016,8 +687,12 @@ id_field:(RVBNSString**) id_field
         queryParams[@"order"] = order;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     if(include_count != nil)
         queryParams[@"include_count"] = include_count;
+    if(include_schema != nil)
+        queryParams[@"include_schema"] = include_schema;
     if(id_field != nil)
         queryParams[@"id_field"] = id_field;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -1058,6 +733,7 @@ id_field:(RVBNSString**) id_field
 body:(RVBRVBRecords**) body 
 id_field:(RVBNSString**) id_field 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -1076,6 +752,8 @@ X-HTTP-METHOD:(RVBNSString**) X-HTTP-METHOD
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     if(X-HTTP-METHOD != nil)
         headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
@@ -1143,6 +821,7 @@ ids:(RVBNSString**) ids
 filter:(RVBNSString**) filter 
 id_field:(RVBNSString**) id_field 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1164,6 +843,8 @@ fields:(RVBNSString**) fields
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -1229,6 +910,7 @@ filter:(RVBNSString**) filter
 force:(RVBNSNumber**) force 
 id_field:(RVBNSString**) id_field 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1252,6 +934,8 @@ fields:(RVBNSString**) fields
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(table_name == nil) {
@@ -1288,9 +972,9 @@ fields:(RVBNSString**) fields
 
 -(void) getRecordAsJsonWithCompletionBlock :(RVBNSString**) table_name 
 _id:(RVBNSString**) _id 
-properties_only:(RVBNSNumber**) properties_only 
 id_field:(RVBNSString**) id_field 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1305,12 +989,12 @@ fields:(RVBNSString**) fields
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(properties_only != nil)
-        queryParams[@"properties_only"] = properties_only;
     if(id_field != nil)
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(table_name == nil) {
@@ -1353,6 +1037,7 @@ _id:(RVBNSString**) _id
 id_field:(RVBNSString**) id_field 
 body:(RVBRVBRecord**) body 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1371,6 +1056,8 @@ fields:(RVBNSString**) fields
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -1438,6 +1125,7 @@ _id:(RVBNSString**) _id
 id_field:(RVBNSString**) id_field 
 body:(RVBRVBRecord**) body 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1456,6 +1144,8 @@ fields:(RVBNSString**) fields
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -1522,6 +1212,7 @@ fields:(RVBNSString**) fields
 _id:(RVBNSString**) _id 
 id_field:(RVBNSString**) id_field 
 fields:(RVBNSString**) fields 
+related:(RVBNSString**) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1540,6 +1231,8 @@ fields:(RVBNSString**) fields
         queryParams[@"id_field"] = id_field;
     if(fields != nil)
         queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(table_name == nil) {

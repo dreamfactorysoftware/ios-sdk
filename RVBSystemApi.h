@@ -691,6 +691,7 @@
  @param related Comma-delimited list of related names to retrieve for each record.
  @param include_count Include the total number of filter results in returned metadata.
  @param include_schema Include the schema of the table queried in returned metadata.
+ @param file Download the results of the request as a file.
  */
 -(void) getUsersWithCompletionBlock :(RVBNSString**) ids 
         filter:(RVBNSString**) filter 
@@ -701,6 +702,7 @@
         related:(RVBNSString**) related 
         include_count:(RVBNSNumber**) include_count 
         include_schema:(RVBNSNumber**) include_schema 
+        file:(RVBNSString**) file 
         completionHandler: (void (^)(RVBUsersResponse* output, NSError* error))completionBlock;
 
 /**
@@ -720,13 +722,13 @@
 
 /**
 
- putUsers() - Update one or more users.
+ updateUsers() - Update one or more users.
  Post data should be a single record or an array of records (shown). By default, only the id property of the record is returned on success, use 'fields' and 'related' to return more info.
  @param body Data containing name-value pairs of records to update.
  @param fields Comma-delimited list of field names to return for each record affected.
  @param related Comma-delimited list of related names to return for each record affected.
  */
--(void) putUsersWithCompletionBlock :(RVBRVBUsersRequest**) body 
+-(void) updateUsersWithCompletionBlock :(RVBRVBUsersRequest**) body 
         fields:(RVBNSString**) fields 
         related:(RVBNSString**) related 
         completionHandler: (void (^)(RVBUsersResponse* output, NSError* error))completionBlock;
