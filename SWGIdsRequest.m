@@ -1,11 +1,11 @@
 #import "NIKDate.h"
-#import "SWGRecord.h"
+#import "SWGIdsRequest.h"
 
-@implementation SWGRecord
+@implementation SWGIdsRequest
 
--(id)_field_: (NSString*) _field_
+-(id)ids: (NSArray*) ids
 {
-  __field_ = _field_;
+  _ids = ids;
   return self;
 }
 
@@ -13,7 +13,7 @@
 {
     self = [super init];
     if(self) {
-        __field_ = dict[@"_field_"]; 
+        _ids = dict[@"ids"]; 
         
 
     }
@@ -22,7 +22,7 @@
 
 -(NSDictionary*) asDictionary {
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    if(__field_ != nil) dict[@"_field_"] = __field_ ;
+    if(_ids != nil) dict[@"ids"] = _ids ;
     NSDictionary* output = [dict copy];
     return output;
 }

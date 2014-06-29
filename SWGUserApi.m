@@ -17,7 +17,7 @@
 
 
 @implementation SWGUserApi
-static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -326,6 +326,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 }
 
 -(void) changePasswordWithCompletionBlock:(NSNumber*) reset
+        login:(NSNumber*) login
         body:(SWGPasswordRequest*) body
         completionHandler: (void (^)(SWGPasswordResponse* output, NSError* error))completionBlock{
 
@@ -341,6 +342,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(reset != nil)
         queryParams[@"reset"] = reset;
+    if(login != nil)
+        queryParams[@"login"] = login;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -478,7 +481,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
--(void) registerWithCompletionBlock:(SWGRegister*) body
+-(void) registerWithCompletionBlock:(NSNumber*) login
+        body:(SWGRegister*) body
         completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/register", basePath];
@@ -491,6 +495,8 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(login != nil)
+        queryParams[@"login"] = login;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -1025,6 +1031,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 }
 
 -(void) changePasswordAsJsonWithCompletionBlock :(NSNumber*) reset 
+login:(NSNumber*) login 
 body:(SWGPasswordRequest*) body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -1040,6 +1047,8 @@ body:(SWGPasswordRequest*) body
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(reset != nil)
         queryParams[@"reset"] = reset;
+    if(login != nil)
+        queryParams[@"login"] = login;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
@@ -1209,7 +1218,8 @@ body:(SWGPasswordRequest*) body
 
 }
 
--(void) registerAsJsonWithCompletionBlock :(SWGRegister*) body 
+-(void) registerAsJsonWithCompletionBlock :(NSNumber*) login 
+body:(SWGRegister*) body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1222,6 +1232,8 @@ body:(SWGPasswordRequest*) body
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(login != nil)
+        queryParams[@"login"] = login;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){

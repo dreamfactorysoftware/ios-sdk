@@ -3,9 +3,9 @@
 
 @implementation SWGTables
 
--(id)table: (NSArray*) table
+-(id)field: (NSArray*) field
 {
-  _table = table;
+  _field = field;
   return self;
 }
 
@@ -13,25 +13,25 @@
 {
     self = [super init];
     if(self) {
-        id table_dict = dict[@"table"];
-        if([table_dict isKindOfClass:[NSArray class]]) {
+        id field_dict = dict[@"field"];
+        if([field_dict isKindOfClass:[NSArray class]]) {
 
-            NSMutableArray * objs = [[NSMutableArray alloc] initWithCapacity:[(NSArray*)table_dict count]];
+            NSMutableArray * objs = [[NSMutableArray alloc] initWithCapacity:[(NSArray*)field_dict count]];
 
-            if([(NSArray*)table_dict count] > 0) {
-                for (NSDictionary* dict in (NSArray*)table_dict) {
-                    SWGTable* d = [[SWGTable alloc] initWithValues:dict];
+            if([(NSArray*)field_dict count] > 0) {
+                for (NSDictionary* dict in (NSArray*)field_dict) {
+                    SWGTableSchema* d = [[SWGTableSchema alloc] initWithValues:dict];
                     [objs addObject:d];
                 }
                 
-                _table = [[NSArray alloc] initWithArray:objs];
+                _field = [[NSArray alloc] initWithArray:objs];
             }
             else {
-                _table = [[NSArray alloc] init];
+                _field = [[NSArray alloc] init];
             }
         }
         else {
-            _table = [[NSArray alloc] init];
+            _field = [[NSArray alloc] init];
         }
         
 
@@ -41,23 +41,23 @@
 
 -(NSDictionary*) asDictionary {
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    if(_table != nil){
-        if([_table isKindOfClass:[NSArray class]]){
+    if(_field != nil){
+        if([_field isKindOfClass:[NSArray class]]){
             NSMutableArray * array = [[NSMutableArray alloc] init];
-            for( SWGTable *table in (NSArray*)_table) {
-                [array addObject:[(NIKSwaggerObject*)table asDictionary]];
+            for( SWGTableSchema *field in (NSArray*)_field) {
+                [array addObject:[(NIKSwaggerObject*)field asDictionary]];
             }
-            dict[@"table"] = array;
+            dict[@"field"] = array;
         }
-        else if(_table && [_table isKindOfClass:[NIKDate class]]) {
-            NSString * dateString = [(NIKDate*)_table toString];
+        else if(_field && [_field isKindOfClass:[NIKDate class]]) {
+            NSString * dateString = [(NIKDate*)_field toString];
             if(dateString){
-                dict[@"table"] = dateString;
+                dict[@"field"] = dateString;
             }
         }
     }
     else {
-    if(_table != nil) dict[@"table"] = [(NIKSwaggerObject*)_table asDictionary];
+    if(_field != nil) dict[@"field"] = [(NIKSwaggerObject*)_field asDictionary];
     }
     NSDictionary* output = [dict copy];
     return output;

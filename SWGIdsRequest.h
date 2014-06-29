@@ -1,10 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
 
-@interface SWGRecord : NIKSwaggerObject
+@interface SWGIdsRequest : NIKSwaggerObject
 
-@property(nonatomic) NSString* _field_;
-- (id) _field_: (NSString*) _field_;
+@property(nonatomic) NSArray* ids;
+- (id) ids: (NSArray*) ids;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
 #import "SWGMetadata.h"
-#import "SWGRecord.h"
+#import "SWGProviderUserResponse.h"
 
-@interface SWGRecords : NIKSwaggerObject
+@interface SWGProviderUsersResponse : NIKSwaggerObject
 
 @property(nonatomic) NSArray* record;
 @property(nonatomic) SWGMetadata* meta;

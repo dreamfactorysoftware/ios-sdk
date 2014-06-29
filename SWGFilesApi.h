@@ -5,10 +5,11 @@
 #import "SWGFolderRequest.h"
 #import "SWGContainerRequest.h"
 #import "SWGFolder.h"
+#import "SWGResources.h"
 #import "SWGContainersResponse.h"
-#import "SWGFileRequest.h"
 #import "SWGContainersRequest.h"
 #import "SWGFolderResponse.h"
+#import "SWGFileRequest.h"
 #import "SWGFile.h"
 #import "SWGContainerResponse.h"
 
@@ -26,8 +27,15 @@
 
 /**
 
- getContainers() - List all containers.
- List the names of the available containers in this storage. Use 'include_properties' to include any properties of the containers.
+ getResources() - List all resources.
+ List the names of the available containers in this storage. 
+ */
+-(void) getResourcesWithCompletionBlock :(void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ getContainers() - List all containers, optionally with properties.
+ List the names and any properties of the available containers in this storage.
  @param include_properties Return any properties of the container in the response.
  */
 -(void) getContainersWithCompletionBlock :(NSNumber*) include_properties 

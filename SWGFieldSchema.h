@@ -21,7 +21,7 @@
 @property(nonatomic) NSString* ref_table;
 @property(nonatomic) NSString* ref_fields;
 @property(nonatomic) NSArray* validation;
-@property(nonatomic) NSArray* values;
+@property(nonatomic) NSArray* value;
 - (id) name: (NSString*) name
      label: (NSString*) label
      type: (NSString*) type
@@ -40,7 +40,7 @@
      ref_table: (NSString*) ref_table
      ref_fields: (NSString*) ref_fields
      validation: (NSArray*) validation
-     values: (NSArray*) values;
+     value: (NSArray*) value;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

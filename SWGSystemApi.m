@@ -1,9 +1,19 @@
 #import "SWGSystemApi.h"
 #import "NIKFile.h"
+#import "SWGEventsResponse.h"
 #import "SWGConstant.h"
 #import "SWGRolesResponse.h"
 #import "SWGAppGroupsResponse.h"
 #import "SWGCustomSettings.h"
+#import "SWGEventResponse.h"
+#import "SWGProviderUsersResponse.h"
+#import "SWGProviderUsersRequest.h"
+#import "SWGProviderUserRequest.h"
+#import "SWGProvidersRequest.h"
+#import "SWGProviderRequest.h"
+#import "SWGProvidersResponse.h"
+#import "SWGScriptOutput.h"
+#import "SWGEventsRequest.h"
 #import "SWGUsersRequest.h"
 #import "SWGEmailTemplateRequest.h"
 #import "SWGDeviceResponse.h"
@@ -15,6 +25,7 @@
 #import "SWGServiceRequest.h"
 #import "SWGRoleRequest.h"
 #import "SWGServicesResponse.h"
+#import "SWGScriptResponse.h"
 #import "SWGAppsRequest.h"
 #import "SWGAppGroupResponse.h"
 #import "SWGConstants.h"
@@ -23,13 +34,18 @@
 #import "SWGAppsResponse.h"
 #import "SWGEmailTemplateResponse.h"
 #import "SWGSuccess.h"
+#import "SWGProviderUserResponse.h"
 #import "SWGServicesRequest.h"
+#import "SWGEventCacheResponse.h"
 #import "SWGAppRequest.h"
 #import "SWGAppGroupsRequest.h"
 #import "SWGAppGroupRequest.h"
 #import "SWGRolesRequest.h"
+#import "SWGProviderResponse.h"
 #import "SWGUserResponse.h"
+#import "SWGScripts.h"
 #import "SWGDevicesResponse.h"
+#import "SWGEventRequest.h"
 #import "SWGAppResponse.h"
 #import "SWGUsersResponse.h"
 #import "SWGRoleResponse.h"
@@ -38,7 +54,7 @@
 
 
 @implementation SWGSystemApi
-static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -1774,6 +1790,1140 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
+-(void) getEventsWithCompletionBlock:(NSNumber*) all_events
+        as_cached:(NSNumber*) as_cached
+        completionHandler: (void (^)(SWGEventCacheResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(all_events != nil)
+        queryParams[@"all_events"] = all_events;
+    if(as_cached != nil)
+        queryParams[@"as_cached"] = as_cached;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventCacheResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) registerEventsWithCompletionBlock:(SWGEventsRequest*) body
+        completionHandler: (void (^)(SWGEventsResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventsResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) unregisterEventsWithCompletionBlock:(SWGEventsRequest*) body
+        completionHandler: (void (^)(SWGEventsResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventsResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getEventWithCompletionBlock:(NSString*) event_name
+        completionHandler: (void (^)(SWGEventResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"event_name", @"}"]] withString: [_api escapeString:event_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(event_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) registerEventWithCompletionBlock:(SWGEventRequest*) body
+        completionHandler: (void (^)(SWGEventResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateEventWithCompletionBlock:(NSString*) _id
+        body:(SWGEventRequest*) body
+        completionHandler: (void (^)(SWGEventResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) unregisterEventWithCompletionBlock:(NSString*) _id
+        body:(SWGEventRequest*) body
+        completionHandler: (void (^)(SWGEventResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGEventResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getProvidersWithCompletionBlock:(NSNumber*) user_id
+        completionHandler: (void (^)(SWGProvidersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(user_id != nil)
+        queryParams[@"user_id"] = user_id;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProvidersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) createProvidersWithCompletionBlock:(SWGProvidersRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        completionHandler: (void (^)(SWGProvidersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    if(X-HTTP-METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProvidersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateProvidersWithCompletionBlock:(SWGProvidersRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProvidersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProvidersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteProvidersWithCompletionBlock:(NSString*) ids
+        force:(NSNumber*) force
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProvidersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(force != nil)
+        queryParams[@"force"] = force;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProvidersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getProviderWithCompletionBlock:(NSString*) _id
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateProviderWithCompletionBlock:(NSString*) _id
+        body:(SWGProviderRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteProviderWithCompletionBlock:(NSString*) _id
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getProviderUsersWithCompletionBlock:(NSString*) ids
+        filter:(NSString*) filter
+        limit:(NSNumber*) limit
+        order:(NSString*) order
+        offset:(NSNumber*) offset
+        fields:(NSString*) fields
+        related:(NSString*) related
+        include_count:(NSNumber*) include_count
+        include_schema:(NSNumber*) include_schema
+        file:(NSString*) file
+        completionHandler: (void (^)(SWGProviderUsersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(filter != nil)
+        queryParams[@"filter"] = filter;
+    if(limit != nil)
+        queryParams[@"limit"] = limit;
+    if(order != nil)
+        queryParams[@"order"] = order;
+    if(offset != nil)
+        queryParams[@"offset"] = offset;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    if(include_count != nil)
+        queryParams[@"include_count"] = include_count;
+    if(include_schema != nil)
+        queryParams[@"include_schema"] = include_schema;
+    if(file != nil)
+        queryParams[@"file"] = file;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUsersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) createProviderUsersWithCompletionBlock:(SWGProviderUsersRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        completionHandler: (void (^)(SWGProviderUsersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    if(X-HTTP-METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUsersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateProviderUsersWithCompletionBlock:(SWGProviderUsersRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderUsersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUsersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteProviderUsersWithCompletionBlock:(NSString*) ids
+        force:(NSNumber*) force
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderUsersResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(force != nil)
+        queryParams[@"force"] = force;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUsersResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getProviderUserWithCompletionBlock:(NSString*) _id
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderUserResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUserResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateProviderUserWithCompletionBlock:(NSString*) _id
+        body:(SWGProviderUserRequest*) body
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderUserResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUserResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteProviderUserWithCompletionBlock:(NSString*) _id
+        fields:(NSString*) fields
+        related:(NSString*) related
+        completionHandler: (void (^)(SWGProviderUserResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGProviderUserResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
 -(void) getRolesWithCompletionBlock:(NSString*) ids
         filter:(NSString*) filter
         limit:(NSNumber*) limit
@@ -2157,6 +3307,206 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         }
 
         completionBlock( [[SWGRoleResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getScriptsWithCompletionBlock: (void (^)(SWGScripts* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGScripts alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getScriptWithCompletionBlock:(NSString*) script_id
+        completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(script_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGScriptResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) runScriptWithCompletionBlock:(NSString*) script_id
+        completionHandler: (void (^)(SWGScriptOutput* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(script_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGScriptOutput alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) writeScriptWithCompletionBlock:(NSString*) script_id
+        body:(NSString*) body
+        completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(script_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGScriptResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteScriptWithCompletionBlock:(NSString*) script_id
+        completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(script_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGScriptResponse alloc]initWithValues: data], nil);}];
     
 
 }
@@ -5048,6 +6398,1369 @@ related:(NSString*) related
 
 }
 
+-(void) getEventsAsJsonWithCompletionBlock :(NSNumber*) all_events 
+as_cached:(NSNumber*) as_cached 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(all_events != nil)
+        queryParams[@"all_events"] = all_events;
+    if(as_cached != nil)
+        queryParams[@"as_cached"] = as_cached;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) registerEventsAsJsonWithCompletionBlock :(SWGEventsRequest*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) unregisterEventsAsJsonWithCompletionBlock :(SWGEventsRequest*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getEventAsJsonWithCompletionBlock :(NSString*) event_name 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"event_name", @"}"]] withString: [_api escapeString:event_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(event_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) registerEventAsJsonWithCompletionBlock :(SWGEventRequest*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateEventAsJsonWithCompletionBlock :(NSString*) _id 
+body:(SWGEventRequest*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) unregisterEventAsJsonWithCompletionBlock :(NSString*) _id 
+body:(SWGEventRequest*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/event/{event_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getProvidersAsJsonWithCompletionBlock :(NSNumber*) user_id 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(user_id != nil)
+        queryParams[@"user_id"] = user_id;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) createProvidersAsJsonWithCompletionBlock :(SWGProvidersRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    if(X-HTTP-METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateProvidersAsJsonWithCompletionBlock :(SWGProvidersRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteProvidersAsJsonWithCompletionBlock :(NSString*) ids 
+force:(NSNumber*) force 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(force != nil)
+        queryParams[@"force"] = force;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getProviderAsJsonWithCompletionBlock :(NSString*) _id 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateProviderAsJsonWithCompletionBlock :(NSString*) _id 
+body:(SWGProviderRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteProviderAsJsonWithCompletionBlock :(NSString*) _id 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getProviderUsersAsJsonWithCompletionBlock :(NSString*) ids 
+filter:(NSString*) filter 
+limit:(NSNumber*) limit 
+order:(NSString*) order 
+offset:(NSNumber*) offset 
+fields:(NSString*) fields 
+related:(NSString*) related 
+include_count:(NSNumber*) include_count 
+include_schema:(NSNumber*) include_schema 
+file:(NSString*) file 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(filter != nil)
+        queryParams[@"filter"] = filter;
+    if(limit != nil)
+        queryParams[@"limit"] = limit;
+    if(order != nil)
+        queryParams[@"order"] = order;
+    if(offset != nil)
+        queryParams[@"offset"] = offset;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    if(include_count != nil)
+        queryParams[@"include_count"] = include_count;
+    if(include_schema != nil)
+        queryParams[@"include_schema"] = include_schema;
+    if(file != nil)
+        queryParams[@"file"] = file;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) createProviderUsersAsJsonWithCompletionBlock :(SWGProviderUsersRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    if(X-HTTP-METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateProviderUsersAsJsonWithCompletionBlock :(SWGProviderUsersRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteProviderUsersAsJsonWithCompletionBlock :(NSString*) ids 
+force:(NSNumber*) force 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(ids != nil)
+        queryParams[@"ids"] = ids;
+    if(force != nil)
+        queryParams[@"force"] = force;
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getProviderUserAsJsonWithCompletionBlock :(NSString*) _id 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateProviderUserAsJsonWithCompletionBlock :(NSString*) _id 
+body:(SWGProviderUserRequest*) body 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteProviderUserAsJsonWithCompletionBlock :(NSString*) _id 
+fields:(NSString*) fields 
+related:(NSString*) related 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/provider_user/{id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"id", @"}"]] withString: [_api escapeString:_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(fields != nil)
+        queryParams[@"fields"] = fields;
+    if(related != nil)
+        queryParams[@"related"] = related;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
 -(void) getRolesAsJsonWithCompletionBlock :(NSString*) ids 
 filter:(NSString*) filter 
 limit:(NSNumber*) limit 
@@ -5483,6 +8196,268 @@ related:(NSString*) related
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getScriptsAsJsonWithCompletionBlock :
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(script_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) runScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(script_id == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) writeScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+body:(NSString*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(script_id == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(script_id == nil) {
         // error
     }
     [_api dictionary:requestUrl 

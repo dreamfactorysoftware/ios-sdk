@@ -6,7 +6,7 @@
 
 
 @implementation SWGEmailApi
-static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;

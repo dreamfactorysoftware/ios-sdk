@@ -88,9 +88,11 @@
  changePassword() - Change or reset the current user's password.
  A valid current session along with old and new password are required to change the password directly posting 'old_password' and 'new_password'. <br/>To request password reset, post 'email' and set 'reset' to true. <br/>To reset the password from an email confirmation, post 'email', 'code', and 'new_password'. <br/>To reset the password from a security question, post 'email', 'security_answer', and 'new_password'.
  @param reset Set to true to perform password reset.
+ @param login Login and create a session upon successful password reset.
  @param body Data containing name-value pairs for password change.
  */
 -(void) changePasswordWithCompletionBlock :(NSNumber*) reset 
+        login:(NSNumber*) login 
         body:(SWGPasswordRequest*) body 
         completionHandler: (void (^)(SWGPasswordResponse* output, NSError* error))completionBlock;
 
@@ -114,9 +116,11 @@
 
  register() - Register a new user in the system.
  The new user is created and, if required, sent an email for confirmation. This also handles the registration confirmation by posting email, confirmation code and new password.
+ @param login Login and create a session upon successful registration.
  @param body Data containing name-value pairs for new user registration.
  */
--(void) registerWithCompletionBlock :(SWGRegister*) body 
+-(void) registerWithCompletionBlock :(NSNumber*) login 
+        body:(SWGRegister*) body 
         completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
 
 /**

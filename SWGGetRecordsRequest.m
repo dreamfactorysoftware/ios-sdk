@@ -1,13 +1,17 @@
 #import "NIKDate.h"
-#import "SWGRecords.h"
+#import "SWGGetRecordsRequest.h"
 
-@implementation SWGRecords
+@implementation SWGGetRecordsRequest
 
 -(id)record: (NSArray*) record
-    meta: (SWGMetadata*) meta
+    ids: (NSArray*) ids
+    filter: (NSString*) filter
+    params: (NSArray*) params
 {
   _record = record;
-  _meta = meta;
+  _ids = ids;
+  _filter = filter;
+  _params = params;
   return self;
 }
 
@@ -22,7 +26,7 @@
 
             if([(NSArray*)record_dict count] > 0) {
                 for (NSDictionary* dict in (NSArray*)record_dict) {
-                    SWGRecord* d = [[SWGRecord alloc] initWithValues:dict];
+                    SWGRecordRequest* d = [[SWGRecordRequest alloc] initWithValues:dict];
                     [objs addObject:d];
                 }
                 
@@ -35,8 +39,9 @@
         else {
             _record = [[NSArray alloc] init];
         }
-        id meta_dict = dict[@"meta"];
-        _meta = [[SWGMetadata alloc]initWithValues:meta_dict];
+        _ids = dict[@"ids"]; 
+        _filter = dict[@"filter"]; 
+        _params = dict[@"params"]; 
         
 
     }
@@ -48,7 +53,7 @@
     if(_record != nil){
         if([_record isKindOfClass:[NSArray class]]){
             NSMutableArray * array = [[NSMutableArray alloc] init];
-            for( SWGRecord *record in (NSArray*)_record) {
+            for( SWGRecordRequest *record in (NSArray*)_record) {
                 [array addObject:[(NIKSwaggerObject*)record asDictionary]];
             }
             dict[@"record"] = array;
@@ -63,24 +68,9 @@
     else {
     if(_record != nil) dict[@"record"] = [(NIKSwaggerObject*)_record asDictionary];
     }
-    if(_meta != nil){
-        if([_meta isKindOfClass:[NSArray class]]){
-            NSMutableArray * array = [[NSMutableArray alloc] init];
-            for( SWGMetadata *meta in (NSArray*)_meta) {
-                [array addObject:[(NIKSwaggerObject*)meta asDictionary]];
-            }
-            dict[@"meta"] = array;
-        }
-        else if(_meta && [_meta isKindOfClass:[NIKDate class]]) {
-            NSString * dateString = [(NIKDate*)_meta toString];
-            if(dateString){
-                dict[@"meta"] = dateString;
-            }
-        }
-    }
-    else {
-    if(_meta != nil) dict[@"meta"] = [(NIKSwaggerObject*)_meta asDictionary];
-    }
+    if(_ids != nil) dict[@"ids"] = _ids ;
+    if(_filter != nil) dict[@"filter"] = _filter ;
+    if(_params != nil) dict[@"params"] = _params ;
     NSDictionary* output = [dict copy];
     return output;
 }
