@@ -234,7 +234,7 @@ static NSString *baseUrl=@"";
     [swgDbApi setBaseUrlPath:baseUrl];
     [swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
     [swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    [swgDbApi createRecordWithCompletionBlock:kTableName _id:@"123" id_field:nil body:record fields:nil related:nil completionHandler:^(SWGRecord *output, NSError *error) {
+    [swgDbApi createRecordWithCompletionBlock:kTableName _id:@"" id_field:nil body:record fields:nil related:nil completionHandler:^(SWGRecord *output, NSError *error) {
         NSLog(@"Error %@",error);
        // NSLog(@"OutPut %@",output.record);
         dispatch_async(dispatch_get_main_queue(),^ (void){
