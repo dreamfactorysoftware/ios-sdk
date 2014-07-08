@@ -2940,7 +2940,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system", basePath];
 
@@ -3937,7 +3937,7 @@ related:(NSString*) related
 
 -(void) getConfigAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/config", basePath];
 
@@ -4050,7 +4050,7 @@ related:(NSString*) related
 
 -(void) getConstantsAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/constant", basePath];
 
@@ -4142,7 +4142,7 @@ related:(NSString*) related
 
 -(void) getCustomSettingsAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/custom", basePath];
 
