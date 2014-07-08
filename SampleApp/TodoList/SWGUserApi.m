@@ -676,7 +676,7 @@ static NSString * basePath=@"https://dsp-alok.cloud.dreamfactory.com/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+                            completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user", basePath];
 
@@ -720,7 +720,7 @@ static NSString * basePath=@"https://dsp-alok.cloud.dreamfactory.com/rest";
 
 -(void) getCustomSettingsAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/custom", basePath];
 
@@ -929,7 +929,7 @@ static NSString * basePath=@"https://dsp-alok.cloud.dreamfactory.com/rest";
 
 -(void) getDevicesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/device", basePath];
 
@@ -1114,7 +1114,7 @@ body:(SWGPasswordRequest*) body
 
 -(void) getProfileAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/profile", basePath];
 
@@ -1296,7 +1296,7 @@ body:(SWGPasswordRequest*) body
 
 -(void) getSessionAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/session", basePath];
 
@@ -1409,7 +1409,7 @@ body:(SWGPasswordRequest*) body
 
 -(void) logoutAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/session", basePath];
 

@@ -540,7 +540,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler : (void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/schema", basePath];
 
