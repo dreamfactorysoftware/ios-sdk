@@ -1,4 +1,4 @@
-#import "SWGFilesApi.h"
+#import "SWGNewfilestorageApi.h"
 #import "NIKFile.h"
 #import "SWGFileResponse.h"
 #import "SWGContainer.h"
@@ -15,17 +15,17 @@
 
 
 
-@implementation SWGFilesApi
+@implementation SWGNewfilestorageApi
 static NSString * basePath = @"http://localhost/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
 
-+(SWGFilesApi*) apiWithHeader:(NSString*)headerValue key:(NSString*)key {
-    static SWGFilesApi* singletonAPI = nil;
++(SWGNewfilestorageApi*) apiWithHeader:(NSString*)headerValue key:(NSString*)key {
+    static SWGNewfilestorageApi* singletonAPI = nil;
 
     if (singletonAPI == nil) {
-        singletonAPI = [[SWGFilesApi alloc] init];
+        singletonAPI = [[SWGNewfilestorageApi alloc] init];
         [singletonAPI addHeader:headerValue forKey:key];
     }
     return singletonAPI;
@@ -46,7 +46,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) getResourcesWithCompletionBlock: (void (^)(SWGResources* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -77,7 +77,7 @@ static NSString * basePath = @"http://localhost/rest";
 -(void) getContainersWithCompletionBlock:(NSNumber*) include_properties
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -115,7 +115,7 @@ static NSString * basePath = @"http://localhost/rest";
         X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -180,7 +180,7 @@ static NSString * basePath = @"http://localhost/rest";
         force:(NSNumber*) force
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -220,7 +220,7 @@ static NSString * basePath = @"http://localhost/rest";
         zip:(NSNumber*) zip
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -271,7 +271,7 @@ static NSString * basePath = @"http://localhost/rest";
         X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -343,7 +343,7 @@ static NSString * basePath = @"http://localhost/rest";
         body:(SWGContainer*) body
         completionHandler: (void (^)(SWGContainer* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -409,7 +409,7 @@ static NSString * basePath = @"http://localhost/rest";
         content_only:(NSNumber*) content_only
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -454,7 +454,7 @@ static NSString * basePath = @"http://localhost/rest";
         zip:(NSNumber*) zip
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -510,7 +510,7 @@ static NSString * basePath = @"http://localhost/rest";
         X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -587,7 +587,7 @@ static NSString * basePath = @"http://localhost/rest";
         body:(SWGFolder*) body
         completionHandler: (void (^)(SWGFolder* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -655,7 +655,7 @@ static NSString * basePath = @"http://localhost/rest";
         content_only:(NSNumber*) content_only
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -702,7 +702,7 @@ static NSString * basePath = @"http://localhost/rest";
         download:(NSNumber*) download
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -750,7 +750,7 @@ static NSString * basePath = @"http://localhost/rest";
         body:(SWGFileRequest*) body
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -819,7 +819,7 @@ static NSString * basePath = @"http://localhost/rest";
         body:(SWGFileRequest*) body
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -886,7 +886,7 @@ static NSString * basePath = @"http://localhost/rest";
         body:(SWGFile*) body
         completionHandler: (void (^)(SWGFile* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -952,7 +952,7 @@ static NSString * basePath = @"http://localhost/rest";
         file_path:(NSString*) file_path
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -992,7 +992,7 @@ static NSString * basePath = @"http://localhost/rest";
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1036,7 +1036,7 @@ static NSString * basePath = @"http://localhost/rest";
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1087,7 +1087,7 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1161,7 +1161,7 @@ force:(NSNumber*) force
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1214,7 +1214,7 @@ zip:(NSNumber*) zip
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1278,7 +1278,7 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1359,7 +1359,7 @@ body:(SWGContainer*) body
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1434,7 +1434,7 @@ content_only:(NSNumber*) content_only
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1492,7 +1492,7 @@ zip:(NSNumber*) zip
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1561,7 +1561,7 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1647,7 +1647,7 @@ body:(SWGFolder*) body
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1724,7 +1724,7 @@ content_only:(NSNumber*) content_only
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1784,7 +1784,7 @@ download:(NSNumber*) download
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1845,7 +1845,7 @@ body:(SWGFileRequest*) body
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1923,7 +1923,7 @@ body:(SWGFileRequest*) body
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -1999,7 +1999,7 @@ body:(SWGFile*) body
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
@@ -2074,7 +2074,7 @@ file_path:(NSString*) file_path
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{file_path}", basePath];
 
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)

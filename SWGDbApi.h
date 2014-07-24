@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "NIKApiInvoker.h"
+#import "SWGStoredProcRequest.h"
 #import "SWGRecordsRequest.h"
 #import "SWGRecordResponse.h"
 #import "SWGIdsRequest.h"
@@ -11,6 +12,7 @@
 #import "SWGFilterRecordRequest.h"
 #import "SWGRecordsResponse.h"
 #import "SWGTables.h"
+#import "SWGStoredProcResponse.h"
 
 
 @interface SWGDbApi: NSObject {
@@ -466,5 +468,36 @@
         id_type:(NSString*) id_type 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordResponse* output, NSError* error))completionBlock;
+
+/**
+
+ getStoredProcs() - List callable stored procedures.
+ List the names of the available stored procedures on this database. 
+ */
+-(void) getStoredProcsWithCompletionBlock :(void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ callStoredProc() - Call a stored procedure.
+ Call a stored procedure with no parameters. Set an optional wrapper for the returned data set. 
+ @param procedure_name Name of the stored procedure to call.
+ @param wrapper Add this wrapper around the expected data set before returning.
+ */
+-(void) callStoredProc()WithCompletionBlock :(NSString*) procedure_name 
+        wrapper:(NSString*) wrapper 
+        completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock;
+
+/**
+
+ callStoredProcWithParams() - Call a stored procedure.
+ Call a stored procedure with parameters. Set an optional wrapper and schema for the returned data set. 
+ @param procedure_name Name of the stored procedure to call.
+ @param body Data containing in and out parameters to pass to procedure.
+ @param wrapper Add this wrapper around the expected data set before returning.
+ */
+-(void) callStoredProcWithParams()WithCompletionBlock :(NSString*) procedure_name 
+        body:(SWGStoredProcRequest*) body 
+        wrapper:(NSString*) wrapper 
+        completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock;
 
 @end

@@ -1,5 +1,6 @@
 #import "SWGDbApi.h"
 #import "NIKFile.h"
+#import "SWGStoredProcRequest.h"
 #import "SWGRecordsRequest.h"
 #import "SWGRecordResponse.h"
 #import "SWGIdsRequest.h"
@@ -11,11 +12,12 @@
 #import "SWGFilterRecordRequest.h"
 #import "SWGRecordsResponse.h"
 #import "SWGTables.h"
+#import "SWGStoredProcResponse.h"
 
 
 
 @implementation SWGDbApi
-static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"http://localhost/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -1542,6 +1544,142 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
         }
 
         completionBlock( [[SWGRecordResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getStoredProcsWithCompletionBlock: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) callStoredProc()WithCompletionBlock:(NSString*) procedure_name
+        wrapper:(NSString*) wrapper
+        completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc/{procedure_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"procedure_name", @"}"]] withString: [_api escapeString:procedure_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(wrapper != nil)
+        queryParams[@"wrapper"] = wrapper;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(procedure_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGStoredProcResponse alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) callStoredProcWithParams()WithCompletionBlock:(NSString*) procedure_name
+        body:(SWGStoredProcRequest*) body
+        wrapper:(NSString*) wrapper
+        completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc/{procedure_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"procedure_name", @"}"]] withString: [_api escapeString:procedure_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(wrapper != nil)
+        queryParams[@"wrapper"] = wrapper;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(procedure_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGStoredProcResponse alloc]initWithValues: data], nil);}];
     
 
 }
@@ -3240,6 +3378,178 @@ related:(NSString*) related
     }
     [_api dictionary:requestUrl 
               method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getStoredProcsAsJsonWithCompletionBlock :
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) callStoredProc()AsJsonWithCompletionBlock :(NSString*) procedure_name 
+wrapper:(NSString*) wrapper 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc/{procedure_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"procedure_name", @"}"]] withString: [_api escapeString:procedure_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(wrapper != nil)
+        queryParams[@"wrapper"] = wrapper;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(procedure_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) callStoredProcWithParams()AsJsonWithCompletionBlock :(NSString*) procedure_name 
+body:(SWGStoredProcRequest*) body 
+wrapper:(NSString*) wrapper 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc/{procedure_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"procedure_name", @"}"]] withString: [_api escapeString:procedure_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(wrapper != nil)
+        queryParams[@"wrapper"] = wrapper;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(procedure_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
          queryParams:queryParams 
                 body:bodyDictionary 
         headerParams:headerParams

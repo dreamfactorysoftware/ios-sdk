@@ -2,6 +2,7 @@
 #import "NIKApiInvoker.h"
 #import "SWGEventsResponse.h"
 #import "SWGConstant.h"
+#import "SWGScriptsResponse.h"
 #import "SWGRolesResponse.h"
 #import "SWGAppGroupsResponse.h"
 #import "SWGCustomSettings.h"
@@ -43,7 +44,6 @@
 #import "SWGRolesRequest.h"
 #import "SWGProviderResponse.h"
 #import "SWGUserResponse.h"
-#import "SWGScripts.h"
 #import "SWGDevicesResponse.h"
 #import "SWGEventRequest.h"
 #import "SWGAppResponse.h"
@@ -929,16 +929,28 @@
 
  getScripts() - List all scripts
  List all known scripts
+ @param is_user_script Set to true to return a list of user scripts. Otherwise, only event scripts are returned.
+ @param language The language of the script
+ @param include_script_body True if you would like the body of the scripts back as well
  */
--(void) getScriptsWithCompletionBlock :(void (^)(SWGScripts* output, NSError* error))completionBlock;
+-(void) getScriptsWithCompletionBlock :(NSNumber*) is_user_script 
+        language:(NSString*) language 
+        include_script_body:(NSNumber*) include_script_body 
+        completionHandler: (void (^)(SWGScriptsResponse* output, NSError* error))completionBlock;
 
 /**
 
  getScript() - Get the script with ID provided
  
  @param script_id The ID of the record to retrieve
+ @param is_user_script True if you would like a user script to be returned
+ @param language The language of the script
+ @param include_body True if you would like the body of the scripts back as well
  */
 -(void) getScriptWithCompletionBlock :(NSString*) script_id 
+        is_user_script:(NSNumber*) is_user_script 
+        language:(NSString*) language 
+        include_body:(NSNumber*) include_body 
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock;
 
 /**
@@ -946,8 +958,12 @@
  runScript() - Runs the specified script.
  Loads and executes the specified script
  @param script_id The ID of the script which you want to retrieve.
+ @param is_user_script True if you would like a user script to be returned
+ @param language The language of the script
  */
 -(void) runScriptWithCompletionBlock :(NSString*) script_id 
+        is_user_script:(NSNumber*) is_user_script 
+        language:(NSString*) language 
         completionHandler: (void (^)(SWGScriptOutput* output, NSError* error))completionBlock;
 
 /**
@@ -956,9 +972,13 @@
  Post data as a string.
  @param script_id The ID of the script which you want to retrieve.
  @param body The body of the script to write.
+ @param is_user_script True if you would like a user script to be returned
+ @param language The language of the script
  */
 -(void) writeScriptWithCompletionBlock :(NSString*) script_id 
         body:(NSString*) body 
+        is_user_script:(NSNumber*) is_user_script 
+        language:(NSString*) language 
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock;
 
 /**
@@ -966,8 +986,12 @@
  deleteScript() - Delete the script with ID provided
  
  @param script_id The ID of the record to retrieve
+ @param is_user_script True if you would like a user script to be returned
+ @param language The language of the script
  */
 -(void) deleteScriptWithCompletionBlock :(NSString*) script_id 
+        is_user_script:(NSNumber*) is_user_script 
+        language:(NSString*) language 
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock;
 
 /**

@@ -2,6 +2,7 @@
 #import "NIKFile.h"
 #import "SWGEventsResponse.h"
 #import "SWGConstant.h"
+#import "SWGScriptsResponse.h"
 #import "SWGRolesResponse.h"
 #import "SWGAppGroupsResponse.h"
 #import "SWGCustomSettings.h"
@@ -43,7 +44,6 @@
 #import "SWGRolesRequest.h"
 #import "SWGProviderResponse.h"
 #import "SWGUserResponse.h"
-#import "SWGScripts.h"
 #import "SWGDevicesResponse.h"
 #import "SWGEventRequest.h"
 #import "SWGAppResponse.h"
@@ -54,7 +54,7 @@
 
 
 @implementation SWGSystemApi
-static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"http://localhost/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -3311,7 +3311,10 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 }
 
--(void) getScriptsWithCompletionBlock: (void (^)(SWGScripts* output, NSError* error))completionBlock{
+-(void) getScriptsWithCompletionBlock:(NSNumber*) is_user_script
+        language:(NSString*) language
+        include_script_body:(NSNumber*) include_script_body
+        completionHandler: (void (^)(SWGScriptsResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script", basePath];
 
@@ -3319,13 +3322,25 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"include_script_body", @"}"]] withString: [_api escapeString:include_script_body]];
     NSString* contentType = @"application/json";
 
 
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-        [_api dictionary:requestUrl 
+        if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
+    if(include_script_body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
               method:@"GET" 
          queryParams:queryParams 
                 body:bodyDictionary 
@@ -3336,12 +3351,15 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
             completionBlock(nil, error);return;
         }
 
-        completionBlock( [[SWGScripts alloc]initWithValues: data], nil);}];
+        completionBlock( [[SWGScriptsResponse alloc]initWithValues: data], nil);}];
     
 
 }
 
 -(void) getScriptWithCompletionBlock:(NSString*) script_id
+        is_user_script:(NSNumber*) is_user_script
+        language:(NSString*) language
+        include_body:(NSNumber*) include_body
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
@@ -3351,6 +3369,9 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"include_body", @"}"]] withString: [_api escapeString:include_body]];
     NSString* contentType = @"application/json";
 
 
@@ -3358,6 +3379,15 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
+    if(include_body == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -3377,6 +3407,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 }
 
 -(void) runScriptWithCompletionBlock:(NSString*) script_id
+        is_user_script:(NSNumber*) is_user_script
+        language:(NSString*) language
         completionHandler: (void (^)(SWGScriptOutput* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
@@ -3386,6 +3418,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
 
@@ -3393,6 +3427,12 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -3413,6 +3453,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 -(void) writeScriptWithCompletionBlock:(NSString*) script_id
         body:(NSString*) body
+        is_user_script:(NSNumber*) is_user_script
+        language:(NSString*) language
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
@@ -3422,6 +3464,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
 
@@ -3460,6 +3504,12 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     if(body == nil) {
         // error
     }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"PUT" 
          queryParams:queryParams 
@@ -3477,6 +3527,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 }
 
 -(void) deleteScriptWithCompletionBlock:(NSString*) script_id
+        is_user_script:(NSNumber*) is_user_script
+        language:(NSString*) language
         completionHandler: (void (^)(SWGScriptResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/system/script/{script_id}", basePath];
@@ -3486,6 +3538,8 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
 
@@ -3493,6 +3547,12 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -8227,7 +8287,9 @@ related:(NSString*) related
 
 }
 
--(void) getScriptsAsJsonWithCompletionBlock :
+-(void) getScriptsAsJsonWithCompletionBlock :(NSNumber*) is_user_script 
+language:(NSString*) language 
+include_script_body:(NSNumber*) include_script_body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -8237,11 +8299,23 @@ related:(NSString*) related
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
 
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"include_script_body", @"}"]] withString: [_api escapeString:include_script_body]];
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
+    if(include_script_body == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"GET" 
          queryParams:queryParams 
@@ -8272,6 +8346,9 @@ related:(NSString*) related
 }
 
 -(void) getScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+is_user_script:(NSNumber*) is_user_script 
+language:(NSString*) language 
+include_body:(NSNumber*) include_body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -8282,12 +8359,24 @@ related:(NSString*) related
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"include_body", @"}"]] withString: [_api escapeString:include_body]];
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
+    if(include_body == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -8320,6 +8409,8 @@ related:(NSString*) related
 }
 
 -(void) runScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+is_user_script:(NSNumber*) is_user_script 
+language:(NSString*) language 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -8330,12 +8421,20 @@ related:(NSString*) related
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -8369,6 +8468,8 @@ related:(NSString*) related
 
 -(void) writeScriptAsJsonWithCompletionBlock :(NSString*) script_id 
 body:(NSString*) body 
+is_user_script:(NSNumber*) is_user_script 
+language:(NSString*) language 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -8379,6 +8480,8 @@ body:(NSString*) body
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
@@ -8412,6 +8515,12 @@ body:(NSString*) body
     if(body == nil) {
         // error
     }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"PUT" 
          queryParams:queryParams 
@@ -8442,6 +8551,8 @@ body:(NSString*) body
 }
 
 -(void) deleteScriptAsJsonWithCompletionBlock :(NSString*) script_id 
+is_user_script:(NSNumber*) is_user_script 
+language:(NSString*) language 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -8452,12 +8563,20 @@ body:(NSString*) body
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
 
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"script_id", @"}"]] withString: [_api escapeString:script_id]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"is_user_script", @"}"]] withString: [_api escapeString:is_user_script]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"language", @"}"]] withString: [_api escapeString:language]];
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
     if(script_id == nil) {
+        // error
+    }
+    if(is_user_script == nil) {
+        // error
+    }
+    if(language == nil) {
         // error
     }
     [_api dictionary:requestUrl 

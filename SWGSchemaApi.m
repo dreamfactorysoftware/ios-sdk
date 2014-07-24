@@ -10,7 +10,7 @@
 
 
 @implementation SWGSchemaApi
-static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"http://localhost/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
