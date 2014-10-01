@@ -1,17 +1,15 @@
-//
-//  ViewController.h
-//  TodoList
-//
-//  Created by Sachin Soni on 2/26/14.
-//  Copyright (c) 2014 sachin. All rights reserved.
-//
 
 #import <UIKit/UIKit.h>
 
-#define kApplicationName @"ToDoListAndroid"
+#define kApplicationName @"todoangular"
 #define kTableName @"todo"
 #define kSessionIdKey @"SessionId"
 #define kBaseDspUrl @"BaseDspUrl"
+#define kUserEmail @"UserEmail"
+#define kPassword @"UserPassword"
+#define kContainerName @"applications"
+#define kFolderName @"uploaded_files"
+
 
 @interface MasterViewController : UIViewController
 

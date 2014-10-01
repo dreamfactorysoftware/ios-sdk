@@ -3,9 +3,9 @@
 
 @implementation SWGCustomSettings
 
--(id)type_name: (NSArray*) type_name
+-(id)name: (NSArray*) name
 {
-  _type_name = type_name;
+  _name = name;
   return self;
 }
 
@@ -13,25 +13,25 @@
 {
     self = [super init];
     if(self) {
-        id type_name_dict = dict[@"type_name"];
-        if([type_name_dict isKindOfClass:[NSArray class]]) {
+        id name_dict = dict[@"name"];
+        if([name_dict isKindOfClass:[NSArray class]]) {
 
-            NSMutableArray * objs = [[NSMutableArray alloc] initWithCapacity:[(NSArray*)type_name_dict count]];
+            NSMutableArray * objs = [[NSMutableArray alloc] initWithCapacity:[(NSArray*)name_dict count]];
 
-            if([(NSArray*)type_name_dict count] > 0) {
-                for (NSDictionary* dict in (NSArray*)type_name_dict) {
+            if([(NSArray*)name_dict count] > 0) {
+                for (NSDictionary* dict in (NSArray*)name_dict) {
                     SWGCustomSetting* d = [[SWGCustomSetting alloc] initWithValues:dict];
                     [objs addObject:d];
                 }
                 
-                _type_name = [[NSArray alloc] initWithArray:objs];
+                _name = [[NSArray alloc] initWithArray:objs];
             }
             else {
-                _type_name = [[NSArray alloc] init];
+                _name = [[NSArray alloc] init];
             }
         }
         else {
-            _type_name = [[NSArray alloc] init];
+            _name = [[NSArray alloc] init];
         }
         
 
@@ -41,23 +41,23 @@
 
 -(NSDictionary*) asDictionary {
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
-    if(_type_name != nil){
-        if([_type_name isKindOfClass:[NSArray class]]){
+    if(_name != nil){
+        if([_name isKindOfClass:[NSArray class]]){
             NSMutableArray * array = [[NSMutableArray alloc] init];
-            for( SWGCustomSetting *type_name in (NSArray*)_type_name) {
-                [array addObject:[(NIKSwaggerObject*)type_name asDictionary]];
+            for( SWGCustomSetting *name in (NSArray*)_name) {
+                [array addObject:[(NIKSwaggerObject*)name asDictionary]];
             }
-            dict[@"type_name"] = array;
+            dict[@"name"] = array;
         }
-        else if(_type_name && [_type_name isKindOfClass:[NIKDate class]]) {
-            NSString * dateString = [(NIKDate*)_type_name toString];
+        else if(_name && [_name isKindOfClass:[NIKDate class]]) {
+            NSString * dateString = [(NIKDate*)_name toString];
             if(dateString){
-                dict[@"type_name"] = dateString;
+                dict[@"name"] = dateString;
             }
         }
     }
     else {
-    if(_type_name != nil) dict[@"type_name"] = [(NIKSwaggerObject*)_type_name asDictionary];
+    if(_name != nil) dict[@"name"] = [(NIKSwaggerObject*)_name asDictionary];
     }
     NSDictionary* output = [dict copy];
     return output;

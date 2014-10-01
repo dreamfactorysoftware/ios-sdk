@@ -37,7 +37,16 @@
 
 /**
 
- updateTables() - Update one or more tables.
+ replaceTables() - Update (replace) one or more tables.
+ Post data should be a single table definition or an array of table definitions.
+ @param body Array of table definitions.
+ */
+-(void) replaceTablesWithCompletionBlock :(SWGTables*) body 
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ updateTables() - Update (patch) one or more tables.
  Post data should be a single table definition or an array of table definitions.
  @param body Array of table definitions.
  */
@@ -66,7 +75,18 @@
 
 /**
 
- updateFields() - Update one or more fields in the given table.
+ replaceFields() - Update (replace) one or more fields in the given table.
+ Post data should be an array of field properties for a single record or an array of fields.
+ @param table_name Name of the table to perform operations on.
+ @param body Array of field definitions.
+ */
+-(void) replaceFieldsWithCompletionBlock :(NSString*) table_name 
+        body:(SWGFields*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ updateFields() - Update (patch) one or more fields in the given table.
  Post data should be an array of field properties for a single record or an array of fields.
  @param table_name Name of the table to perform operations on.
  @param body Array of field definitions.
@@ -94,6 +114,19 @@
 -(void) describeFieldWithCompletionBlock :(NSString*) table_name 
         field_name:(NSString*) field_name 
         completionHandler: (void (^)(SWGFieldSchema* output, NSError* error))completionBlock;
+
+/**
+
+ replaceField() - Update one record by identifier.
+ Post data should be an array of field properties for the given field.
+ @param table_name Name of the table to perform operations on.
+ @param field_name Name of the field to perform operations on.
+ @param body Array of field properties.
+ */
+-(void) replaceFieldWithCompletionBlock :(NSString*) table_name 
+        field_name:(NSString*) field_name 
+        body:(SWGFieldSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
 
 /**
 

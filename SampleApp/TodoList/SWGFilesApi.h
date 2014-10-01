@@ -5,13 +5,15 @@
 #import "SWGFolderRequest.h"
 #import "SWGContainerRequest.h"
 #import "SWGFolder.h"
+#import "SWGResources.h"
 #import "SWGContainersResponse.h"
-#import "SWGFileRequest.h"
 #import "SWGContainersRequest.h"
 #import "SWGFolderResponse.h"
+#import "SWGFileRequest.h"
 #import "SWGFile.h"
 #import "SWGContainerResponse.h"
-
+#import "SWGComponentList.h"
+#import "NIKFile.h"
 
 @interface SWGFilesApi: NSObject {
 
@@ -23,11 +25,27 @@
 @property(nonatomic, readonly) NIKApiInvoker* api;
 
 -(void) addHeader:(NSString*)value forKey:(NSString*)key;
+-(void)setBaseUrlPath:(NSString*)baseUrl;
+/**
+
+ getResources() - List all resources.
+ List the names of the available containers in this storage. 
+ */
+-(void) getResourcesWithCompletionBlock :(void (^)(SWGResources* output, NSError* error))completionBlock;
 
 /**
 
- getContainers() - List all containers.
- List the names of the available containers in this storage. Use 'include_properties' to include any properties of the containers.
+ getAccessComponents() - List all role accessible components.
+ List the names of all the role accessible components.
+ @param as_access_components Return the names of all the accessible components.
+ */
+-(void) getAccessComponentsWithCompletionBlock :(NSNumber*) as_access_components 
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock;
+
+/**
+
+ getContainers() - List all containers, optionally with properties.
+ List the names and any properties of the available containers in this storage.
  @param include_properties Return any properties of the container in the response.
  */
 -(void) getContainersWithCompletionBlock :(NSNumber*) include_properties 
@@ -224,6 +242,14 @@
         check_exist:(NSNumber*) check_exist 
         body:(SWGFileRequest*) body 
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock;
+
+-(void) createFileWithCompletionBlock:(NSString*) container
+                            file_path:(NSString*) file_path
+                          check_exist:(NSNumber*) check_exist
+                          NIKFilebody:(NIKFile*) body
+                    completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock;
+
+
 
 /**
 

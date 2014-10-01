@@ -1,10 +1,3 @@
-//
-//  todoTableViewCell.m
-//  TodoList
-//
-//  Created by Sachin Soni on 2/27/14.
-//  Copyright (c) 2014 sachin. All rights reserved.
-//
 
 #import "todoTableViewCell.h"
 
@@ -16,7 +9,6 @@
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Initialization code
     }
     return self;
 }
@@ -25,7 +17,6 @@
 {
     [super setSelected:selected animated:animated];
 
-    // Configure the view for the selected state
 }
 
 -(void)setTaskComplete:(BOOL)complete{

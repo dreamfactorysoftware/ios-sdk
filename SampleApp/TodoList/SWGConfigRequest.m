@@ -13,6 +13,12 @@
     guest_role_id: (NSNumber*) guest_role_id
     editable_profile_fields: (NSString*) editable_profile_fields
     allowed_hosts: (NSArray*) allowed_hosts
+    restricted_verbs: (NSArray*) restricted_verbs
+    install_type: (NSNumber*) install_type
+    install_name: (NSString*) install_name
+    is_hosted: (NSNumber*) is_hosted
+    is_private: (NSNumber*) is_private
+    is_guest: (NSNumber*) is_guest
 {
   _open_reg_role_id = open_reg_role_id;
   _open_reg_email_service_id = open_reg_email_service_id;
@@ -24,6 +30,12 @@
   _guest_role_id = guest_role_id;
   _editable_profile_fields = editable_profile_fields;
   _allowed_hosts = allowed_hosts;
+  _restricted_verbs = restricted_verbs;
+  _install_type = install_type;
+  _install_name = install_name;
+  _is_hosted = is_hosted;
+  _is_private = is_private;
+  _is_guest = is_guest;
   return self;
 }
 
@@ -60,6 +72,12 @@
         else {
             _allowed_hosts = [[NSArray alloc] init];
         }
+        _restricted_verbs = dict[@"restricted_verbs"]; 
+        _install_type = dict[@"install_type"]; 
+        _install_name = dict[@"install_name"]; 
+        _is_hosted = dict[@"is_hosted"]; 
+        _is_private = dict[@"is_private"]; 
+        _is_guest = dict[@"is_guest"]; 
         
 
     }
@@ -95,6 +113,12 @@
     else {
     if(_allowed_hosts != nil) dict[@"allowed_hosts"] = [(NIKSwaggerObject*)_allowed_hosts asDictionary];
     }
+    if(_restricted_verbs != nil) dict[@"restricted_verbs"] = _restricted_verbs ;
+    if(_install_type != nil) dict[@"install_type"] = _install_type ;
+    if(_install_name != nil) dict[@"install_name"] = _install_name ;
+    if(_is_hosted != nil) dict[@"is_hosted"] = _is_hosted ;
+    if(_is_private != nil) dict[@"is_private"] = _is_private ;
+    if(_is_guest != nil) dict[@"is_guest"] = _is_guest ;
     NSDictionary* output = [dict copy];
     return output;
 }

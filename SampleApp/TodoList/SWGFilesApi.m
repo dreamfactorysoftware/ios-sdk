@@ -5,17 +5,19 @@
 #import "SWGFolderRequest.h"
 #import "SWGContainerRequest.h"
 #import "SWGFolder.h"
+#import "SWGResources.h"
 #import "SWGContainersResponse.h"
-#import "SWGFileRequest.h"
 #import "SWGContainersRequest.h"
 #import "SWGFolderResponse.h"
+#import "SWGFileRequest.h"
 #import "SWGFile.h"
 #import "SWGContainerResponse.h"
+#import "SWGComponentList.h"
 
 
 
 @implementation SWGFilesApi
-static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"http://localhost:8080/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -38,9 +40,92 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
     return self;
 }
 
+-(void)setBaseUrlPath:(NSString*)baseUrl{
+    
+    NSString *lastPathComponent=[baseUrl lastPathComponent];
+    
+    if(![lastPathComponent isEqualToString:@"rest"])
+        
+        basePath=[baseUrl stringByAppendingString:@"/rest"];
+    
+    else{
+        
+        basePath=baseUrl;
+        
+    }
+    
+}
+
+
 -(void) addHeader:(NSString*) value
            forKey:(NSString*)key {
     [_api addHeader:value forKey:key];
+}
+
+-(void) getResourcesWithCompletionBlock: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getAccessComponentsWithCompletionBlock:(NSNumber*) as_access_components
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(as_access_components != nil)
+        queryParams[@"as_access_components"] = as_access_components;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(as_access_components == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGComponentList alloc]initWithValues: data], nil);}];
+    
+
 }
 
 -(void) getContainersWithCompletionBlock:(NSNumber*) include_properties
@@ -60,7 +145,10 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"include_properties"] = include_properties;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-        [_api dictionary:requestUrl 
+        if(include_properties == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
               method:@"GET" 
          queryParams:queryParams 
                 body:bodyDictionary 
@@ -621,16 +709,29 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         content_only:(NSNumber*) content_only
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock{
 
-    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}/", basePath];
-
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}", basePath];
+    
+    /*
+    if(container.length>0){
+        requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{folder_path}", basePath];
+    }else{
+        requestUrl = [NSMutableString stringWithFormat:@"%@/files/{folder_path}", basePath];
+    }*/
+    
     // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
+    if ([requestUrl rangeOfString:@"{container}"].location != NSNotFound)
     [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"container", @"}"]] withString: [_api escapeString:container]];
-    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"folder_path", @"}"]] withString: [_api escapeString:folder_path]];
+    //[requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"folder_path", @"}"]] withString: [_api escapeString:folder_path]];
+  
+    
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"folder_path", @"}"]] withString: folder_path];
+
     NSString* contentType = @"application/json";
 
+    
 
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(force != nil)
@@ -713,20 +814,16 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 -(void) createFileWithCompletionBlock:(NSString*) container
         file_path:(NSString*) file_path
         check_exist:(NSNumber*) check_exist
-        body:(SWGFileRequest*) body
+        body:(NSData*) body
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
-
-    // remove format in URL if needed
     if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
         [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
 
-    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"container", @"}"]] withString: [_api escapeString:container]];
-    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"file_path", @"}"]] withString: [_api escapeString:file_path]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"container", @"}"]] withString: container];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"file_path", @"}"]] withString: file_path];
     NSString* contentType = @"application/json";
-
-
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
@@ -751,7 +848,7 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         bodyDictionary = body;
     }
     else if([body isKindOfClass: [NIKFile class]]) {
-        contentType = @"form-data";
+         contentType = @"application/octet-stream";
         bodyDictionary = body;
     }
     else{
@@ -778,6 +875,73 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         completionBlock( [[SWGFileResponse alloc]initWithValues: data], nil);}];
     
 
+}
+
+
+-(void) createFileWithCompletionBlock:(NSString*) container
+                            file_path:(NSString*) file_path
+                          check_exist:(NSNumber*) check_exist
+                                 NIKFilebody:(NIKFile*) body
+                    completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock{
+    
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files/{container}/{file_path}", basePath];
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+    
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"container", @"}"]] withString: container];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"file_path", @"}"]] withString: file_path];
+    NSString* contentType = @"application/json";
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(check_exist != nil)
+        queryParams[@"check_exist"] = check_exist;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"application/octet-stream";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+    
+    if(container == nil) {
+        // error
+    }
+    if(file_path == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl
+              method:@"POST"
+         queryParams:queryParams
+                body:bodyDictionary
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+         if (error) {
+             completionBlock(nil, error);return;
+         }
+         
+         completionBlock( [[SWGFileResponse alloc]initWithValues: data], nil);}];
+    
+    
 }
 
 -(void) replaceFileWithCompletionBlock:(NSString*) container
@@ -954,6 +1118,99 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
 
 }
 
+-(void) getResourcesAsJsonWithCompletionBlock :
+
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getAccessComponentsAsJsonWithCompletionBlock :(NSNumber*) as_access_components 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/files", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(as_access_components != nil)
+        queryParams[@"as_access_components"] = as_access_components;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(as_access_components == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
 -(void) getContainersAsJsonWithCompletionBlock :(NSNumber*) include_properties 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -971,6 +1228,9 @@ static NSString * basePath = @"https://next.cloud.dreamfactory.com/rest";
         queryParams[@"include_properties"] = include_properties;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
+    if(include_properties == nil) {
+        // error
+    }
     [_api dictionary:requestUrl 
               method:@"GET" 
          queryParams:queryParams 

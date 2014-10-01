@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
 #import "SWGHostInfo.h"
+//#import "Integer.h"
 
 @interface SWGConfigResponse : NIKSwaggerObject
 
@@ -14,6 +15,12 @@
 @property(nonatomic) NSNumber* guest_role_id;
 @property(nonatomic) NSString* editable_profile_fields;
 @property(nonatomic) NSArray* allowed_hosts;
+@property(nonatomic) NSArray* restricted_verbs;
+@property(nonatomic) NSNumber* install_type;
+@property(nonatomic) NSString* install_name;
+@property(nonatomic) NSNumber* is_hosted;
+@property(nonatomic) NSNumber* is_private;
+@property(nonatomic) NSNumber* is_guest;
 @property(nonatomic) NSString* dsp_version;
 @property(nonatomic) NSString* db_version;
 - (id) open_reg_role_id: (NSNumber*) open_reg_role_id
@@ -26,6 +33,12 @@
      guest_role_id: (NSNumber*) guest_role_id
      editable_profile_fields: (NSString*) editable_profile_fields
      allowed_hosts: (NSArray*) allowed_hosts
+     restricted_verbs: (NSArray*) restricted_verbs
+     install_type: (NSNumber*) install_type
+     install_name: (NSString*) install_name
+     is_hosted: (NSNumber*) is_hosted
+     is_private: (NSNumber*) is_private
+     is_guest: (NSNumber*) is_guest
      dsp_version: (NSString*) dsp_version
      db_version: (NSString*) db_version;
 

@@ -1,10 +1,3 @@
-//
-//  ToDoListViewController.m
-//  TodoList
-//
-//  Created by Sachin Soni on 2/26/14.
-//  Copyright (c) 2014 sachin. All rights reserved.
-//
 
 #import "ToDoListViewController.h"
 #import "todoTableViewCell.h"
@@ -28,7 +21,6 @@ static NSString *baseUrl=@"";
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
     }
     return self;
 }
@@ -40,7 +32,6 @@ static NSString *baseUrl=@"";
     baseUrl=baseDSPUrl;
     [self getTodoListContentFromServer];
     
-	// Do any additional setup after loading the view.
     self.todoListContentArray=[[NSMutableArray alloc]init];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
@@ -59,7 +50,6 @@ static NSString *baseUrl=@"";
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - KeyBoard Notification
@@ -78,21 +68,17 @@ static NSString *baseUrl=@"";
     [self.userInputTextField resignFirstResponder];
 }
 
-/*
- 
- 320*568
- 
- */
+
 -(void)setViewMovedUp:(BOOL)movedUp
 {
     CGRect frame=self.navigationController.view.frame;
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.1]; // if you want to slide up the view
+    [UIView setAnimationDuration:0.1]; 
     CGRect rect = self.userInputView.frame;
     if (movedUp)
     {
-        // 1. move the view's origin up so that the text field that will be hidden come above the keyboard
+        
         if(UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad){
             if (UIInterfaceOrientationIsPortrait(orientation)) {
                 if(frame.size.height==1024 && frame.size.width==768){
@@ -127,7 +113,7 @@ static NSString *baseUrl=@"";
     else
     {
         if (UIInterfaceOrientationIsPortrait(orientation)) {
-             rect.origin.y = frame.size.height-100;//rect.origin.y = 60 ;//frame.size.height-60;
+             rect.origin.y = frame.size.height-100;
         }else{
             if(frame.size.height==568 && frame.size.width==320){
                 rect.origin.y = frame.size.height-344;
@@ -135,7 +121,6 @@ static NSString *baseUrl=@"";
                 rect.origin.y = frame.size.height-256;
             }
         }
-        // revert back to the normal state.
     }
     self.userInputView.frame = rect;
     [UIView commitAnimations];
@@ -171,9 +156,12 @@ static NSString *baseUrl=@"";
     
 
    [self showProgressView:YES];
+    
+    
     todoTableViewCell *cell = (todoTableViewCell*)[tableView cellForRowAtIndexPath:indexPath];
     TODORecord *recordInfo=(TODORecord*)[self.todoListContentArray objectAtIndex:cell.deleteButton.tag];
-    SWGRecord *record=[[SWGRecord alloc]init];
+    
+    SWGRecordRequest *record=[[SWGRecordRequest alloc]init];
     [record setName:cell.todoTextLabel.text];
     [record set_id:cell.record_Id];
     if(cell.isComplete){
@@ -186,9 +174,10 @@ static NSString *baseUrl=@"";
     [swgDbApi setBaseUrlPath:baseUrl];
     [swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
     [swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    [swgDbApi updateRecordWithCompletionBlock:kTableName _id:[NSString stringWithFormat:@"%@",cell.record_Id] id_field:nil body:record fields:nil related:nil completionHandler:^(SWGRecord *output, NSError *error) {
-         NSLog(@"Completetion Error %@",error);
-         NSLog(@"Completetion OutPut %@",output._id);
+    
+    [swgDbApi updateRecordWithCompletionBlock:kTableName _id:[NSString stringWithFormat:@"%@",cell.record_Id] body:record fields:nil id_field:nil id_type:nil related:nil completionHandler:^(SWGRecordResponse *output, NSError *error) {
+        NSLog(@"Completetion Error %@",error);
+        NSLog(@"Completetion OutPut %@",output._id);
         dispatch_sync(dispatch_get_main_queue(),^ (void){
             [self showProgressView:NO];
             if (output) {
@@ -204,7 +193,7 @@ static NSString *baseUrl=@"";
         });
         
     }];
-
+    
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section{
@@ -227,16 +216,14 @@ static NSString *baseUrl=@"";
     [self.userInputTextField setText:@""];
     [self showProgressView:YES];
     NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
-    SWGRecord *record=[[SWGRecord alloc]init];
+    SWGRecordRequest *record=[[SWGRecordRequest alloc]init];
     [record set_field_:taskToAdd];
     [record setName:taskToAdd];
     SWGDbApi *swgDbApi=[[SWGDbApi alloc]init];
     [swgDbApi setBaseUrlPath:baseUrl];
     [swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
     [swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    [swgDbApi createRecordWithCompletionBlock:kTableName _id:@"" id_field:nil body:record fields:nil related:nil completionHandler:^(SWGRecord *output, NSError *error) {
-        NSLog(@"Error %@",error);
-       // NSLog(@"OutPut %@",output.record);
+    [swgDbApi createRecordWithCompletionBlock:kTableName _id:@"" body:record fields:nil id_field:nil id_type:nil related:@"" completionHandler:^(SWGRecordResponse *output, NSError *error) {
         dispatch_async(dispatch_get_main_queue(),^ (void){
             [self showProgressView:NO];
         });
@@ -244,16 +231,17 @@ static NSString *baseUrl=@"";
             UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
             [message show];
         }else{
-                TODORecord *newRecord=[[TODORecord alloc]init];
-                [newRecord setRecord_Id:output._id];
-                [newRecord setRecord_Task:record.name];
-                [newRecord setRecord_Complete:output._complete];
-                [self.todoListContentArray addObject:newRecord];
+            TODORecord *newRecord=[[TODORecord alloc]init];
+            [newRecord setRecord_Id:output._id];
+            [newRecord setRecord_Task:record.name];
+            [newRecord setRecord_Complete:output._complete];
+            [self.todoListContentArray addObject:newRecord];
             dispatch_async(dispatch_get_main_queue(),^ (void){
                 [self.todoListTableView reloadData];
                 [self.todoListTableView setNeedsDisplay];
             });
         }
+        
     }];
 }
 
@@ -271,9 +259,8 @@ static NSString *baseUrl=@"";
     [swgDbApi setBaseUrlPath:baseUrl];
     [swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
     [swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    [swgDbApi deleteRecordWithCompletionBlock:kTableName _id:[NSString stringWithFormat:@"%@",record.record_Id] id_field:nil fields:nil related:nil completionHandler:^(SWGRecord *output, NSError *error) {
+    [swgDbApi deleteRecordWithCompletionBlock:kTableName _id:[NSString stringWithFormat:@"%@",record.record_Id] fields:nil id_field:nil id_type:nil related:nil completionHandler:^(SWGRecordResponse *output, NSError *error) {
         NSLog(@"Error %@",error);
-        // NSLog(@"OutPut %@",output.record);
         dispatch_async(dispatch_get_main_queue(),^ (void){
             [self showProgressView:NO];
         });
@@ -281,14 +268,14 @@ static NSString *baseUrl=@"";
             UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
             [message show];
         }else{
-             for (TODORecord *record in self.todoListContentArray) {
-                 NSString *record_Id=[NSString stringWithFormat:@"%@",record.record_Id]  ;
-                 NSString *outPut_Id=[NSString stringWithFormat:@"%@",output._id];
-                  if ([record_Id isEqualToString:outPut_Id]) {
-                        [self.todoListContentArray removeObject:record];
-                        break;
-                  }
+            for (TODORecord *record in self.todoListContentArray) {
+                NSString *record_Id=[NSString stringWithFormat:@"%@",record.record_Id]  ;
+                NSString *outPut_Id=[NSString stringWithFormat:@"%@",output._id];
+                if ([record_Id isEqualToString:outPut_Id]) {
+                    [self.todoListContentArray removeObject:record];
+                    break;
                 }
+            }
             dispatch_async(dispatch_get_main_queue(),^ (void){
                 [self.todoListTableView reloadData];
                 [self.todoListTableView setNeedsDisplay];
@@ -296,11 +283,13 @@ static NSString *baseUrl=@"";
         }
     }];
     
+    
 }
 
 
 -(void)getTodoListContentFromServer{
   
+    
     NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
     if (swgSessionId.length>0) {
         [self showProgressView:YES];
@@ -308,7 +297,8 @@ static NSString *baseUrl=@"";
         [swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
         [swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
         [swgDbApi setBaseUrlPath:baseUrl];
-        [swgDbApi getRecordsWithCompletionBlock:kTableName ids:nil filter:nil limit:nil offset:nil order:nil fields:nil related:nil include_count:[NSNumber numberWithBool:TRUE] include_schema:nil id_field:nil completionHandler:^(SWGRecords *output, NSError *error) {
+        [swgDbApi getRecordsWithCompletionBlock:kTableName ids:nil filter:nil limit:nil offset:nil order:nil fields:nil include_count:[NSNumber numberWithBool:TRUE] include_schema:nil id_field:nil id_type:nil continue:nil related:nil completionHandler:^(SWGRecordsResponse *output, NSError *error) {
+            
             NSLog(@"Error %@",error);
             NSLog(@"OutPut %@",output.record);
             dispatch_async(dispatch_get_main_queue(),^ (void){
@@ -318,13 +308,10 @@ static NSString *baseUrl=@"";
                 dispatch_async(dispatch_get_main_queue(),^ (void){
                     [self.navigationController popToRootViewControllerAnimated:YES];
                 });
-        
-//                UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-//                [message show];
+                
             }else{
                 [self.todoListContentArray removeAllObjects];
-                for (SWGRecord *recordInfo in output.record) {
-                    // NSLog(@"OutPut %@",recordInfo._field_);
+                for (SWGRecordResponse *recordInfo in output.record) {
                     TODORecord *newRecord=[[TODORecord alloc]init];
                     [newRecord setRecord_Id:recordInfo._id];
                     [newRecord setRecord_Task:recordInfo.name];
@@ -337,7 +324,10 @@ static NSString *baseUrl=@"";
                     [self.todoListTableView setNeedsDisplay];
                 });
             }
+            
         }];
+        
+        
     }else{
         
     }
@@ -357,6 +347,7 @@ static NSString *baseUrl=@"";
 }
 
 -(IBAction)doLogout:(id)sender{
+    
         NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
         [self showProgressView:YES];
         SWGUserApi *userApi=[[SWGUserApi alloc]init];
@@ -365,10 +356,21 @@ static NSString *baseUrl=@"";
         [userApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
         [userApi logoutWithCompletionBlock:^(SWGSuccess *output, NSError *error) {
         [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kSessionIdKey];
+            [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUserEmail];
+            [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kPassword];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+
         dispatch_async(dispatch_get_main_queue(),^ (void){
             [self showProgressView:NO];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
         }];
+    
 }
+
+-(IBAction)backEvent:(id)sender{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
 @end

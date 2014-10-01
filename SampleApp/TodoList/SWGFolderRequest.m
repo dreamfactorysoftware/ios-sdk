@@ -5,14 +5,12 @@
 
 -(id)name: (NSString*) name
     path: (NSString*) path
-    _property_: (NSString*) _property_
     metadata: (NSArray*) metadata
     folder: (NSArray*) folder
     file: (NSArray*) file
 {
   _name = name;
   _path = path;
-  __property_ = _property_;
   _metadata = metadata;
   _folder = folder;
   _file = file;
@@ -25,7 +23,6 @@
     if(self) {
         _name = dict[@"name"]; 
         _path = dict[@"path"]; 
-        __property_ = dict[@"_property_"]; 
         _metadata = dict[@"metadata"]; 
         id folder_dict = dict[@"folder"];
         if([folder_dict isKindOfClass:[NSArray class]]) {
@@ -77,7 +74,6 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(_name != nil) dict[@"name"] = _name ;
     if(_path != nil) dict[@"path"] = _path ;
-    if(__property_ != nil) dict[@"_property_"] = __property_ ;
     if(_metadata != nil) dict[@"metadata"] = _metadata ;
     if(_folder != nil){
         if([_folder isKindOfClass:[NSArray class]]){

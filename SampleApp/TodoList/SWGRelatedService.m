@@ -10,7 +10,6 @@
     is_active: (NSNumber*) is_active
     type: (NSString*) type
     type_id: (NSNumber*) type_id
-    storage_name: (NSString*) storage_name
     storage_type: (NSString*) storage_type
     storage_type_id: (NSNumber*) storage_type_id
     credentials: (NSString*) credentials
@@ -30,7 +29,6 @@
   _is_active = is_active;
   _type = type;
   _type_id = type_id;
-  _storage_name = storage_name;
   _storage_type = storage_type;
   _storage_type_id = storage_type_id;
   _credentials = credentials;
@@ -56,7 +54,6 @@
         _is_active = dict[@"is_active"]; 
         _type = dict[@"type"]; 
         _type_id = dict[@"type_id"]; 
-        _storage_name = dict[@"storage_name"]; 
         _storage_type = dict[@"storage_type"]; 
         _storage_type_id = dict[@"storage_type_id"]; 
         _credentials = dict[@"credentials"]; 
@@ -83,7 +80,6 @@
     if(_is_active != nil) dict[@"is_active"] = _is_active ;
     if(_type != nil) dict[@"type"] = _type ;
     if(_type_id != nil) dict[@"type_id"] = _type_id ;
-    if(_storage_name != nil) dict[@"storage_name"] = _storage_name ;
     if(_storage_type != nil) dict[@"storage_type"] = _storage_type ;
     if(_storage_type_id != nil) dict[@"storage_type_id"] = _storage_type_id ;
     if(_credentials != nil) dict[@"credentials"] = _credentials ;

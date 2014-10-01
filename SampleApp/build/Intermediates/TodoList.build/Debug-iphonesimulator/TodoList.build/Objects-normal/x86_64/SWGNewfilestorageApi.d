@@ -1,0 +1,19 @@
+dependencies: \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGNewfilestorageApi.m \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGNewfilestorageApi.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/NIKApiInvoker.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFileResponse.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/NIKSwaggerObject.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGContainer.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFolderRequest.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFileRequest.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGContainerRequest.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFolder.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGResources.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGResource.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGContainersResponse.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGContainersRequest.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFolderResponse.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGFile.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/SWGContainerResponse.h \
+  /Volumes/Data/Project/MY+Personal/26Sep/DFDemo-iOS-Sep-15/TodoList/NIKFile.h

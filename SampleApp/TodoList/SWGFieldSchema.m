@@ -21,7 +21,7 @@
     ref_table: (NSString*) ref_table
     ref_fields: (NSString*) ref_fields
     validation: (NSArray*) validation
-    values: (NSArray*) values
+    value: (NSArray*) value
 {
   _name = name;
   _label = label;
@@ -41,7 +41,7 @@
   _ref_table = ref_table;
   _ref_fields = ref_fields;
   _validation = validation;
-  _values = values;
+  _value = value;
   return self;
 }
 
@@ -67,7 +67,7 @@
         _ref_table = dict[@"ref_table"]; 
         _ref_fields = dict[@"ref_fields"]; 
         _validation = dict[@"validation"]; 
-        _values = dict[@"values"]; 
+        _value = dict[@"value"]; 
         
 
     }
@@ -94,7 +94,7 @@
     if(_ref_table != nil) dict[@"ref_table"] = _ref_table ;
     if(_ref_fields != nil) dict[@"ref_fields"] = _ref_fields ;
     if(_validation != nil) dict[@"validation"] = _validation ;
-    if(_values != nil) dict[@"values"] = _values ;
+    if(_value != nil) dict[@"value"] = _value ;
     NSDictionary* output = [dict copy];
     return output;
 }

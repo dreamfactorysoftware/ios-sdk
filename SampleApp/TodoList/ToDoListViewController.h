@@ -1,11 +1,3 @@
-//
-//  ToDoListViewController.h
-//  TodoList
-//
-//  Created by Sachin Soni on 2/26/14.
-//  Copyright (c) 2014 sachin. All rights reserved.
-//
-
 #import <UIKit/UIKit.h>
 
 @interface ToDoListViewController : UIViewController<UITableViewDataSource,UITableViewDelegate>
@@ -23,6 +15,6 @@
 
 -(IBAction)addTodoTaskActionEvent:(id)sender;
 -(IBAction)deleteTodoTaskActionEvent:(id)sender;
-
+-(IBAction)backEvent:(id)sender;
 -(IBAction)doLogout:(id)sender;
 @end

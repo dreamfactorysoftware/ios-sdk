@@ -5,7 +5,6 @@
 
 -(id)name: (NSString*) name
     path: (NSString*) path
-    _property_: (NSString*) _property_
     metadata: (NSArray*) metadata
     last_modified: (NSString*) last_modified
     folder: (NSArray*) folder
@@ -13,7 +12,6 @@
 {
   _name = name;
   _path = path;
-  __property_ = _property_;
   _metadata = metadata;
   _last_modified = last_modified;
   _folder = folder;
@@ -27,7 +25,6 @@
     if(self) {
         _name = dict[@"name"]; 
         _path = dict[@"path"]; 
-        __property_ = dict[@"_property_"]; 
         _metadata = dict[@"metadata"]; 
         _last_modified = dict[@"last_modified"]; 
         id folder_dict = dict[@"folder"];
@@ -80,7 +77,6 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(_name != nil) dict[@"name"] = _name ;
     if(_path != nil) dict[@"path"] = _path ;
-    if(__property_ != nil) dict[@"_property_"] = __property_ ;
     if(_metadata != nil) dict[@"metadata"] = _metadata ;
     if(_last_modified != nil) dict[@"last_modified"] = _last_modified ;
     if(_folder != nil){

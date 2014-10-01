@@ -4,8 +4,8 @@
 
 @interface SWGCustomSettings : NIKSwaggerObject
 
-@property(nonatomic) NSArray* type_name;
-- (id) type_name: (NSArray*) type_name;
+@property(nonatomic) NSArray* name;
+- (id) name: (NSArray*) name;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
