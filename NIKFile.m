@@ -13,12 +13,12 @@
 
 - (id) initWithNameData: (NSString*) filename
                mimeType: (NSString*) fileMimeType
-                   data: (NSData*) data {
+                   data: (NSData*) datat {
 	self = [super init];
 	if(self) {
 		_name = filename;
 		_mimeType = fileMimeType;
-		_data = data;
+		_data = datat;
 	}
 	return self;
 }

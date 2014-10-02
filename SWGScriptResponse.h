@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
-#import "Integer.h"
+//#import "Integer.h"
 
 @interface SWGScriptResponse : NIKSwaggerObject
 

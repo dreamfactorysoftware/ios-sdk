@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
-#import "SWGCustomSetting.h"
 
-@interface SWGCustomSettings : NIKSwaggerObject
+@interface SWGComponentList : NIKSwaggerObject
 
-@property(nonatomic) NSArray* name;
-- (id) name: (NSArray*) name;
+@property(nonatomic) NSArray* resource;
+- (id) resource: (NSArray*) resource;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

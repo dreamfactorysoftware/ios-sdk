@@ -1,18 +1,22 @@
 #import "SWGDbApi.h"
 #import "NIKFile.h"
+#import "SWGTableSchemas.h"
 #import "SWGStoredProcRequest.h"
 #import "SWGRecordsRequest.h"
 #import "SWGRecordResponse.h"
+#import "SWGFieldSchema.h"
 #import "SWGIdsRequest.h"
 #import "SWGRecordRequest.h"
 #import "SWGFilterRequest.h"
 #import "SWGGetRecordsRequest.h"
 #import "SWGIdsRecordRequest.h"
+#import "SWGTableSchema.h"
 #import "SWGResources.h"
 #import "SWGFilterRecordRequest.h"
+#import "SWGSuccess.h"
 #import "SWGRecordsResponse.h"
-#import "SWGTables.h"
 #import "SWGStoredProcResponse.h"
+#import "SWGComponentList.h"
 
 
 
@@ -38,6 +42,22 @@ static NSString * basePath = @"http://localhost/rest";
     _api = [NIKApiInvoker sharedInstance];
 
     return self;
+}
+
+-(void)setBaseUrlPath:(NSString*)baseUrl{
+    
+    NSString *lastPathComponent=[baseUrl lastPathComponent];
+    
+    if(![lastPathComponent isEqualToString:@"rest"])
+        
+        basePath=[baseUrl stringByAppendingString:@"/rest"];
+    
+    else{
+        
+        basePath=baseUrl;
+        
+    }
+    
 }
 
 -(void) addHeader:(NSString*) value
@@ -75,8 +95,9 @@ static NSString * basePath = @"http://localhost/rest";
 
 }
 
--(void) getTablesWithCompletionBlock:(NSString*) names
-        completionHandler: (void (^)(SWGTables* output, NSError* error))completionBlock{
+-(void) getTablesWithCompletionBlock:(NSNumber*) names_only
+        include_schemas:(NSNumber*) include_schemas
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
 
@@ -88,11 +109,16 @@ static NSString * basePath = @"http://localhost/rest";
 
 
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(names != nil)
-        queryParams[@"names"] = names;
+    if(names_only != nil)
+        queryParams[@"names_only"] = names_only;
+    if(include_schemas != nil)
+        queryParams[@"include_schemas"] = include_schemas;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-        if(names == nil) {
+        if(names_only == nil) {
+        // error
+    }
+    if(include_schemas == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -106,7 +132,43 @@ static NSString * basePath = @"http://localhost/rest";
             completionBlock(nil, error);return;
         }
 
-        completionBlock( [[SWGTables alloc]initWithValues: data], nil);}];
+        completionBlock( [[SWGComponentList alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) getAccessComponentsWithCompletionBlock:(NSNumber*) as_access_components
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(as_access_components != nil)
+        queryParams[@"as_access_components"] = as_access_components;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(as_access_components == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGComponentList alloc]initWithValues: data], nil);}];
     
 
 }
@@ -175,7 +237,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
 
@@ -198,8 +260,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -231,8 +293,8 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        continue:(NSNumber*) swgcontinue
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/{table_name}", basePath];
@@ -252,11 +314,11 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -290,7 +352,7 @@ static NSString * basePath = @"http://localhost/rest";
     if(body == nil) {
         // error
     }
-    if(X-HTTP-METHOD == nil) {
+    if(X_HTTP_METHOD == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -320,7 +382,7 @@ static NSString * basePath = @"http://localhost/rest";
         include_schema:(NSNumber*) include_schema
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
 
@@ -355,8 +417,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -385,9 +447,9 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
 
@@ -408,15 +470,15 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -472,7 +534,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
@@ -496,8 +558,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -631,7 +693,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
@@ -653,8 +715,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -715,7 +777,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
@@ -739,8 +801,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -874,7 +936,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
@@ -896,8 +958,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -958,7 +1020,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         related:(NSString*) related
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock{
@@ -982,8 +1044,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -1114,7 +1176,7 @@ static NSString * basePath = @"http://localhost/rest";
         fields:(NSString*) fields
         id_field:(NSString*) id_field
         id_type:(NSString*) id_type
-        continue:(NSNumber*) continue
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback
         filter:(NSString*) filter
         ids:(NSString*) ids
@@ -1138,8 +1200,8 @@ static NSString * basePath = @"http://localhost/rest";
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(filter != nil)
@@ -1548,6 +1610,707 @@ static NSString * basePath = @"http://localhost/rest";
 
 }
 
+-(void) getSchemasWithCompletionBlock: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) createTablesWithCompletionBlock:(SWGTableSchemas*) body
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) replaceTablesWithCompletionBlock:(SWGTableSchemas*) body
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateTablesWithCompletionBlock:(SWGTableSchemas*) body
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGResources alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) describeTableWithCompletionBlock:(NSString*) table_name
+        refresh:(NSNumber*) refresh
+        completionHandler: (void (^)(SWGTableSchema* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(refresh != nil)
+        queryParams[@"refresh"] = refresh;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(table_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGTableSchema alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) createTableWithCompletionBlock:(NSString*) table_name
+        body:(SWGTableSchema*) body
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) replaceTableWithCompletionBlock:(NSString*) table_name
+        body:(SWGTableSchema*) body
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateTableWithCompletionBlock:(NSString*) table_name
+        body:(SWGTableSchema*) body
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteTableWithCompletionBlock:(NSString*) table_name
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(table_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) describeFieldWithCompletionBlock:(NSString*) table_name
+        field_name:(NSString*) field_name
+        refresh:(NSNumber*) refresh
+        completionHandler: (void (^)(SWGFieldSchema* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(refresh != nil)
+        queryParams[@"refresh"] = refresh;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGFieldSchema alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) replaceFieldWithCompletionBlock:(NSString*) table_name
+        field_name:(NSString*) field_name
+        body:(SWGFieldSchema*) body
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) updateFieldWithCompletionBlock:(NSString*) table_name
+        field_name:(NSString*) field_name
+        body:(SWGFieldSchema*) body
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else if([body isKindOfClass: [NIKFile class]]) {
+        contentType = @"form-data";
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
+-(void) deleteFieldWithCompletionBlock:(NSString*) table_name
+        field_name:(NSString*) field_name
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@".json"];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+        if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        completionBlock( [[SWGSuccess alloc]initWithValues: data], nil);}];
+    
+
+}
+
 -(void) getStoredProcsWithCompletionBlock: (void (^)(SWGResources* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc", basePath];
@@ -1578,7 +2341,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 }
 
--(void) callStoredProc()WithCompletionBlock:(NSString*) procedure_name
+-(void) callStoredProcWithCompletionBlock:(NSString*) procedure_name
         wrapper:(NSString*) wrapper
         completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock{
 
@@ -1616,7 +2379,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 }
 
--(void) callStoredProcWithParams()WithCompletionBlock:(NSString*) procedure_name
+-(void) callStoredProcWithParamsWithCompletionBlock:(NSString*) procedure_name
         body:(SWGStoredProcRequest*) body
         wrapper:(NSString*) wrapper
         completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock{
@@ -1686,7 +2449,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
 
@@ -1728,7 +2491,8 @@ static NSString * basePath = @"http://localhost/rest";
 
 }
 
--(void) getTablesAsJsonWithCompletionBlock :(NSString*) names 
+-(void) getTablesAsJsonWithCompletionBlock :(NSNumber*) names_only 
+include_schemas:(NSNumber*) include_schemas 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1741,11 +2505,65 @@ static NSString * basePath = @"http://localhost/rest";
     NSString* contentType = @"application/json";
 
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    if(names != nil)
-        queryParams[@"names"] = names;
+    if(names_only != nil)
+        queryParams[@"names_only"] = names_only;
+    if(include_schemas != nil)
+        queryParams[@"include_schemas"] = include_schemas;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
-    if(names == nil) {
+    if(names_only == nil) {
+        // error
+    }
+    if(include_schemas == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getAccessComponentsAsJsonWithCompletionBlock :(NSNumber*) as_access_components 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(as_access_components != nil)
+        queryParams[@"as_access_components"] = as_access_components;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(as_access_components == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -1854,7 +2672,7 @@ ids:(NSString*) ids
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 related:(NSString*) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -1877,8 +2695,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -1923,8 +2741,8 @@ body:(SWGGetRecordsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
-X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+continue:(NSNumber*) swgcontinue
+X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1944,11 +2762,11 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -1978,7 +2796,7 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
     if(body == nil) {
         // error
     }
-    if(X-HTTP-METHOD == nil) {
+    if(X_HTTP_METHOD == nil) {
         // error
     }
     [_api dictionary:requestUrl 
@@ -2021,7 +2839,7 @@ include_count:(NSNumber*) include_count
 include_schema:(NSNumber*) include_schema 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 related:(NSString*) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -2056,8 +2874,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -2099,9 +2917,9 @@ body:(SWGRecordsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
-X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
 related:(NSString*) related 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -2122,15 +2940,15 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
         queryParams[@"related"] = related;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -2195,7 +3013,7 @@ ids:(NSString*) ids
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 related:(NSString*) related 
 
@@ -2219,8 +3037,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -2372,7 +3190,7 @@ body:(SWGRecordsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 related:(NSString*) related 
 
@@ -2394,8 +3212,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -2465,7 +3283,7 @@ ids:(NSString*) ids
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 related:(NSString*) related 
 
@@ -2489,8 +3307,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -2642,7 +3460,7 @@ body:(SWGRecordsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 related:(NSString*) related 
 
@@ -2664,8 +3482,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -2735,7 +3553,7 @@ body:(SWGIdsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 related:(NSString*) related 
 
@@ -2759,8 +3577,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(related != nil)
@@ -2909,7 +3727,7 @@ body:(SWGRecordsRequest*) body
 fields:(NSString*) fields 
 id_field:(NSString*) id_field 
 id_type:(NSString*) id_type 
-continue:(NSNumber*) continue 
+continue:(NSNumber*) swgcontinue
 rollback:(NSNumber*) rollback 
 filter:(NSString*) filter 
 ids:(NSString*) ids 
@@ -2933,8 +3751,8 @@ related:(NSString*) related
         queryParams[@"id_field"] = id_field;
     if(id_type != nil)
         queryParams[@"id_type"] = id_type;
-    if(continue != nil)
-        queryParams[@"continue"] = continue;
+    if(swgcontinue != nil)
+        queryParams[@"continue"] = swgcontinue;
     if(rollback != nil)
         queryParams[@"rollback"] = rollback;
     if(filter != nil)
@@ -3405,9 +4223,848 @@ related:(NSString*) related
 
 }
 
--(void) getStoredProcsAsJsonWithCompletionBlock :
+-(void) getSchemasAsJsonWithCompletionBlock :
+
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) createTablesAsJsonWithCompletionBlock :(SWGTableSchemas*) body 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) replaceTablesAsJsonWithCompletionBlock :(SWGTableSchemas*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateTablesAsJsonWithCompletionBlock :(SWGTableSchemas*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) describeTableAsJsonWithCompletionBlock :(NSString*) table_name 
+refresh:(NSNumber*) refresh 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(refresh != nil)
+        queryParams[@"refresh"] = refresh;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(table_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) createTableAsJsonWithCompletionBlock :(NSString*) table_name 
+body:(SWGTableSchema*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"POST" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) replaceTableAsJsonWithCompletionBlock :(NSString*) table_name 
+body:(SWGTableSchema*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateTableAsJsonWithCompletionBlock :(NSString*) table_name 
+body:(SWGTableSchema*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteTableAsJsonWithCompletionBlock :(NSString*) table_name 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(table_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) describeFieldAsJsonWithCompletionBlock :(NSString*) table_name 
+field_name:(NSString*) field_name 
+refresh:(NSNumber*) refresh 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    if(refresh != nil)
+        queryParams[@"refresh"] = refresh;
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"GET" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) replaceFieldAsJsonWithCompletionBlock :(NSString*) table_name 
+field_name:(NSString*) field_name 
+body:(SWGFieldSchema*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PUT" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) updateFieldAsJsonWithCompletionBlock :(NSString*) table_name 
+field_name:(NSString*) field_name 
+body:(SWGFieldSchema*) body 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(body != nil && [body isKindOfClass:[NSArray class]]){
+        NSMutableArray * objs = [[NSMutableArray alloc] init];
+        for (id dict in (NSArray*)body) {
+            if([dict respondsToSelector:@selector(asDictionary)]) {
+                [objs addObject:[(NIKSwaggerObject*)dict asDictionary]];
+            }
+            else{
+                [objs addObject:dict];
+            }
+        }
+        bodyDictionary = objs;
+    }
+    else if([body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(NIKSwaggerObject*)body asDictionary];
+    }
+    else if([body isKindOfClass:[NSString class]]) {
+        bodyDictionary = body;
+    }
+    else{
+        NSLog(@"don't know what to do with %@", body);
+    }
+
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    if(body == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"PATCH" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) deleteFieldAsJsonWithCompletionBlock :(NSString*) table_name 
+field_name:(NSString*) field_name 
+
+        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+
+    NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_schema/{table_name}/{field_name}", basePath];
+
+    // remove format in URL if needed
+    if ([requestUrl rangeOfString:@".{format}"].location != NSNotFound)
+        [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:@".{format}"] withString:@""];
+
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"table_name", @"}"]] withString: [_api escapeString:table_name]];
+    [requestUrl replaceCharactersInRange: [requestUrl rangeOfString:[NSString stringWithFormat:@"%@%@%@", @"{", @"field_name", @"}"]] withString: [_api escapeString:field_name]];
+    NSString* contentType = @"application/json";
+
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    id bodyDictionary = nil;
+    if(table_name == nil) {
+        // error
+    }
+    if(field_name == nil) {
+        // error
+    }
+    [_api dictionary:requestUrl 
+              method:@"DELETE" 
+         queryParams:queryParams 
+                body:bodyDictionary 
+        headerParams:headerParams
+         contentType:contentType
+     completionBlock:^(NSDictionary *data, NSError *error) {
+        if (error) {
+            completionBlock(nil, error);return;
+        }
+
+        NSData * responseData = nil;
+            if([data isKindOfClass:[NSDictionary class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            else if ([data isKindOfClass:[NSArray class]]){
+                responseData = [NSJSONSerialization dataWithJSONObject:data
+                                                               options:kNilOptions error:&error];
+            }
+            NSString * json = [[NSString alloc]initWithData:responseData encoding:NSUTF8StringEncoding];
+            completionBlock(json, nil);
+        
+
+    }];
+
+
+}
+
+-(void) getStoredProcsAsJsonWithCompletionBlock :
+
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/db/_proc", basePath];
 
@@ -3449,7 +5106,7 @@ related:(NSString*) related
 
 }
 
--(void) callStoredProc()AsJsonWithCompletionBlock :(NSString*) procedure_name 
+-(void) callStoredProcAsJsonWithCompletionBlock :(NSString*) procedure_name
 wrapper:(NSString*) wrapper 
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
@@ -3500,7 +5157,7 @@ wrapper:(NSString*) wrapper
 
 }
 
--(void) callStoredProcWithParams()AsJsonWithCompletionBlock :(NSString*) procedure_name 
+-(void) callStoredProcWithParamsAsJsonWithCompletionBlock :(NSString*) procedure_name
 body:(SWGStoredProcRequest*) body 
 wrapper:(NSString*) wrapper 
 

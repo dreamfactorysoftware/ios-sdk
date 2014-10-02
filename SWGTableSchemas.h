@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
-#import "SWGCustomSetting.h"
+#import "SWGTableSchema.h"
 
-@interface SWGCustomSettings : NIKSwaggerObject
+@interface SWGTableSchemas : NIKSwaggerObject
 
-@property(nonatomic) NSArray* name;
-- (id) name: (NSArray*) name;
+@property(nonatomic) NSArray* table;
+- (id) table: (NSArray*) table;
 
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

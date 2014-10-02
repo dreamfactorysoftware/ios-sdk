@@ -735,7 +735,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/schema", basePath];
 

@@ -51,7 +51,7 @@
  */
 -(void) createContainersWithCompletionBlock :(SWGContainersRequest*) body 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock;
 
 /**
@@ -102,7 +102,7 @@
         extract:(NSNumber*) extract 
         clean:(NSNumber*) clean 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock;
 
 /**
@@ -170,7 +170,7 @@
         extract:(NSNumber*) extract 
         clean:(NSNumber*) clean 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock;
 
 /**

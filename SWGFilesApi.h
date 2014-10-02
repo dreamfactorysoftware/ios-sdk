@@ -12,7 +12,8 @@
 #import "SWGFileRequest.h"
 #import "SWGFile.h"
 #import "SWGContainerResponse.h"
-
+#import "SWGComponentList.h"
+#import "NIKFile.h"
 
 @interface SWGFilesApi: NSObject {
 
@@ -24,13 +25,22 @@
 @property(nonatomic, readonly) NIKApiInvoker* api;
 
 -(void) addHeader:(NSString*)value forKey:(NSString*)key;
-
+-(void)setBaseUrlPath:(NSString*)baseUrl;
 /**
 
  getResources() - List all resources.
  List the names of the available containers in this storage. 
  */
 -(void) getResourcesWithCompletionBlock :(void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ getAccessComponents() - List all role accessible components.
+ List the names of all the role accessible components.
+ @param as_access_components Return the names of all the accessible components.
+ */
+-(void) getAccessComponentsWithCompletionBlock :(NSNumber*) as_access_components 
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock;
 
 /**
 
@@ -51,7 +61,7 @@
  */
 -(void) createContainersWithCompletionBlock :(SWGContainersRequest*) body 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD 
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock;
 
 /**
@@ -102,7 +112,7 @@
         extract:(NSNumber*) extract 
         clean:(NSNumber*) clean 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD 
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock;
 
 /**
@@ -170,7 +180,7 @@
         extract:(NSNumber*) extract 
         clean:(NSNumber*) clean 
         check_exist:(NSNumber*) check_exist 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD 
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock;
 
 /**
@@ -232,6 +242,14 @@
         check_exist:(NSNumber*) check_exist 
         body:(SWGFileRequest*) body 
         completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock;
+
+-(void) createFileWithCompletionBlock:(NSString*) container
+                            file_path:(NSString*) file_path
+                          check_exist:(NSNumber*) check_exist
+                          NIKFilebody:(NIKFile*) body
+                    completionHandler: (void (^)(SWGFileResponse* output, NSError* error))completionBlock;
+
+
 
 /**
 

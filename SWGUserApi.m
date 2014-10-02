@@ -17,7 +17,7 @@
 
 
 @implementation SWGUserApi
-static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
+static NSString * basePath = @"http://localhost/rest";
 
 @synthesize queue = _queue;
 @synthesize api = _api;
@@ -38,6 +38,22 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
     _api = [NIKApiInvoker sharedInstance];
 
     return self;
+}
+
+-(void)setBaseUrlPath:(NSString*)baseUrl{
+    
+    NSString *lastPathComponent=[baseUrl lastPathComponent];
+    
+    if(![lastPathComponent isEqualToString:@"rest"])
+        
+        basePath=[baseUrl stringByAppendingString:@"/rest"];
+    
+    else{
+        
+        basePath=baseUrl;
+        
+    }
+    
 }
 
 -(void) addHeader:(NSString*) value
@@ -666,7 +682,7 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user", basePath];
 
@@ -710,7 +726,7 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 -(void) getCustomSettingsAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/custom", basePath];
 
@@ -919,7 +935,7 @@ static NSString * basePath = @"https://dsp-codegen.cloud.dreamfactory.com/rest";
 
 -(void) getDevicesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/device", basePath];
 
@@ -1107,7 +1123,7 @@ body:(SWGPasswordRequest*) body
 
 -(void) getProfileAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/profile", basePath];
 
@@ -1292,7 +1308,7 @@ body:(SWGRegister*) body
 
 -(void) getSessionAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/session", basePath];
 
@@ -1405,7 +1421,7 @@ body:(SWGRegister*) body
 
 -(void) logoutAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/user/session", basePath];
 

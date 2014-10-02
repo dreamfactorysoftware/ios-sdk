@@ -12,7 +12,6 @@
 @property(nonatomic) NSNumber* is_active;
 @property(nonatomic) NSString* type;
 @property(nonatomic) NSNumber* type_id;
-@property(nonatomic) NSString* storage_name;
 @property(nonatomic) NSString* storage_type;
 @property(nonatomic) NSNumber* storage_type_id;
 @property(nonatomic) NSString* credentials;
@@ -34,7 +33,6 @@
      is_active: (NSNumber*) is_active
      type: (NSString*) type
      type_id: (NSNumber*) type_id
-     storage_name: (NSString*) storage_name
      storage_type: (NSString*) storage_type
      storage_type_id: (NSNumber*) storage_type_id
      credentials: (NSString*) credentials

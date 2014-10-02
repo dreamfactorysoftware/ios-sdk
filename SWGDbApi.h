@@ -1,18 +1,22 @@
 #import <Foundation/Foundation.h>
 #import "NIKApiInvoker.h"
+#import "SWGTableSchemas.h"
 #import "SWGStoredProcRequest.h"
 #import "SWGRecordsRequest.h"
 #import "SWGRecordResponse.h"
+#import "SWGFieldSchema.h"
 #import "SWGIdsRequest.h"
 #import "SWGRecordRequest.h"
 #import "SWGFilterRequest.h"
 #import "SWGGetRecordsRequest.h"
 #import "SWGIdsRecordRequest.h"
+#import "SWGTableSchema.h"
 #import "SWGResources.h"
 #import "SWGFilterRecordRequest.h"
+#import "SWGSuccess.h"
 #import "SWGRecordsResponse.h"
-#import "SWGTables.h"
 #import "SWGStoredProcResponse.h"
+#import "SWGComponentList.h"
 
 
 @interface SWGDbApi: NSObject {
@@ -25,6 +29,8 @@
 @property(nonatomic, readonly) NIKApiInvoker* api;
 
 -(void) addHeader:(NSString*)value forKey:(NSString*)key;
+-(void)setBaseUrlPath:(NSString*)baseUrl;
+
 
 /**
 
@@ -35,12 +41,23 @@
 
 /**
 
- getTables() - List all properties on given tables.
- List the properties of the given tables in this storage.
- @param names Comma-delimited list of the table names to retrieve.
+ getTables() - List all table names.
+ List the table names in this storage, return as an array.
+ @param names_only Return only the names of the tables in an array.
+ @param include_schemas Also return the names of the tables where the schema is retrievable.
  */
--(void) getTablesWithCompletionBlock :(NSString*) names 
-        completionHandler: (void (^)(SWGTables* output, NSError* error))completionBlock;
+-(void) getTablesWithCompletionBlock :(NSNumber*) names_only 
+        include_schemas:(NSNumber*) include_schemas 
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock;
+
+/**
+
+ getAccessComponents() - List all role accessible components.
+ List the names of all the role accessible components.
+ @param as_access_components Return the names of all the accessible components.
+ */
+-(void) getAccessComponentsWithCompletionBlock :(NSNumber*) as_access_components 
+        completionHandler: (void (^)(SWGComponentList* output, NSError* error))completionBlock;
 
 /**
 
@@ -84,7 +101,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
 
@@ -105,8 +122,8 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        continue:(NSNumber*) swgcontinue
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
 
 /**
@@ -138,7 +155,7 @@
         include_schema:(NSNumber*) include_schema 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
 
@@ -161,9 +178,9 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
 
@@ -187,7 +204,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
@@ -227,7 +244,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
@@ -252,7 +269,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
@@ -292,7 +309,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
@@ -317,7 +334,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         related:(NSString*) related 
         completionHandler: (void (^)(SWGRecordsResponse* output, NSError* error))completionBlock;
@@ -361,7 +378,7 @@
         fields:(NSString*) fields 
         id_field:(NSString*) id_field 
         id_type:(NSString*) id_type 
-        continue:(NSNumber*) continue 
+        continue:(NSNumber*) swgcontinue
         rollback:(NSNumber*) rollback 
         filter:(NSString*) filter 
         ids:(NSString*) ids 
@@ -471,6 +488,143 @@
 
 /**
 
+ getSchemas() - List resources available for database schema.
+ See listed operations for each resource available.
+ */
+-(void) getSchemasWithCompletionBlock :(void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ createTables() - Create one or more tables.
+ Post data should be a single table definition or an array of table definitions.
+ @param body Array of table definitions.
+ */
+-(void) createTablesWithCompletionBlock :(SWGTableSchemas*) body 
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ replaceTables() - Update (replace) one or more tables.
+ Post data should be a single table definition or an array of table definitions.
+ @param body Array of table definitions.
+ */
+-(void) replaceTablesWithCompletionBlock :(SWGTableSchemas*) body 
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ updateTables() - Update (patch) one or more tables.
+ Post data should be a single table definition or an array of table definitions.
+ @param body Array of table definitions.
+ */
+-(void) updateTablesWithCompletionBlock :(SWGTableSchemas*) body 
+        completionHandler: (void (^)(SWGResources* output, NSError* error))completionBlock;
+
+/**
+
+ describeTable() - Retrieve table definition for the given table.
+ This describes the table, its fields and relations to other tables.
+ @param table_name Name of the table to perform operations on.
+ @param refresh Refresh any cached copy of the schema.
+ */
+-(void) describeTableWithCompletionBlock :(NSString*) table_name 
+        refresh:(NSNumber*) refresh 
+        completionHandler: (void (^)(SWGTableSchema* output, NSError* error))completionBlock;
+
+/**
+
+ createTable() - Create a table with the given properties and fields.
+ Post data should be an array of field properties for a single record or an array of fields.
+ @param table_name Name of the table to perform operations on.
+ @param body Array of table properties and fields definitions.
+ */
+-(void) createTableWithCompletionBlock :(NSString*) table_name 
+        body:(SWGTableSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ replaceTable() - Update (replace) a table with the given properties.
+ Post data should be an array of field properties for a single record or an array of fields.
+ @param table_name Name of the table to perform operations on.
+ @param body Array of field definitions.
+ */
+-(void) replaceTableWithCompletionBlock :(NSString*) table_name 
+        body:(SWGTableSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ updateTable() - Update (patch) a table with the given properties.
+ Post data should be an array of field properties for a single record or an array of fields.
+ @param table_name Name of the table to perform operations on.
+ @param body Array of field definitions.
+ */
+-(void) updateTableWithCompletionBlock :(NSString*) table_name 
+        body:(SWGTableSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ deleteTable() - Delete (aka drop) the given table.
+ Careful, this drops the database table and all of its contents.
+ @param table_name Name of the table to perform operations on.
+ */
+-(void) deleteTableWithCompletionBlock :(NSString*) table_name 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ describeField() - Retrieve the definition of the given field for the given table.
+ This describes the field and its properties.
+ @param table_name Name of the table to perform operations on.
+ @param field_name Name of the field to perform operations on.
+ @param refresh Refresh any cached copy of the schema.
+ */
+-(void) describeFieldWithCompletionBlock :(NSString*) table_name 
+        field_name:(NSString*) field_name 
+        refresh:(NSNumber*) refresh 
+        completionHandler: (void (^)(SWGFieldSchema* output, NSError* error))completionBlock;
+
+/**
+
+ replaceField() - Update one record by identifier.
+ Post data should be an array of field properties for the given field.
+ @param table_name Name of the table to perform operations on.
+ @param field_name Name of the field to perform operations on.
+ @param body Array of field properties.
+ */
+-(void) replaceFieldWithCompletionBlock :(NSString*) table_name 
+        field_name:(NSString*) field_name 
+        body:(SWGFieldSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ updateField() - Update one record by identifier.
+ Post data should be an array of field properties for the given field.
+ @param table_name Name of the table to perform operations on.
+ @param field_name Name of the field to perform operations on.
+ @param body Array of field properties.
+ */
+-(void) updateFieldWithCompletionBlock :(NSString*) table_name 
+        field_name:(NSString*) field_name 
+        body:(SWGFieldSchema*) body 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ deleteField() - Remove the given field from the given table.
+ Careful, this drops the database table field/column and all of its contents.
+ @param table_name Name of the table to perform operations on.
+ @param field_name Name of the field to perform operations on.
+ */
+-(void) deleteFieldWithCompletionBlock :(NSString*) table_name 
+        field_name:(NSString*) field_name 
+        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
  getStoredProcs() - List callable stored procedures.
  List the names of the available stored procedures on this database. 
  */
@@ -483,7 +637,7 @@
  @param procedure_name Name of the stored procedure to call.
  @param wrapper Add this wrapper around the expected data set before returning.
  */
--(void) callStoredProc()WithCompletionBlock :(NSString*) procedure_name 
+-(void) callStoredProcWithCompletionBlock :(NSString*) procedure_name
         wrapper:(NSString*) wrapper 
         completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock;
 
@@ -495,7 +649,7 @@
  @param body Data containing in and out parameters to pass to procedure.
  @param wrapper Add this wrapper around the expected data set before returning.
  */
--(void) callStoredProcWithParams()WithCompletionBlock :(NSString*) procedure_name 
+-(void) callStoredProcWithParamsWithCompletionBlock :(NSString*) procedure_name
         body:(SWGStoredProcRequest*) body 
         wrapper:(NSString*) wrapper 
         completionHandler: (void (^)(SWGStoredProcResponse* output, NSError* error))completionBlock;

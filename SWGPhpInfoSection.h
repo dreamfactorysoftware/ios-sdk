@@ -1,8 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "NIKSwaggerObject.h"
-#import "SWGCustomSetting.h"
 
-@interface SWGCustomSettings : NIKSwaggerObject
+@interface SWGPhpInfoSection : NIKSwaggerObject
 
 @property(nonatomic) NSArray* name;
 - (id) name: (NSArray*) name;

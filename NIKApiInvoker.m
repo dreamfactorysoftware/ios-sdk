@@ -117,15 +117,17 @@ static NSInteger __LoadingObjectsCount = 0;
             NIKFile * file = (NIKFile*) body;
 
             NSString *boundary = @"Fo0+BAr";
-            contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+//            contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
 
+//            contentType = @"application/octet-stream";
             // add the body
             NSMutableData *postBody = [NSMutableData data];
             [postBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
             [postBody appendData:[@"Content-Disposition: form-data; name= \"some_name\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-            [postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"image_file\"; filename=\"%@\"\r\n", file] dataUsingEncoding:NSUTF8StringEncoding]];
+            [postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"image_file\"; filename=\"%@\"\r\n", file.name] dataUsingEncoding:NSUTF8StringEncoding]];
             [postBody appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", file.mimeType] dataUsingEncoding:NSUTF8StringEncoding]];
             [postBody appendData: file.data];
+            data = file.data;
             [postBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
         }
         else if ([body isKindOfClass:[NSArray class]]){

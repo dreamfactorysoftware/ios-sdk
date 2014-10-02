@@ -7,7 +7,7 @@
 @property(nonatomic) NSString* first_name;
 @property(nonatomic) NSString* last_name;
 @property(nonatomic) NSString* display_name;
-@property(nonatomic) NSString* _new_password;
+@property(nonatomic) NSString* swgnew_password;
 @property(nonatomic) NSString* code;
 - (id) email: (NSString*) email
      first_name: (NSString*) first_name

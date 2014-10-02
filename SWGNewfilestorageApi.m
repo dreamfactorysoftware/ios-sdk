@@ -112,7 +112,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) createContainersWithCompletionBlock:(SWGContainersRequest*) body
         check_exist:(NSNumber*) check_exist
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGContainersResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
@@ -128,8 +128,8 @@ static NSString * basePath = @"http://localhost/rest";
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -268,7 +268,7 @@ static NSString * basePath = @"http://localhost/rest";
         extract:(NSNumber*) extract
         clean:(NSNumber*) clean
         check_exist:(NSNumber*) check_exist
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGContainerResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/", basePath];
@@ -291,8 +291,8 @@ static NSString * basePath = @"http://localhost/rest";
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -507,7 +507,7 @@ static NSString * basePath = @"http://localhost/rest";
         extract:(NSNumber*) extract
         clean:(NSNumber*) clean
         check_exist:(NSNumber*) check_exist
-        X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
+        X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
         completionHandler: (void (^)(SWGFolderResponse* output, NSError* error))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage/{container}/{folder_path}/", basePath];
@@ -531,8 +531,8 @@ static NSString * basePath = @"http://localhost/rest";
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -990,7 +990,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) getResourcesAsJsonWithCompletionBlock :
 
-        completionHandler:(void (^)(NSString*, NSError *))completionBlock{
+        completionHandler :(void (^)(NSString*, NSError *))completionBlock{
 
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/newfilestorage", basePath];
 
@@ -1083,7 +1083,7 @@ static NSString * basePath = @"http://localhost/rest";
 
 -(void) createContainersAsJsonWithCompletionBlock :(SWGContainersRequest*) body 
 check_exist:(NSNumber*) check_exist 
-X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1099,8 +1099,8 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -1274,7 +1274,7 @@ url:(NSString*) url
 extract:(NSNumber*) extract 
 clean:(NSNumber*) clean 
 check_exist:(NSNumber*) check_exist 
-X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1297,8 +1297,8 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
@@ -1557,7 +1557,7 @@ url:(NSString*) url
 extract:(NSNumber*) extract 
 clean:(NSNumber*) clean 
 check_exist:(NSNumber*) check_exist 
-X-HTTP-METHOD:(NSString*) X-HTTP-METHOD 
+X_HTTP_METHOD:(NSString*) X_HTTP_METHOD
 
         completionHandler:(void (^)(NSString*, NSError *))completionBlock{
 
@@ -1581,8 +1581,8 @@ X-HTTP-METHOD:(NSString*) X-HTTP-METHOD
     if(check_exist != nil)
         queryParams[@"check_exist"] = check_exist;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    if(X-HTTP-METHOD != nil)
-        headerParams[@"X-HTTP-METHOD"] = X-HTTP-METHOD;
+    if(X_HTTP_METHOD != nil)
+        headerParams[@"X-HTTP-METHOD"] = X_HTTP_METHOD;
     id bodyDictionary = nil;
     if(body != nil && [body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];

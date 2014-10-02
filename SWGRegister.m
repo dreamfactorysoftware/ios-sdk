@@ -14,7 +14,7 @@
   _first_name = first_name;
   _last_name = last_name;
   _display_name = display_name;
-  __new_password = _new_password;
+  _swgnew_password = _new_password;
   _code = code;
   return self;
 }
@@ -27,7 +27,7 @@
         _first_name = dict[@"first_name"]; 
         _last_name = dict[@"last_name"]; 
         _display_name = dict[@"display_name"]; 
-        __new_password = dict[@"new_password"]; 
+        _swgnew_password = dict[@"new_password"];
         _code = dict[@"code"]; 
         
 
@@ -41,7 +41,7 @@
     if(_first_name != nil) dict[@"first_name"] = _first_name ;
     if(_last_name != nil) dict[@"last_name"] = _last_name ;
     if(_display_name != nil) dict[@"display_name"] = _display_name ;
-    if(__new_password != nil) dict[@"new_password"] = __new_password ;
+    if(_swgnew_password != nil) dict[@"new_password"] = _swgnew_password ;
     if(_code != nil) dict[@"code"] = _code ;
     NSDictionary* output = [dict copy];
     return output;

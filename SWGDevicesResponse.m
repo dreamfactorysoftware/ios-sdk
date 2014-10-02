@@ -4,10 +4,8 @@
 @implementation SWGDevicesResponse
 
 -(id)record: (NSArray*) record
-    meta: (SWGMetadata*) meta
 {
   _record = record;
-  _meta = meta;
   return self;
 }
 
@@ -35,8 +33,6 @@
         else {
             _record = [[NSArray alloc] init];
         }
-        id meta_dict = dict[@"meta"];
-        _meta = [[SWGMetadata alloc]initWithValues:meta_dict];
         
 
     }
@@ -62,24 +58,6 @@
     }
     else {
     if(_record != nil) dict[@"record"] = [(NIKSwaggerObject*)_record asDictionary];
-    }
-    if(_meta != nil){
-        if([_meta isKindOfClass:[NSArray class]]){
-            NSMutableArray * array = [[NSMutableArray alloc] init];
-            for( SWGMetadata *meta in (NSArray*)_meta) {
-                [array addObject:[(NIKSwaggerObject*)meta asDictionary]];
-            }
-            dict[@"meta"] = array;
-        }
-        else if(_meta && [_meta isKindOfClass:[NIKDate class]]) {
-            NSString * dateString = [(NIKDate*)_meta toString];
-            if(dateString){
-                dict[@"meta"] = dateString;
-            }
-        }
-    }
-    else {
-    if(_meta != nil) dict[@"meta"] = [(NIKSwaggerObject*)_meta asDictionary];
     }
     NSDictionary* output = [dict copy];
     return output;

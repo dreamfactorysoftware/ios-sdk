@@ -25,7 +25,7 @@
 @property(nonatomic, readonly) NIKApiInvoker* api;
 
 -(void) addHeader:(NSString*)value forKey:(NSString*)key;
-
+-(void)setBaseUrlPath:(NSString*)baseUrl;
 /**
 
  getResources() - List resources available for user session management.
