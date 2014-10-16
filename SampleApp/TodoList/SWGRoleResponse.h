@@ -9,7 +9,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) NSNumber* is_active;
 @property(nonatomic) NSNumber* default_app_id;
 @property(nonatomic) SWGRelatedApp* default_app;

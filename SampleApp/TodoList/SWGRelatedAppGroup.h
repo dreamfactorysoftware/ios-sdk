@@ -5,7 +5,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) NSString* created_date;
 @property(nonatomic) NSNumber* created_by_id;
 @property(nonatomic) NSString* last_modified_date;

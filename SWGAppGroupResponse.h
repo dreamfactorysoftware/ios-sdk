@@ -6,7 +6,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swg_description;
 @property(nonatomic) SWGRelatedApps* apps;
 @property(nonatomic) NSString* created_date;
 @property(nonatomic) NSNumber* created_by_id;
@@ -14,7 +14,7 @@
 @property(nonatomic) NSNumber* last_modified_by_id;
 - (id) _id: (NSNumber*) _id
      name: (NSString*) name
-     description: (NSString*) description
+     swg_description: (NSString*) swg_description
      apps: (SWGRelatedApps*) apps
      created_date: (NSString*) created_date
      created_by_id: (NSNumber*) created_by_id

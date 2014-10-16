@@ -6,12 +6,12 @@
 -(id)_id: (NSString*) _id
     swgrelease: (NSString*) swgrelease
     codename: (NSString*) codename
-    description: (NSString*) description
+    swg_description: (NSString*) swg_description
 {
   _swg_id = _id;
   _swgrelease = swgrelease;
   _codename = codename;
-  _description = description;
+  _swg_description = swg_description;
   return self;
 }
 
@@ -22,7 +22,7 @@
         _swg_id = dict[@"id"];
         _swgrelease = dict[@"release"];
         _codename = dict[@"codename"]; 
-        _description = dict[@"description"]; 
+        _swg_description = dict[@"description"];
         
 
     }
@@ -34,7 +34,7 @@
     if(_swg_id != nil) dict[@"id"] = _swg_id ;
     if(_swgrelease != nil) dict[@"release"] = _swgrelease ;
     if(_codename != nil) dict[@"codename"] = _codename ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swg_description != nil) dict[@"description"] = _swg_description ;
     NSDictionary* output = [dict copy];
     return output;
 }

@@ -10,29 +10,29 @@
 	<string>TodoList</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>FF52E5DB-C9E7-4681-9739-C9DDA0A3A824</key>
+		<key>BEB93BC933FE7CDDEDB2C95365A600FB0EF12F56</key>
 		<string>https://github.com/dreamfactorysoftware/ios-sdk.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>SampleApp/TodoList.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>FF52E5DB-C9E7-4681-9739-C9DDA0A3A824</key>
+		<key>BEB93BC933FE7CDDEDB2C95365A600FB0EF12F56</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/dreamfactorysoftware/ios-sdk.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>FF52E5DB-C9E7-4681-9739-C9DDA0A3A824</string>
+	<string>BEB93BC933FE7CDDEDB2C95365A600FB0EF12F56</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>FF52E5DB-C9E7-4681-9739-C9DDA0A3A824</string>
+			<string>BEB93BC933FE7CDDEDB2C95365A600FB0EF12F56</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ios-sdk</string>
 		</dict>

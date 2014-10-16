@@ -6,7 +6,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) NSArray* to;
 @property(nonatomic) NSArray* cc;
 @property(nonatomic) NSArray* bcc;

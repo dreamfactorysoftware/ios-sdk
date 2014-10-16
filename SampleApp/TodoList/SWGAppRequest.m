@@ -26,7 +26,7 @@
   __id = _id;
   _name = name;
   _api_name = api_name;
-  _description = description;
+  _swgdescription = description;
   _is_active = is_active;
   _url = url;
   _is_url_external = is_url_external;
@@ -52,7 +52,7 @@
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
         _api_name = dict[@"api_name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         _is_active = dict[@"is_active"]; 
         _url = dict[@"url"]; 
         _is_url_external = dict[@"is_url_external"]; 
@@ -84,7 +84,7 @@
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
     if(_api_name != nil) dict[@"api_name"] = _api_name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     if(_is_active != nil) dict[@"is_active"] = _is_active ;
     if(_url != nil) dict[@"url"] = _url ;
     if(_is_url_external != nil) dict[@"is_url_external"] = _is_url_external ;

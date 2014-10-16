@@ -5,7 +5,7 @@
 
 -(id)_id: (NSNumber*) _id
     name: (NSString*) name
-    description: (NSString*) description
+    swg_description: (NSString*) swg_description
     is_url_external: (NSNumber*) is_url_external
     launch_url: (NSString*) launch_url
     requires_fullscreen: (NSNumber*) requires_fullscreen
@@ -15,7 +15,7 @@
 {
   __id = _id;
   _name = name;
-  _description = description;
+  _swg_description = swg_description;
   _is_url_external = is_url_external;
   _launch_url = launch_url;
   _requires_fullscreen = requires_fullscreen;
@@ -31,7 +31,7 @@
     if(self) {
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
-        _description = dict[@"description"]; 
+        _swg_description = dict[@"description"];
         _is_url_external = dict[@"is_url_external"]; 
         _launch_url = dict[@"launch_url"]; 
         _requires_fullscreen = dict[@"requires_fullscreen"]; 
@@ -48,7 +48,7 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swg_description != nil) dict[@"description"] = _swg_description ;
     if(_is_url_external != nil) dict[@"is_url_external"] = _is_url_external ;
     if(_launch_url != nil) dict[@"launch_url"] = _launch_url ;
     if(_requires_fullscreen != nil) dict[@"requires_fullscreen"] = _requires_fullscreen ;

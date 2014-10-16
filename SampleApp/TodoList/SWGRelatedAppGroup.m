@@ -13,7 +13,7 @@
 {
   __id = _id;
   _name = name;
-  _description = description;
+  _swgdescription = description;
   _created_date = created_date;
   _created_by_id = created_by_id;
   _last_modified_date = last_modified_date;
@@ -27,7 +27,7 @@
     if(self) {
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         _created_date = dict[@"created_date"]; 
         _created_by_id = dict[@"created_by_id"]; 
         _last_modified_date = dict[@"last_modified_date"]; 
@@ -42,7 +42,7 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     if(_created_date != nil) dict[@"created_date"] = _created_date ;
     if(_created_by_id != nil) dict[@"created_by_id"] = _created_by_id ;
     if(_last_modified_date != nil) dict[@"last_modified_date"] = _last_modified_date ;

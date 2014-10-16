@@ -137,7 +137,7 @@ static NSInteger __LoadingObjectsCount = 0;
         else {
             data = [body dataUsingEncoding:NSUTF8StringEncoding];
         }
-        NSString *postLength = [NSString stringWithFormat:@"%d", [data length]];
+        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[data length]];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
@@ -269,7 +269,7 @@ static NSInteger __LoadingObjectsCount = 0;
         else {
             data = [body dataUsingEncoding:NSUTF8StringEncoding];
         }
-        NSString *postLength = [NSString stringWithFormat:@"%d", [data length]];
+        NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[data length]];
         [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
         [request setHTTPBody:data];
         
@@ -304,7 +304,7 @@ static NSInteger __LoadingObjectsCount = 0;
     NSDate *date = [NSDate date];
     [NSURLConnection sendAsynchronousRequest:request queue:_queue completionHandler:
      ^(NSURLResponse *response, NSData *data, NSError *error) {
-         int statusCode = [(NSHTTPURLResponse*)response statusCode];
+        long statusCode = [(NSHTTPURLResponse*)response statusCode];
          if (error) {
              completionBlock(nil, error);
              return;

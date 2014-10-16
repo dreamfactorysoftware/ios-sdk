@@ -10,7 +10,7 @@
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
 @property(nonatomic) NSString* api_name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) NSNumber* is_active;
 @property(nonatomic) NSString* url;
 @property(nonatomic) NSNumber* is_url_external;

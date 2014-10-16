@@ -11,7 +11,7 @@
   _swg_id = _id;
   _swgrelease = swgrelease;
   _codename = codename;
-  _description = description;
+  _swgdescription = description;
   return self;
 }
 
@@ -22,7 +22,7 @@
         _swg_id = dict[@"id"];
         _swgrelease = dict[@"release"];
         _codename = dict[@"codename"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         
 
     }
@@ -34,7 +34,7 @@
     if(_swg_id != nil) dict[@"id"] = _swg_id ;
     if(_swgrelease != nil) dict[@"release"] = _swgrelease ;
     if(_codename != nil) dict[@"codename"] = _codename ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     NSDictionary* output = [dict copy];
     return output;
 }

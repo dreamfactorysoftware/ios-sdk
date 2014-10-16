@@ -6,7 +6,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swg_description;
 @property(nonatomic) NSArray* to;
 @property(nonatomic) NSArray* cc;
 @property(nonatomic) NSArray* bcc;
@@ -22,7 +22,7 @@
 @property(nonatomic) NSNumber* last_modified_by_id;
 - (id) _id: (NSNumber*) _id
      name: (NSString*) name
-     description: (NSString*) description
+     swg_description: (NSString*) swg_description
      to: (NSArray*) to
      cc: (NSArray*) cc
      bcc: (NSArray*) bcc

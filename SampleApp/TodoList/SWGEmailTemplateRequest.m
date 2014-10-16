@@ -18,7 +18,7 @@
 {
   __id = _id;
   _name = name;
-  _description = description;
+  _swgdescription = description;
   _to = to;
   _cc = cc;
   _bcc = bcc;
@@ -37,7 +37,7 @@
     if(self) {
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         id to_dict = dict[@"to"];
         if([to_dict isKindOfClass:[NSArray class]]) {
 
@@ -116,7 +116,7 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     if(_to != nil){
         if([_to isKindOfClass:[NSArray class]]){
             NSMutableArray * array = [[NSMutableArray alloc] init];

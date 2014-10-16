@@ -15,7 +15,7 @@
 {
   __id = _id;
   _name = name;
-  _description = description;
+  _swgdescription = description;
   _is_active = is_active;
   _default_app_id = default_app_id;
   _created_date = created_date;
@@ -31,7 +31,7 @@
     if(self) {
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         _is_active = dict[@"is_active"]; 
         _default_app_id = dict[@"default_app_id"]; 
         _created_date = dict[@"created_date"]; 
@@ -48,7 +48,7 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription;
     if(_is_active != nil) dict[@"is_active"] = _is_active ;
     if(_default_app_id != nil) dict[@"default_app_id"] = _default_app_id ;
     if(_created_date != nil) dict[@"created_date"] = _created_date ;

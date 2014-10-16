@@ -8,7 +8,7 @@
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
 @property(nonatomic) NSString* api_name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swg_description;
 @property(nonatomic) NSNumber* is_active;
 @property(nonatomic) NSString* type;
 @property(nonatomic) NSNumber* type_id;
@@ -24,7 +24,7 @@
 - (id) _id: (NSNumber*) _id
      name: (NSString*) name
      api_name: (NSString*) api_name
-     description: (NSString*) description
+     swg_description: (NSString*) swg_description
      is_active: (NSNumber*) is_active
      type: (NSString*) type
      type_id: (NSNumber*) type_id

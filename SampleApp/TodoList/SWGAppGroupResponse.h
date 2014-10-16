@@ -6,7 +6,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) SWGRelatedApps* apps;
 @property(nonatomic) NSString* created_date;
 @property(nonatomic) NSNumber* created_by_id;

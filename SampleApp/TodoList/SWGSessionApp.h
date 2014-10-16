@@ -5,7 +5,7 @@
 
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swgdescription;
 @property(nonatomic) NSNumber* is_url_external;
 @property(nonatomic) NSString* launch_url;
 @property(nonatomic) NSNumber* requires_fullscreen;

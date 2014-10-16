@@ -138,11 +138,20 @@ static NSString *baseUrl=@"";
         cell = (todoTableViewCell *) [nib objectAtIndex:0];
         [cell setSelectionStyle:UITableViewCellSelectionStyleNone];
     }
-    if([record.record_Complete integerValue]==0){
-        cell.isComplete=NO;
-    }else{
-        cell.isComplete=YES;
+    NSLog(@"is recored completed %@", record.record_Complete);
+    @try
+    {
+        if(record.record_Complete != NULL && [record.record_Complete integerValue]==0){
+            cell.isComplete=NO;
+        }else{
+            cell.isComplete=YES;
+        }
     }
+    @catch (NSException *exception)
+    {
+        cell.isComplete=NO;
+    }
+    
     [cell setTaskComplete:cell.isComplete];
     [cell.deleteButton setTag:indexPath.row];
     [cell.deleteButton addTarget:self action:@selector(deleteTodoTaskActionEvent:) forControlEvents:UIControlEventTouchDown];

@@ -1224,40 +1224,40 @@
         related:(NSString*) related 
         completionHandler: (void (^)(SWGUserResponse* output, NSError* error))completionBlock;
 
-///**
-//
-// getCustomSettings() - Retrieve all custom user settings.
-// Returns an object containing name-value pairs for custom user settings
-// */
+/**
+
+ getCustomSettings() - Retrieve all custom user settings.
+ Returns an object containing name-value pairs for custom user settings
+ */
 //-(void) getCustomSettingsWithCompletionBlock :(void (^)(SWGCustomSettings* output, NSError* error))completionBlock;
-//
-///**
-//
-// setCustomSettings() - Set or update one or more custom user settings.
-// A valid session is required to edit settings. Post body should be an array of name-value pairs.
-// @param body Data containing name-value pairs of desired settings.
-// */
-//-(void) setCustomSettingsWithCompletionBlock :(SWGCustomSettings*) body 
-//        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
-//
-///**
-//
-// getCustomSetting() - Retrieve one custom user setting.
-// Setting will be returned as an object containing name-value pair. A value of null is returned for settings that are not found.
-// @param setting Name of the setting to retrieve.
-// */
-//-(void) getCustomSettingWithCompletionBlock :(NSString*) setting 
-//        completionHandler: (void (^)(SWGCustomSetting* output, NSError* error))completionBlock;
-//
-///**
-//
-// deleteCustomSetting() - Delete one custom setting.
-// A valid session is required to delete settings.
-// @param setting Name of the setting to delete.
-// */
-//-(void) deleteCustomSettingWithCompletionBlock :(NSString*) setting 
-//        completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
-//
+
+/**
+
+ setCustomSettings() - Set or update one or more custom user settings.
+ A valid session is required to edit settings. Post body should be an array of name-value pairs.
+ @param body Data containing name-value pairs of desired settings.
+ */
+//-(void) setCustomSettingsWithCompletionBlock :(SWGCustomSettings*) body
+ //       completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
+/**
+
+ getCustomSetting() - Retrieve one custom user setting.
+ Setting will be returned as an object containing name-value pair. A value of null is returned for settings that are not found.
+ @param setting Name of the setting to retrieve.
+ */
+//-(void) getCustomSettingWithCompletionBlock :(NSString*) setting
+ //       completionHandler: (void (^)(SWGCustomSetting* output, NSError* error))completionBlock;
+
+/**
+
+ deleteCustomSetting() - Delete one custom setting.
+ A valid session is required to delete settings.
+ @param setting Name of the setting to delete.
+ */
+//-(void) deleteCustomSettingWithCompletionBlock :(NSString*) setting
+ //       completionHandler: (void (^)(SWGSuccess* output, NSError* error))completionBlock;
+
 /**
 
  getDevices() - Retrieve the current user's device information.

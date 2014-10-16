@@ -14,7 +14,7 @@
 {
   __id = _id;
   _name = name;
-  _description = description;
+  _swgdescription = description;
   _apps = apps;
   _created_date = created_date;
   _created_by_id = created_by_id;
@@ -29,7 +29,7 @@
     if(self) {
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         id apps_dict = dict[@"apps"];
         _apps = [[SWGRelatedApps alloc]initWithValues:apps_dict];
         _created_date = dict[@"created_date"]; 
@@ -46,7 +46,7 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     if(_apps != nil){
         if([_apps isKindOfClass:[NSArray class]]){
             NSMutableArray * array = [[NSMutableArray alloc] init];

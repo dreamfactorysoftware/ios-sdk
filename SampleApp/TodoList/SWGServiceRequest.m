@@ -23,7 +23,7 @@
   __id = _id;
   _name = name;
   _api_name = api_name;
-  _description = description;
+  _swgdescription = description;
   _is_active = is_active;
   _type = type;
   _type_id = type_id;
@@ -46,7 +46,7 @@
         __id = dict[@"id"]; 
         _name = dict[@"name"]; 
         _api_name = dict[@"api_name"]; 
-        _description = dict[@"description"]; 
+        _swgdescription = dict[@"description"];
         _is_active = dict[@"is_active"]; 
         _type = dict[@"type"]; 
         _type_id = dict[@"type_id"]; 
@@ -72,7 +72,7 @@
     if(__id != nil) dict[@"id"] = __id ;
     if(_name != nil) dict[@"name"] = _name ;
     if(_api_name != nil) dict[@"api_name"] = _api_name ;
-    if(_description != nil) dict[@"description"] = _description ;
+    if(_swgdescription != nil) dict[@"description"] = _swgdescription ;
     if(_is_active != nil) dict[@"is_active"] = _is_active ;
     if(_type != nil) dict[@"type"] = _type ;
     if(_type_id != nil) dict[@"type_id"] = _type_id ;

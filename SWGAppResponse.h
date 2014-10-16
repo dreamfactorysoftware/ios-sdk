@@ -10,7 +10,7 @@
 @property(nonatomic) NSNumber* _id;
 @property(nonatomic) NSString* name;
 @property(nonatomic) NSString* api_name;
-@property(nonatomic) NSString* description;
+@property(nonatomic) NSString* swg_description;
 @property(nonatomic) NSNumber* is_active;
 @property(nonatomic) NSString* url;
 @property(nonatomic) NSNumber* is_url_external;
@@ -33,7 +33,7 @@
 - (id) _id: (NSNumber*) _id
      name: (NSString*) name
      api_name: (NSString*) api_name
-     description: (NSString*) description
+     swg_description: (NSString*) swg_description
      is_active: (NSNumber*) is_active
      url: (NSString*) url
      is_url_external: (NSNumber*) is_url_external
