@@ -45,6 +45,35 @@
 }
 -(IBAction)Logout:(id)sender{
     [self showProgressView:YES];
+    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
+    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString *serviceName = @"user"; // your service name here
+    NSString *apiName = @"session"; // rest path
+    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseDSPUrl,serviceName,apiName];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+    [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+    NSString* contentType = @"application/json";
+    
+    NSDictionary *requestBody;
+    
+    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *output, NSError *error) {
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kSessionIdKey];
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUserEmail];
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kPassword];
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self showProgressView:NO];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
+}
+
+-(IBAction)Logout2:(id)sender{
+    [self showProgressView:YES];
     NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
     NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
     SWGUserApi *userApi=[[SWGUserApi alloc]init];
@@ -63,7 +92,6 @@
         });
     }];
 }
-
 
 -(void)showProgressView:(BOOL)progress{
     

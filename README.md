@@ -3,7 +3,7 @@
 
 ###Getting Started
 
-As always, clone this repo
+To use the iOS SDK, simply clone this repo.
 
 ####Importing the Xcode Project
 

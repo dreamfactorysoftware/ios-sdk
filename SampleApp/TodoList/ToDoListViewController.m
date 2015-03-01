@@ -217,9 +217,47 @@ static NSString *baseUrl=@"";
 }
 
 #pragma mark - action Event
-
-
 -(IBAction)addTodoTaskActionEvent:(id)sender{
+    
+    NSString *taskToAdd=self.userInputTextField.text;
+    [self.userInputTextField setText:@""];
+    [self showProgressView:YES];
+    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSString *serviceName = @"db"; // your service name here
+    NSString *apiName = kTableName; // rest path
+    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName,apiName];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+    [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+    NSString* contentType = @"application/json";
+    NSDictionary *requestBody = @{@"_field_": taskToAdd, @"name": taskToAdd};
+
+    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
+        NSLog(@"Error %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self showProgressView:NO];
+        });
+        if (error) {
+            UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+            [message show];
+        }else{
+            TODORecord *newRecord=[[TODORecord alloc]init];
+            [newRecord setRecord_Id:[responseDict objectForKey:@"id"]];
+            [newRecord setRecord_Task:taskToAdd];
+            [newRecord setRecord_Complete:@"0"];
+            [self.todoListContentArray addObject:newRecord];
+            dispatch_async(dispatch_get_main_queue(),^ (void){
+                [self.todoListTableView reloadData];
+                [self.todoListTableView setNeedsDisplay];
+            });
+        }
+        
+    }];
+}
+
+-(IBAction)addTodoTaskActionEvent2:(id)sender{
     
     NSString *taskToAdd=self.userInputTextField.text;
     [self.userInputTextField setText:@""];
@@ -294,9 +332,61 @@ static NSString *baseUrl=@"";
     
     
 }
-
-
 -(void)getTodoListContentFromServer{
+    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    if (swgSessionId.length>0) {
+        [self showProgressView:YES];
+        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+        NSString *serviceName = @"db"; // your service name here
+        NSString *apiName = kTableName; // rest path
+        NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName,apiName];
+        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+        queryParams[@"include_count"] = [NSNumber numberWithBool:TRUE];
+        
+        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        NSString* contentType = @"application/json";
+        id bodyDictionary = nil;
+        [self.progressView setHidden:NO];
+        [self.activityIndicator startAnimating];
+        [_api dictionary:restApiPath method:@"GET" queryParams:queryParams body:bodyDictionary headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
+            NSLog(@"Error %@",error);
+            dispatch_async(dispatch_get_main_queue(),^ (void){
+                [self showProgressView:NO];
+            });
+            if (error) {
+                dispatch_async(dispatch_get_main_queue(),^ (void){
+                    [self.navigationController popToRootViewControllerAnimated:YES];
+                });
+                
+            }else{
+                [self.todoListContentArray removeAllObjects];
+                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
+                    TODORecord *newRecord=[[TODORecord alloc]init];
+                    [newRecord setRecord_Id:[recordInfo objectForKey:@"id"]];
+                    [newRecord setRecord_Task:[recordInfo objectForKey:@"name"]];
+                    [newRecord setRecord_Complete:[recordInfo objectForKey:@"complete"]];
+                    [self.todoListContentArray addObject:newRecord];
+                }
+                
+                dispatch_async(dispatch_get_main_queue(),^ (void){
+                    [self.todoListTableView reloadData];
+                    [self.todoListTableView setNeedsDisplay];
+                });
+            }
+            
+        }];
+        
+        
+    }else{
+        
+    }
+    
+}
+
+
+-(void)getTodoListContentFromServer2{
   
     
     NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
@@ -355,7 +445,7 @@ static NSString *baseUrl=@"";
     }
 }
 
--(IBAction)doLogout:(id)sender{
+-(IBAction)doLogout1:(id)sender{
     
         NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
         [self showProgressView:YES];
@@ -376,7 +466,34 @@ static NSString *baseUrl=@"";
         }];
     
 }
-
+-(IBAction)doLogout:(id)sender{
+    [self showProgressView:YES];
+    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
+    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString *serviceName = @"user"; // your service name here
+    NSString *apiName = @"session"; // rest path
+    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseDSPUrl,serviceName,apiName];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+    [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+    NSString* contentType = @"application/json";
+    
+    NSDictionary *requestBody;
+    
+    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *output, NSError *error) {
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kSessionIdKey];
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kUserEmail];
+        [[NSUserDefaults standardUserDefaults] setValue:nil forKey:kPassword];
+        
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self showProgressView:NO];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
+}
 -(IBAction)backEvent:(id)sender{
     [self.navigationController popViewControllerAnimated:YES];
 }

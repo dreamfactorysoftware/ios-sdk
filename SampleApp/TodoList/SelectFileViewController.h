@@ -6,5 +6,5 @@
 -(IBAction)SelectLocalFile:(id)sender;
 -(IBAction)SelectRemoteFile:(id)sender;
 -(IBAction)backEvent:(id)sender;
-
+- (NSData*)createPostData:(id)requestBody;
 @end

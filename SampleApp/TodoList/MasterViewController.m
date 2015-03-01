@@ -38,9 +38,71 @@
 {
     [super didReceiveMemoryWarning];
 }
-
-
+-(NSString *)setBaseUrlPath:(NSString*)baseUrl{
+    
+    NSString *lastPathComponent=[baseUrl lastPathComponent];
+    NSString *basePath = nil;
+    if(![lastPathComponent isEqualToString:@"rest"])
+        
+        basePath=[baseUrl stringByAppendingString:@"/rest"];
+    
+    else{
+        
+        basePath=baseUrl;
+        
+    }
+    return basePath;
+}
 - (IBAction)SubmitActionEvent:(id)sender {
+    if(self.urlTextField.text.length>0 && self.emailTextField.text.length>0 && self.passwordTextField.text.length>0) {
+        [self.urlTextField resignFirstResponder];
+        [self.emailTextField resignFirstResponder];
+        [self.passwordTextField resignFirstResponder];
+    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSString *serviceName = @"user"; // your service name here
+    NSString *apiName = @"session"; // rest path
+    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",[self setBaseUrlPath:self.urlTextField.text],serviceName,apiName];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+    NSString* contentType = @"application/json";
+    
+    NSDictionary *requestBody = @{@"email": self.emailTextField.text, @"password": self.passwordTextField.text};
+    [self.progressView setHidden:NO];
+    [self.activityIndicator startAnimating];
+    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
+        NSLog(@"Error %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.progressView setHidden:YES];
+            [self.activityIndicator stopAnimating];
+            if(responseDict){
+                NSString *SessionId = [responseDict objectForKey:@"session_id"];
+                if(self.urlTextField.text.length>0)
+                [[NSUserDefaults standardUserDefaults] setValue:[self setBaseUrlPath:self.urlTextField.text] forKey:kBaseDspUrl];
+                [[NSUserDefaults standardUserDefaults] setValue:SessionId forKey:kSessionIdKey];
+                [[NSUserDefaults standardUserDefaults] setValue:self.emailTextField.text forKey:kUserEmail];
+                [[NSUserDefaults standardUserDefaults] setValue:self.passwordTextField.text forKey:kPassword];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                [self displayInitialViewController];
+            }else{
+                
+                UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                [message show];
+            }
+            
+        });
+        
+    }];
+    }
+    else {
+        UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"" message:@"Please fill the all entry first." delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+        [message show];
+    }
+    
+}
+
+
+- (IBAction)SubmitActionEvent2:(id)sender {
     
     if(self.urlTextField.text.length>0 && self.emailTextField.text.length>0 && self.passwordTextField.text.length>0) {
         [self.urlTextField resignFirstResponder];
@@ -128,7 +190,7 @@
     }
 }
 
--(void)getNewSessionWithEmail:(NSString*)email Password:(NSString*)password BaseUrl:(NSString*)baseUrl{
+-(void)getNewSessionWithEmail1:(NSString*)email Password:(NSString*)password BaseUrl:(NSString*)baseUrl{
     NSString *baseDspUrl=baseUrl;
     SWGUserApi *userApi=[[SWGUserApi alloc]init];
     [userApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
@@ -165,6 +227,48 @@
         
     }];
 
+}
+
+-(void)getNewSessionWithEmail:(NSString*)email Password:(NSString*)password BaseUrl:(NSString*)baseUrl{
+    NSString *baseDspUrl=baseUrl;
+    [self.progressView setHidden:NO];
+    [self.activityIndicator startAnimating];
+    
+    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSString *serviceName = @"user"; // your service name here
+    NSString *apiName = @"session"; // rest path
+    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",[self setBaseUrlPath:self.urlTextField.text],serviceName,apiName];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
+    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+    NSString* contentType = @"application/json";
+    
+    NSDictionary *requestBody = @{@"email": email, @"password": password};
+    
+    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *output, NSError *error) {
+        NSLog(@"Error %@",error);
+        NSLog(@"OutPut %@",[output objectForKey:@"id"]);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.progressView setHidden:YES];
+            [self.activityIndicator stopAnimating];
+            if(output){
+                NSString *SessionId=[output objectForKey:@"session_id"];
+                [[NSUserDefaults standardUserDefaults] setValue:baseDspUrl forKey:kBaseDspUrl];
+                [[NSUserDefaults standardUserDefaults] setValue:SessionId forKey:kSessionIdKey];
+                [[NSUserDefaults standardUserDefaults] setValue:email forKey:kUserEmail];
+                [[NSUserDefaults standardUserDefaults] setValue:password forKey:kPassword];
+                [[NSUserDefaults standardUserDefaults] synchronize];
+                [self displayInitialViewController];
+            }else{
+                
+                UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                [message show];
+            }
+            
+        });
+        
+    }];
+    
 }
 
 @end

@@ -14,7 +14,7 @@
 		<string>https://github.com/dreamfactorysoftware/ios-sdk.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>SampleApp/TodoList.xcodeproj/project.xcworkspace</string>
+	<string>SampleApp/TodoList.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>BEB93BC933FE7CDDEDB2C95365A600FB0EF12F56</key>

@@ -602,7 +602,7 @@ static NSString * basePath = @"http://localhost/rest";
     NSString* contentType = @"application/json";
 
 
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     id bodyDictionary = nil;
         if(body != nil && [body isKindOfClass:[NSArray class]]){

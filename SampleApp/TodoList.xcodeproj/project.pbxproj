@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		037AF0B21A9FAAC900C0D2F0 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 037AF0B11A9FAAC900C0D2F0 /* AssetsLibrary.framework */; };
 		2A4006C318BF3700007F2841 /* todoTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A4006C218BF3700007F2841 /* todoTableViewCell.m */; };
 		2A4006C518BF3729007F2841 /* todoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2A4006C418BF3729007F2841 /* todoTableViewCell.xib */; };
 		2ADF00A718C0DBBD005B4267 /* TODORecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 2ADF00A618C0DBBD005B4267 /* TODORecord.m */; };
@@ -176,6 +177,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		037AF0B11A9FAAC900C0D2F0 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		2A4006C118BF3700007F2841 /* todoTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = todoTableViewCell.h; sourceTree = "<group>"; };
 		2A4006C218BF3700007F2841 /* todoTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = todoTableViewCell.m; sourceTree = "<group>"; };
 		2A4006C418BF3729007F2841 /* todoTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = todoTableViewCell.xib; sourceTree = "<group>"; };
@@ -479,6 +481,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				037AF0B21A9FAAC900C0D2F0 /* AssetsLibrary.framework in Frameworks */,
 				2ADFEC9D18BE580D00C722AB /* CoreGraphics.framework in Frameworks */,
 				2ADFEC9F18BE580D00C722AB /* UIKit.framework in Frameworks */,
 				2ADFEC9B18BE580D00C722AB /* Foundation.framework in Frameworks */,
@@ -533,6 +536,7 @@
 		2ADFEC9918BE580D00C722AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				037AF0B11A9FAAC900C0D2F0 /* AssetsLibrary.framework */,
 				2ADFEC9A18BE580D00C722AB /* Foundation.framework */,
 				2ADFEC9C18BE580D00C722AB /* CoreGraphics.framework */,
 				2ADFEC9E18BE580D00C722AB /* UIKit.framework */,
