@@ -7,11 +7,11 @@ To use the iOS SDK, simply clone this repo.
 
 ####Importing the Xcode Project
 
-Once your repo is cloned , open SampleApp/TodoList.xcodeproj
+Once your repo is cloned, open SampleApp/TodoList.xcodeproj
 
 ####Basic Usage
 
-####This SDK provides APIs to connect default DSP services as well as custom services created by developers.
+####This SDK provides APIs to call any RESTful service in DreamFactory.
 
 #####User  Login
 Sample code to connect to the 'user' service, for more details please check MasterViewController.m 
