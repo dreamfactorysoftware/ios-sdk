@@ -1,275 +1,29 @@
+## DreamFactory iOS API and sample application
 
-##DreamFactory iOS SDK
+The DreamFactory iOS API provides easy access to native REST services available in DreamFactory and to other remote web services that you make available in DreamFactory.
 
-###Getting Started
+You can find the DreamFactory iOS API and documentation [here](example-ios/api/).
 
-To use the iOS SDK, simply clone this repo.
+A sample iOS Objective-C application that uses the DreamFactory API is located in [example-ios/](example-ios).
 
-####Importing the Xcode Project
+The live API documentation included in the DreamFactory Admin Console is a great way to learn how the DreamFactory REST API works.
+Check out how to use the live API docs [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/API-Docs). You can view and test an example of the live API docs [here](https://dsp-sandman1.cloud.dreamfactory.com/swagger/).
 
-Once your repo is cloned, open SampleApp/TodoList.xcodeproj
+## Quickstart
 
-####Basic Usage
+####Getting DreamFactory on your local machine
 
-####This SDK provides APIs to call any RESTful service in DreamFactory.
+To download and install DreamFactory, follow the instructions [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/Usage-Options). Alternatively, you can create a [free hosted developer account](http://www.dreamfactory.com) at www.dreamfactory.com if you don't want to install DreamFactory locally.
 
-#####User  Login
-Sample code to connect to the 'user' service, for more details please check MasterViewController.m 
+Launch the DreamFactory Admin Console by going to localhost:8080 in your favorite browser and logging in. 
 
-```objectivec
+Navigate to the Config tab and click on CORS in the left sidebar. To enable [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) for development purposes, click add, set the host to *, allow all HTTP verbs and check the enabled box. Click update when you are done. More info on setting up CORS is [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/CORs-Configuration).
 
+####Running the example iOS Address Book app
+From the Apps menu in the DreamFactory Admin Console, click import and select "Address Book" from the list of sample applications. Set the storage service to local file storage and the storage container to applications. Click the Update button when done.
 
-    //SWGUserApi
-	// Creating a user api object
-	SWGUserApi *userApi=[[SWGUserApi alloc]init];
-        [userApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-    // set app name header
-        [userApi setBaseUrlPath:”your dsp url”];
+Almost there! Download this repo to your local machine. Open and run the project in Xcode. You can log in to the app with the username and password you used for the DreamFactory Admin Console. 
 
-	// create login request
-        SWGLogin *login=[[SWGLogin alloc]init];
-        [login setEmail:”login email”];
-        [login setPassword:”password”];
+More info on the DreamFactory iOS API can be found [here](example-ios/api/). 
 
-	//For complete example please check MasterViewController.m
-
-    SWGUserApi *userApi=[[SWGUserApi alloc]init];
-        [userApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        if(self.urlTextField.text.length>0)
-        [userApi setBaseUrlPath:self.urlTextField.text];
-
-        SWGLogin *login=[[SWGLogin alloc]init];
-        [login setEmail:self.emailTextField.text];
-        [login setPassword:self.passwordTextField.text];
-
-
-        [self.progressView setHidden:NO];
-        [self.activityIndicator startAnimating];
-
-        [userApi loginWithCompletionBlock:login completionHandler:^(SWGSession *output, NSError *error) {
-            NSLog(@"Error %@",error);
-            NSLog(@"OutPut %@",output._id);
-            dispatch_async(dispatch_get_main_queue(),^ (void){
-                [self.progressView setHidden:YES];
-                [self.activityIndicator stopAnimating];
-                if(output){
-                    NSString *SessionId=output.session_id;
-                    if(self.urlTextField.text.length>0)
-                    [[NSUserDefaults standardUserDefaults] setValue:baseDspUrl forKey:kBaseDspUrl];
-                    [[NSUserDefaults standardUserDefaults] setValue:SessionId forKey:kSessionIdKey];
-                    [[NSUserDefaults standardUserDefaults] setValue:login.email forKey:kUserEmail];
-                    [[NSUserDefaults standardUserDefaults] setValue:login.password forKey:kPassword];
-                    [[NSUserDefaults standardUserDefaults] synchronize];
-                    [self displayInitialViewController];
-                }else{
-
-                    UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-                    [message show];
-                }
-
-            });
-
-        }];
-
-        ###### Using generic API Invoker
-
-        - (IBAction)SubmitActionEvent:(id)sender {
-    if(self.urlTextField.text.length>0 && self.emailTextField.text.length>0 && self.passwordTextField.text.length>0) {
-        [self.urlTextField resignFirstResponder];
-        [self.emailTextField resignFirstResponder];
-        [self.passwordTextField resignFirstResponder];
-    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-    NSString *serviceName = @"user"; // your service name here
-    NSString *apiName = @"session"; // rest path
-    NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",[self setBaseUrlPath:self.urlTextField.text],serviceName,apiName];
-    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-    NSString* contentType = @"application/json";
-    
-    NSDictionary *requestBody = @{@"email": self.emailTextField.text, @"password": self.passwordTextField.text};
-    [self.progressView setHidden:NO];
-    [self.activityIndicator startAnimating];
-    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-        NSLog(@"Error %@",error);
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self.progressView setHidden:YES];
-            [self.activityIndicator stopAnimating];
-            if(responseDict){
-                NSString *SessionId = [responseDict objectForKey:@"session_id"];
-                if(self.urlTextField.text.length>0)
-                [[NSUserDefaults standardUserDefaults] setValue:[self setBaseUrlPath:self.urlTextField.text] forKey:kBaseDspUrl];
-                [[NSUserDefaults standardUserDefaults] setValue:SessionId forKey:kSessionIdKey];
-                [[NSUserDefaults standardUserDefaults] setValue:self.emailTextField.text forKey:kUserEmail];
-                [[NSUserDefaults standardUserDefaults] setValue:self.passwordTextField.text forKey:kPassword];
-                [[NSUserDefaults standardUserDefaults] synchronize];
-                [self displayInitialViewController];
-            }else{
-                
-                UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-                [message show];
-            }
-            
-        });
-        
-    }];
-    }
-    else {
-        UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"" message:@"Please fill the all entry first." delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-        [message show];
-    }
-    
-}
-
-
-```
-### Working with the DB Service
-```objectivec
-
-
-//SWGDBApi
-	// create a SWGDBApi object similar to above
-	SWGDbApi *swgDbApi=[[SWGDbApi alloc]init];
-	[swgDbApi setBaseUrlPath:baseUrl];
-	[swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-	[swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-	[swgDbApi createRecordWithCompletionBlock:kTableName _id:@"" body:record fields:nil id_field:nil id_type:nil related:@"" completionHandler:^(SWGRecordResponse *output, NSError *error) 	{
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self showProgressView:NO];
-        });
-        if (error) {
-            UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-            [message show];
-        }else{
-            TODORecord *newRecord=[[TODORecord alloc]init];
-            [newRecord setRecord_Id:output._id];
-            [newRecord setRecord_Task:record.name];
-            [newRecord setRecord_Complete:output._complete];
-            [self.todoListContentArray addObject:newRecord];
-            dispatch_async(dispatch_get_main_queue(),^ (void){
-                [self.todoListTableView reloadData];
-                [self.todoListTableView setNeedsDisplay];
-            });
-        }
-
-    }];
-
-    ###### Using generic API Invoker
-    -(void)getTodoListContentFromServer{
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
-    if (swgSessionId.length>0) {
-        [self showProgressView:YES];
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        NSString *serviceName = @"db"; // your service name here
-        NSString *apiName = kTableName; // rest path
-        NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName,apiName];
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"include_count"] = [NSNumber numberWithBool:TRUE];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-        NSString* contentType = @"application/json";
-        id bodyDictionary = nil;
-        [self.progressView setHidden:NO];
-        [self.activityIndicator startAnimating];
-        [_api dictionary:restApiPath method:@"GET" queryParams:queryParams body:bodyDictionary headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-            NSLog(@"Error %@",error);
-            dispatch_async(dispatch_get_main_queue(),^ (void){
-                [self showProgressView:NO];
-            });
-            if (error) {
-                dispatch_async(dispatch_get_main_queue(),^ (void){
-                    [self.navigationController popToRootViewControllerAnimated:YES];
-                });
-                
-            }else{
-                [self.todoListContentArray removeAllObjects];
-                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
-                    TODORecord *newRecord=[[TODORecord alloc]init];
-                    [newRecord setRecord_Id:[recordInfo objectForKey:@"id"]];
-                    [newRecord setRecord_Task:[recordInfo objectForKey:@"name"]];
-                    [newRecord setRecord_Complete:[recordInfo objectForKey:@"complete"]];
-                    [self.todoListContentArray addObject:newRecord];
-                }
-                
-                dispatch_async(dispatch_get_main_queue(),^ (void){
-                    [self.todoListTableView reloadData];
-                    [self.todoListTableView setNeedsDisplay];
-                });
-            }
-            
-        }];
-        
-        
-    }else{
-        
-    }
-    
-}
-
-```
-####Working with Files
-```objectivec
-
-//SWGFilesApi
-	//Here is how to use File API
-       // create a SWGFilesApi api object similar to above
-       SWGFilesApi *fileApi = [[SWGFilesApi alloc] init];
-    	[fileApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-    	[fileApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    	[fileApi setBaseUrlPath:baseDSPUrl];
-    	[fileApi createFileWithCompletionBlock:@"applications" file_path:[NSString stringWithFormat:@"%@/%@",kFolderName,name] check_exist:nil NIKFilebody:nikFile completionHandler:^(SWGFileResponse *output, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self showProgressView:NO];
-        });
-        NSLog(@"output %@",output);
-        NSLog(@"Error %@",error);
-
-    }];
-
-    #### Using generic api invoker
-    - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    dispatch_async(dispatch_get_main_queue(),^ (void){
-        [self showProgressView:YES];
-    });
-    NSData *dataImage = UIImageJPEGRepresentation([info objectForKey:UIImagePickerControllerOriginalImage], 0.1);
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
-    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
-    
-    NSURL *path = [info objectForKey:UIImagePickerControllerReferenceURL];
-    NSString *stringPath = [path absoluteString];
-    NSString *name = [stringPath lastPathComponent];
-    NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-    
-    NSString *folderName = @"applications"; // Folder Name
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@",kFolderName,name]; // File path
-    NSString *restApiPath = [NSString stringWithFormat:@"%@/files/%@/%@",baseDSPUrl,folderName,filePath];
-    
-    NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-    
-    NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-    [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-    [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    
-    NSString* contentType = @"application/octet-stream";
-    
-    NSString *base64String = [dataImage base64EncodedStringWithOptions:0];
-    NSDictionary *requestBody = @{@"name": name, @"mimeType": @"application/octet-stream",@"data":base64String};
-    
-    [_api dictionary:restApiPath method:@"POST" queryParams:queryParams body:requestBody headerParams:headerParams contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-        NSLog(@"Error %@",error);
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self showProgressView:NO];
-        });
-        if (error) {
-            UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-            [message show];
-        }else{
-        }
-    }];
-    [picker dismissViewControllerAnimated:YES completion:NULL];
-    
-}
-
-```
+More detailed instructions and a list of API calls used by the "Address Book" sample application are located in the readme [here](example-ios/SampleApp#sampleapp).
