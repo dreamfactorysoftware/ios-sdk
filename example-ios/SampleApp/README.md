@@ -57,7 +57,7 @@ NSDictionary* requestBody = @{@"email":self.emailTextField.text,
 ```Objective-C
 // build rest path for request, form is <url to server>/rest/serviceName/tableName
 NSString *serviceName = @"db"; // your service name here
-NSString *tableName = @"contactgroups";
+NSString *tableName = @"contact_groups";
 
 NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
 
@@ -101,7 +101,7 @@ queryParams[@"filter"] = filter;
 // request without related would return just {id, groupId, contactId}
 // set the related field to go get the group records referenced by
 // each contactrelationships record
-queryParams[@"related"] = @"contactgroups_by_contactGroupId";
+queryParams[@"related"] = @"contact_groups_by_contactGroupId";
 ```
 
 ### Examples of updating records

@@ -4,7 +4,7 @@
 #import <UIKit/UIKit.h>
 
 // change these values to match your DSP
-#define kApplicationName @"add"
+#define kApplicationName @"add_ios"
 #define kSessionIdKey @"SessionId"
 #define kBaseDspUrl @"http://localhost:8080/rest"
 #define kUserEmail @"UserEmail"

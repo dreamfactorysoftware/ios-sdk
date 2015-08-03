@@ -141,7 +141,6 @@ static NSString *baseUrl=@"";
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
-        __weak typeof(self) weakSelf = self;
         [_api restPath:restApiPath
                 method:@"GET"
            queryParams:queryParams
@@ -149,29 +148,26 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           AddressBookViewController* strongSelf = weakSelf;
            NSLog(@"Error getting address book data: %@",error);
            
            if (error) {
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf.navigationController popToRootViewControllerAnimated:YES];
+                   [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
            else{
                [self.addressBookContentArray removeAllObjects];
                
                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
-                   @autoreleasepool {
-                       GroupRecord *newRecord=[[GroupRecord alloc]init];
-                       [newRecord setId:[recordInfo objectForKey:@"contactGroupId"]];
-                       [newRecord setName:[recordInfo objectForKey:@"groupName"]];
-                       [strongSelf.addressBookContentArray addObject:newRecord];
-                   }
+                   GroupRecord *newRecord=[[GroupRecord alloc]init];
+                   [newRecord setId:[recordInfo objectForKey:@"contactGroupId"]];
+                   [newRecord setName:[recordInfo objectForKey:@"groupName"]];
+                   [self.addressBookContentArray addObject:newRecord];
                }
                
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf.addressBookTableView reloadData];
-                   [strongSelf.addressBookTableView setNeedsDisplay];
+                   [self.addressBookTableView reloadData];
+                   [self.addressBookTableView setNeedsDisplay];
                });
            }
        }];
@@ -275,7 +271,6 @@ static NSString *baseUrl=@"";
 }
 
 - (void) showContactListViewController{
-    @autoreleasepool {
     dispatch_async(dispatch_queue_create("addressBookQueue", NULL), ^{
         // already fetching so just wait until the data gets back
         [self.contactListViewController waitToReady];
@@ -284,7 +279,6 @@ static NSString *baseUrl=@"";
 
         });
     });
-    }
 }
 
 - (void) showGroupAddViewController{

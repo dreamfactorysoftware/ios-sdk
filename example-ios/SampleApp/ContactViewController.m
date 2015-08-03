@@ -68,7 +68,6 @@ static NSString* baseUrl = @"";
 }
 
 - (void) prefetch {
-    __weak typeof(self) weakSelf = self;
     // since there are a bunch of bigger calls (download and relational) needed for this
     // view, run the gets at the same time and do the calls asynchronously
     // prefetch -> waitLock lock blocks showVC -> contactInfo call finished + unlocks showVC
@@ -78,35 +77,35 @@ static NSString* baseUrl = @"";
     NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
     baseUrl=baseDSPUrl;
     
-    weakSelf.contactDetails = [[NSMutableArray alloc] init];
-    weakSelf.contactGroups = [[NSMutableArray alloc] init];
+    self.contactDetails = [[NSMutableArray alloc] init];
+    self.contactGroups = [[NSMutableArray alloc] init];
     
     
-    weakSelf.groupLock = [[NSCondition alloc] init];
-    weakSelf.waitLock = [[NSCondition alloc] init];
-    weakSelf.viewLock = [[NSCondition alloc] init];
+    self.groupLock = [[NSCondition alloc] init];
+    self.waitLock = [[NSCondition alloc] init];
+    self.viewLock = [[NSCondition alloc] init];
     
-    weakSelf.waitReady = NO;
-    weakSelf.groupReady = NO;
-    weakSelf.viewReady = NO;
-    weakSelf.cancled = NO;
+    self.waitReady = NO;
+    self.groupReady = NO;
+    self.viewReady = NO;
+    self.cancled = NO;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [weakSelf.waitLock lock];
-        [weakSelf.viewLock lock];
-        [weakSelf.groupLock lock];
+        [self.waitLock lock];
+        [self.viewLock lock];
+        [self.groupLock lock];
     });
     
-    weakSelf.queue = dispatch_queue_create("contactViewQueue", NULL);
-    dispatch_async(weakSelf.queue, ^ (void){
-        [weakSelf getContactInfoFromServer:weakSelf.contactRecord];
+    self.queue = dispatch_queue_create("contactViewQueue", NULL);
+    dispatch_async(self.queue, ^ (void){
+        [self getContactInfoFromServer:self.contactRecord];
     });
-    dispatch_async(weakSelf.queue, ^ (void){
-        [weakSelf getContactsListFromServerWithRelation];
+    dispatch_async(self.queue, ^ (void){
+        [self getContactsListFromServerWithRelation];
     });
     
-    dispatch_async(weakSelf.queue, ^ (void){
-        [weakSelf buildContactView];
+    dispatch_async(self.queue, ^ (void){
+        [self buildContactView];
     });
 }
 
@@ -120,13 +119,11 @@ static NSString* baseUrl = @"";
 }
 
 - (void) canclePrefetch{
-    __weak typeof(self) weakSelf = self;
-    weakSelf.cancled = YES;
+    self.cancled = YES;
     dispatch_async(dispatch_get_main_queue(), ^{
-        ContactViewController* strongSelf = weakSelf;
-        strongSelf.viewReady = YES;
-        [strongSelf.viewLock signal];
-        [strongSelf.viewLock unlock];
+        self.viewReady = YES;
+        [self.viewLock signal];
+        [self.viewLock unlock];
     });
 }
 
@@ -255,9 +252,8 @@ static NSString* baseUrl = @"";
 
 - (void) buildContactView {
     // clear out the view
-    __weak typeof(self) weakSelf = self;
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [weakSelf.contactDetailScrollView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+        [self.contactDetailScrollView.subviews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     });
     
     // go get the profile image
@@ -282,69 +278,65 @@ static NSString* baseUrl = @"";
     // track the y of the furthest item down in the view
     __block int y = 0;
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(weakSelf == nil){
-            return;
-        }
-        ContactViewController* strongSelf = weakSelf;
-        [profile_image setCenter:CGPointMake(strongSelf.view.frame.size.width * 0.5, profile_image.frame.size.height * 0.5 )];
+        [profile_image setCenter:CGPointMake(self.view.frame.size.width * 0.5, profile_image.frame.size.height * 0.5 )];
         
         y = profile_image.frame.size.height + 5;
         
         // add the name label
-        UILabel* name_label = [[UILabel alloc] initWithFrame:CGRectMake(0, y, strongSelf.view.frame.size.width, 35)];
-        name_label.text = [NSString stringWithFormat:@"%@ %@", strongSelf.contactRecord.FirstName, strongSelf.contactRecord.LastName];
+        UILabel* name_label = [[UILabel alloc] initWithFrame:CGRectMake(0, y, self.view.frame.size.width, 35)];
+        name_label.text = [NSString stringWithFormat:@"%@ %@", self.contactRecord.FirstName, self.contactRecord.LastName];
         name_label.font = [UIFont fontWithName:@"HelveticaNeue-Light" size: 25.0];
         name_label.textAlignment = NSTextAlignmentCenter;
-        [strongSelf.contactDetailScrollView addSubview:name_label];
+        [self.contactDetailScrollView addSubview:name_label];
         y += 40;
         
-        if([strongSelf.contactRecord.Twitter length] > 0){
-            UILabel* twitter_label = [[UILabel alloc] initWithFrame:CGRectMake(40, y, strongSelf.view.frame.size.width - 40, 20)];
+        if([self.contactRecord.Twitter length] > 0){
+            UILabel* twitter_label = [[UILabel alloc] initWithFrame:CGRectMake(40, y, self.view.frame.size.width - 40, 20)];
             [twitter_label setFont:[UIFont fontWithName:@"Helvetica Neue" size: 17.0]];
-            twitter_label.text = strongSelf.contactRecord.Twitter;
+            twitter_label.text = self.contactRecord.Twitter;
             
             UIImageView* twitter_image = [[UIImageView alloc] initWithFrame:CGRectMake(10, y, 20, 20)];
             
             
             [twitter_image setImage:[UIImage imageNamed:@"twitter2.png"]];
             [twitter_image setContentMode:UIViewContentModeScaleAspectFit];
-            [strongSelf.contactDetailScrollView addSubview:twitter_label];
-            [strongSelf.contactDetailScrollView addSubview:twitter_image];
+            [self.contactDetailScrollView addSubview:twitter_label];
+            [self.contactDetailScrollView addSubview:twitter_image];
             
             y += 30;
         }
         
-        if([strongSelf.contactRecord.Skype length] > 0){
-            UILabel* skype_label = [[UILabel alloc] initWithFrame:CGRectMake(40, y, strongSelf.view.frame.size.width - 40, 20)];
-            skype_label.text = strongSelf.contactRecord.Skype;
+        if([self.contactRecord.Skype length] > 0){
+            UILabel* skype_label = [[UILabel alloc] initWithFrame:CGRectMake(40, y, self.view.frame.size.width - 40, 20)];
+            skype_label.text = self.contactRecord.Skype;
             [skype_label setFont:[UIFont fontWithName:@"Helvetica Neue" size: 17.0]];
             
             UIImageView* skype_image = [[UIImageView alloc] initWithFrame:CGRectMake(10, y, 20, 20)];
             
             [skype_image setImage:[UIImage imageNamed:@"skype.png"]];
             [skype_image setContentMode:UIViewContentModeScaleAspectFit];
-            [strongSelf.contactDetailScrollView addSubview:skype_label];
-            [strongSelf.contactDetailScrollView addSubview:skype_image];
+            [self.contactDetailScrollView addSubview:skype_label];
+            [self.contactDetailScrollView addSubview:skype_image];
             y += 30;
         }
         
         // add the notes
-        if([strongSelf.contactRecord.Notes length ] > 0){
+        if([self.contactRecord.Notes length ] > 0){
             UILabel* note_title_label = [[UILabel alloc] initWithFrame:CGRectMake(10, y, 80, 25)];
             note_title_label.text = @"Notes";
             [note_title_label setFont:[UIFont fontWithName:@"HelveticaNeue-Light" size: 19.0]];
             y += 20;
             
-            UILabel* notes_label = [[UILabel alloc] initWithFrame:CGRectMake(strongSelf.view.frame.size.width * .05, y, strongSelf.view.frame.size.width * .9, 80)];
+            UILabel* notes_label = [[UILabel alloc] initWithFrame:CGRectMake(self.view.frame.size.width * .05, y, self.view.frame.size.width * .9, 80)];
             [notes_label setAutoresizesSubviews:YES];
             
             [notes_label setFont:[UIFont fontWithName:@"Helvetica Neue" size: 16.0]];
-            notes_label.text = strongSelf.contactRecord.Notes;
+            notes_label.text = self.contactRecord.Notes;
             notes_label.numberOfLines = 0;
             [notes_label sizeToFit];
             
-            [strongSelf.contactDetailScrollView addSubview:note_title_label];
-            [strongSelf.contactDetailScrollView addSubview:notes_label];
+            [self.contactDetailScrollView addSubview:note_title_label];
+            [self.contactDetailScrollView addSubview:notes_label];
             
             y += notes_label.frame.size.height + 10;
         }
@@ -354,24 +346,16 @@ static NSString* baseUrl = @"";
     
     // don't need to have a lock here because the view lock is dependent on this data loading
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(weakSelf == nil){
-            return;
-        }
-        ContactViewController* strongSelf = weakSelf;
-        for(ContactDetailRecord* record in strongSelf.contactDetails){
-            UIView* toAdd = [strongSelf buildAddressView:record y:[NSNumber numberWithInt:y] buffer:[NSNumber numberWithInt:25]];
+        for(ContactDetailRecord* record in self.contactDetails){
+            UIView* toAdd = [self buildAddressView:record y:[NSNumber numberWithInt:y] buffer:[NSNumber numberWithInt:25]];
             toAdd.backgroundColor = backgroundColor;
             y += toAdd.frame.size.height + 25;
-            [strongSelf.contactDetailScrollView addSubview:toAdd];
+            [self.contactDetailScrollView addSubview:toAdd];
         }
     });
     
     dispatch_sync(dispatch_get_main_queue(), ^{
-        if(weakSelf == nil){
-            return;
-        }
-        ContactViewController* strongSelf = weakSelf;
-        [strongSelf.contactDetailScrollView reloadInputViews];
+        [self.contactDetailScrollView reloadInputViews];
     });
     
     // wait until the group is ready to build group list subviews
@@ -382,29 +366,21 @@ static NSString* baseUrl = @"";
     [self.groupLock unlock];
     
     dispatch_sync(dispatch_get_main_queue(), ^{
-        if(weakSelf == nil){
-            return;
-        }
-        ContactViewController* strongSelf = weakSelf;
-        UIView* toAdd = [strongSelf makeListOfGroupsContactBelongsTo];
+        UIView* toAdd = [self makeListOfGroupsContactBelongsTo];
         CGRect frame = toAdd.frame;
         frame.origin.y = y + 20;
         toAdd.frame = frame;
-        [strongSelf.contactDetailScrollView addSubview:toAdd];
+        [self.contactDetailScrollView addSubview:toAdd];
     });
     
     // resize the scroll view content
     dispatch_async(dispatch_get_main_queue(), ^{
-        if(weakSelf == nil){
-            return;
-        }
-        ContactViewController* strongSelf = weakSelf;
         CGRect contentRect = CGRectZero;
-        for (UIView *view in strongSelf.contactDetailScrollView.subviews) {
+        for (UIView *view in self.contactDetailScrollView.subviews) {
             contentRect = CGRectUnion(contentRect, view.frame);
         }
-        strongSelf.contactDetailScrollView.contentSize = contentRect.size;
-        [strongSelf.contactDetailScrollView reloadInputViews];
+        self.contactDetailScrollView.contentSize = contentRect.size;
+        [self.contactDetailScrollView reloadInputViews];
     });
     
 }
@@ -441,7 +417,6 @@ static NSString* baseUrl = @"";
         NSString* contentType = @"application/json";
         id requestBody = nil;
         
-        __weak typeof(self) weakSelf = self;
         [_api restPath:restApiPath
                 method:@"GET"
            queryParams:queryParams
@@ -451,10 +426,9 @@ static NSString* baseUrl = @"";
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
            
            NSLog(@"Error getting contact info: %@",error);
-           ContactViewController* strongSelf = weakSelf;
            if (error) {
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf.navigationController popToRootViewControllerAnimated:YES];
+                   [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
            else{
@@ -471,26 +445,26 @@ static NSString* baseUrl = @"";
                        }
                        ContactDetailRecord* new_record = [[ContactDetailRecord alloc] init];
                        [new_record setId:[recordInfo objectForKey:@"infoId"]];
-                       [new_record setAddress:[strongSelf removeNull:[recordInfo objectForKey:@"address"]]];
-                       [new_record setCity :[strongSelf removeNull:[recordInfo objectForKey:@"city"]]];
-                       [new_record setCountry:[strongSelf removeNull:[recordInfo objectForKey:@"country"]]];
-                       [new_record setEmail:[strongSelf removeNull:[recordInfo objectForKey:@"email"]]];
-                       [new_record setType:[strongSelf removeNull:[recordInfo objectForKey:@"infoType"]]];
-                       [new_record setPhone:[strongSelf removeNull:[recordInfo objectForKey:@"phone"]]];
-                       [new_record setState:[strongSelf removeNull:[recordInfo objectForKey:@"state"]]];
-                       [new_record setZipcode:[strongSelf removeNull:[recordInfo objectForKey:@"zip"]]];
+                       [new_record setAddress:[self removeNull:[recordInfo objectForKey:@"address"]]];
+                       [new_record setCity :[self removeNull:[recordInfo objectForKey:@"city"]]];
+                       [new_record setCountry:[self removeNull:[recordInfo objectForKey:@"country"]]];
+                       [new_record setEmail:[self removeNull:[recordInfo objectForKey:@"email"]]];
+                       [new_record setType:[self removeNull:[recordInfo objectForKey:@"infoType"]]];
+                       [new_record setPhone:[self removeNull:[recordInfo objectForKey:@"phone"]]];
+                       [new_record setState:[self removeNull:[recordInfo objectForKey:@"state"]]];
+                       [new_record setZipcode:[self removeNull:[recordInfo objectForKey:@"zip"]]];
                        [new_record setContactId:[recordInfo objectForKey:@"contactId"]];
                        [array addObject:new_record];
                    }
                }
                // tell the contact list what group it is looking at
-               strongSelf.contactDetails = array;
+               self.contactDetails = array;
                
                
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   strongSelf.waitReady = YES;
-                   [strongSelf.waitLock signal];
-                   [strongSelf.waitLock unlock];
+                   self.waitReady = YES;
+                   [self.waitLock signal];
+                   [self.waitLock unlock];
                });
            }
        }];
@@ -499,13 +473,11 @@ static NSString* baseUrl = @"";
 
 - (void) getProfilePictureFromServer:(UIImageView*) image_display{
     NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
-    __weak typeof(self) weakSelf = self;
     if(self.contactRecord.ImageUrl == nil ||[self.contactRecord.ImageUrl isEqual:@""]){
         dispatch_async(dispatch_get_main_queue(), ^{
-            ContactViewController* strongSelf = weakSelf;
             [image_display setImage:[UIImage imageNamed:@"default_portrait.png"]];
             [image_display setContentMode:UIViewContentModeScaleAspectFit];
-            [strongSelf.contactDetailScrollView addSubview:image_display];
+            [self.contactDetailScrollView addSubview:image_display];
         });
         return;
     }
@@ -542,9 +514,6 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if(weakSelf == nil){
-               return;
-           }
            NSLog(@"Error getting profile image data from server: %@",error);
            
            dispatch_async(dispatch_get_main_queue(),^ (void){
@@ -572,7 +541,7 @@ static NSString* baseUrl = @"";
                [image_display setImage:image];
                [image_display setContentMode:UIViewContentModeScaleAspectFit];
                
-               [weakSelf.contactDetailScrollView addSubview:image_display];
+               [self.contactDetailScrollView addSubview:image_display];
            });
        }];
     }
@@ -613,7 +582,6 @@ static NSString* baseUrl = @"";
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
-        __weak typeof(self) weakSelf = self;
         [_api restPath:restApiPath
                 method:@"GET"
            queryParams:queryParams
@@ -621,16 +589,15 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           ContactViewController* strongSelf = weakSelf;
            NSLog(@"Error getting groups with relation: %@",error);
            
            if (error) {
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf.navigationController popToRootViewControllerAnimated:YES];
+                   [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
            else{
-               [strongSelf.contactGroups removeAllObjects];
+               [self.contactGroups removeAllObjects];
                
                // handle repeat contact-group relationships
                NSMutableArray* tmpGroupIdList = [[NSMutableArray alloc] init];
@@ -650,23 +617,21 @@ static NSString* baseUrl = @"";
                 *  }
                 */
                for (NSDictionary *relationRecord in [responseDict objectForKey:@"record"]) {
-                   @autoreleasepool {
-                       NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_groups_by_contactGroupId"];
-                       NSNumber* contactId = [recordInfo objectForKey:@"contactGroupId"];
-                       if([tmpGroupIdList containsObject:contactId]){
-                           // a different record already related the group-contact pair
-                           continue;
-                       }
-                       [tmpGroupIdList addObject:contactId];
-                       NSString* groupName = [recordInfo objectForKey:@"groupName"];
-                       [strongSelf.contactGroups addObject:groupName];
+                   NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_groups_by_contactGroupId"];
+                   NSNumber* contactId = [recordInfo objectForKey:@"contactGroupId"];
+                   if([tmpGroupIdList containsObject:contactId]){
+                       // a different record already related the group-contact pair
+                       continue;
                    }
+                   [tmpGroupIdList addObject:contactId];
+                   NSString* groupName = [recordInfo objectForKey:@"groupName"];
+                   [self.contactGroups addObject:groupName];
                }
                
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   strongSelf.groupReady = YES;
-                   [strongSelf.groupLock signal];
-                   [strongSelf.groupLock unlock];
+                   self.groupReady = YES;
+                   [self.groupLock signal];
+                   [self.groupLock unlock];
                });
            }
        }];

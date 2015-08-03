@@ -120,9 +120,8 @@ static NSString *baseUrl=@"";
     if(self.queue == nil){
         self.queue = dispatch_queue_create("contactListQueue", NULL);
     }
-    __weak typeof(self) weakSelf = self;
     dispatch_async(self.queue, ^{
-        [weakSelf getContactsListFromServerWithRelation];
+        [self getContactsListFromServerWithRelation];
     });
 }
 
@@ -300,14 +299,12 @@ static NSString *baseUrl=@"";
     NSString* firstLetter = [[searchText substringToIndex:1] uppercaseString];
     NSArray* arrayAtLetter = [self.contactSectionsDictionary objectForKey:firstLetter];
     for(ContactRecord* record in arrayAtLetter){
-        @autoreleasepool {
-            if([record.LastName length] < [searchText length]){
-                continue;
-            }
-            NSString* lastNameSubstring = [record.LastName substringToIndex:[searchText length]];
-            if([lastNameSubstring caseInsensitiveCompare:searchText] == 0){
-                [self.displayContentArray addObject:record];
-            }
+        if([record.LastName length] < [searchText length]){
+            continue;
+        }
+        NSString* lastNameSubstring = [record.LastName substringToIndex:[searchText length]];
+        if([lastNameSubstring caseInsensitiveCompare:searchText] == 0){
+            [self.displayContentArray addObject:record];
         }
     }
     
@@ -358,7 +355,6 @@ static NSString *baseUrl=@"";
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
-        __weak typeof(self) weakSelf = self;
         [_api restPath:restApiPath
                 method:@"GET"
            queryParams:queryParams
@@ -366,7 +362,6 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           ContactListViewController* strongSelf = weakSelf;
            if (error) {
                if(error.code == 400){
                    NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
@@ -374,7 +369,7 @@ static NSString *baseUrl=@"";
                    if([message containsString:@"Invalid relationship"]){
                        NSLog(@"Error: table names in relational calls are case sensetive: %@", message);
                        dispatch_async(dispatch_get_main_queue(),^ (void){
-                           [strongSelf.navigationController
+                           [self.navigationController
                             popToRootViewControllerAnimated:YES];
                        });
                        return;
@@ -383,16 +378,16 @@ static NSString *baseUrl=@"";
                
                NSLog(@"Error getting contacts with relation: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf.navigationController popToRootViewControllerAnimated:YES];
+                   [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
            else{
-               strongSelf.alphabetArray = [[NSMutableArray alloc] init];
-               strongSelf.contactSectionsDictionary = [[NSMutableDictionary alloc] init];
+               self.alphabetArray = [[NSMutableArray alloc] init];
+               self.contactSectionsDictionary = [[NSMutableDictionary alloc] init];
                
-               [strongSelf.displayContentArray removeAllObjects];
-               [strongSelf.contactSectionsDictionary removeAllObjects];
-               [strongSelf.alphabetArray removeAllObjects];
+               [self.displayContentArray removeAllObjects];
+               [self.contactSectionsDictionary removeAllObjects];
+               [self.alphabetArray removeAllObjects];
                
                // handle repeat contact-group relationships
                NSMutableArray* tmpContactIdList = [[NSMutableArray alloc] init];
@@ -422,22 +417,22 @@ static NSString *baseUrl=@"";
                        [tmpContactIdList addObject:contactId];
                        
                        ContactRecord* newRecord = [[ContactRecord alloc] init];
-                       [newRecord setFirstName:[strongSelf removeNull:[recordInfo objectForKey:@"firstName"]]];
-                       [newRecord setLastName:[strongSelf removeNull:[recordInfo objectForKey:@"lastName"]]];
+                       [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"firstName"]]];
+                       [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"lastName"]]];
                        [newRecord setId:[recordInfo objectForKey:@"contactId"]];
-                       [newRecord setNotes:[strongSelf removeNull:[recordInfo objectForKey:@"notes"]]];
-                       [newRecord setSkype:[strongSelf removeNull:[recordInfo objectForKey:@"skype"]]];
-                       [newRecord setTwitter:[strongSelf removeNull:[recordInfo objectForKey:@"twitter"]]];
-                       [newRecord setImageUrl:[strongSelf removeNull:[recordInfo objectForKey:@"imageUrl"]]];
+                       [newRecord setNotes:[self removeNull:[recordInfo objectForKey:@"notes"]]];
+                       [newRecord setSkype:[self removeNull:[recordInfo objectForKey:@"skype"]]];
+                       [newRecord setTwitter:[self removeNull:[recordInfo objectForKey:@"twitter"]]];
+                       [newRecord setImageUrl:[self removeNull:[recordInfo objectForKey:@"imageUrl"]]];
                        
                        if([newRecord.LastName length] > 0){
-                           [strongSelf.displayContentArray addObject:newRecord];
+                           [self.displayContentArray addObject:newRecord];
                            BOOL found = NO;
-                           for(NSString* key in [strongSelf.contactSectionsDictionary allKeys]){
+                           for(NSString* key in [self.contactSectionsDictionary allKeys]){
                                @autoreleasepool {
                                    if([key caseInsensitiveCompare:[newRecord.LastName substringToIndex:1] ] == 0 ){
                                        // contact fits in one of the buckets already in the dictionary
-                                       NSMutableArray* section = [strongSelf.contactSectionsDictionary objectForKey:key];
+                                       NSMutableArray* section = [self.contactSectionsDictionary objectForKey:key];
                                        [section addObject:newRecord];
                                        found = YES;
                                        break;
@@ -447,7 +442,7 @@ static NSString *baseUrl=@"";
                            if(!found){
                                // add new key
                                NSString* key = [[newRecord.LastName substringToIndex:1] uppercaseString];
-                               strongSelf.contactSectionsDictionary[key] = [[NSMutableArray alloc] initWithObjects:newRecord, nil];
+                               self.contactSectionsDictionary[key] = [[NSMutableArray alloc] initWithObjects:newRecord, nil];
                            }
                        }
                    }
@@ -455,40 +450,40 @@ static NSString *baseUrl=@"";
            
                // sort the sections in the dictionary by lastName, firstName
                NSMutableDictionary* tmp = [[NSMutableDictionary alloc] init];
-               @autoreleasepool {
-                   for(NSString* key in [strongSelf.contactSectionsDictionary allKeys]){
-                       @autoreleasepool {
-                           NSMutableArray* unsorted = [strongSelf.contactSectionsDictionary objectForKey:key];
-                           NSArray* sorted = [unsorted sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                               
-                               ContactRecord* one = (ContactRecord*) obj1;
-                               ContactRecord* two = (ContactRecord*) obj2;
-                               if([[one LastName] isEqual:[two LastName]]){
-                                   NSString* first = [one FirstName];
-                                   NSString* second = [two FirstName];
-                                   return [first compare:second];
-                               }
-                               NSString* first = [(ContactRecord*)obj1 LastName];
-                               NSString* second = [(ContactRecord*)obj2 LastName];
+               
+               for(NSString* key in [self.contactSectionsDictionary allKeys]){
+                   @autoreleasepool {
+                       NSMutableArray* unsorted = [self.contactSectionsDictionary objectForKey:key];
+                       NSArray* sorted = [unsorted sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                           
+                           ContactRecord* one = (ContactRecord*) obj1;
+                           ContactRecord* two = (ContactRecord*) obj2;
+                           if([[one LastName] isEqual:[two LastName]]){
+                               NSString* first = [one FirstName];
+                               NSString* second = [two FirstName];
                                return [first compare:second];
-                           }];
-                           tmp[key] = [sorted mutableCopy];
-                       }
+                           }
+                           NSString* first = [(ContactRecord*)obj1 LastName];
+                           NSString* second = [(ContactRecord*)obj2 LastName];
+                           return [first compare:second];
+                       }];
+                       tmp[key] = [sorted mutableCopy];
                    }
                }
-               strongSelf.contactSectionsDictionary = tmp;
                
-               strongSelf.alphabetArray = [[[strongSelf.contactSectionsDictionary allKeys] sortedArrayUsingSelector:@selector(compare:)] mutableCopy];
+               self.contactSectionsDictionary = tmp;
+               
+               self.alphabetArray = [[[self.contactSectionsDictionary allKeys] sortedArrayUsingSelector:@selector(compare:)] mutableCopy];
                
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   if(!strongSelf.viewReady){
-                       strongSelf.viewReady = YES;
-                       [strongSelf.viewLock signal];
-                       [strongSelf.viewLock unlock];
+                   if(!self.viewReady){
+                       self.viewReady = YES;
+                       [self.viewLock signal];
+                       [self.viewLock unlock];
                    }
                    else{
-                       [strongSelf.contactListTableView reloadData];
-                       [strongSelf.contactListTableView setNeedsDisplay];
+                       [self.contactListTableView reloadData];
+                       [self.contactListTableView setNeedsDisplay];
                    }
                });
            }

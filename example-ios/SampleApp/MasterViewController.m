@@ -97,7 +97,6 @@ completionBlock: (void (^)(NSDictionary*, NSError *))completionBlock {
         NSString* contentType = @"application/json";
         NSDictionary* requestBody = @{@"email":self.emailTextField.text,
                                       @"password":self.passwordTextField.text};
-        __weak id weakSelf = self;
         [_api restPath:restApiPath
                 method:@"POST"
            queryParams:queryParams
@@ -105,7 +104,6 @@ completionBlock: (void (^)(NSDictionary*, NSError *))completionBlock {
           headerParams:headerParams
            contentType:contentType
        completionBlock: ^(NSDictionary *responseDict, NSError  *error) {
-           MasterViewController* strongSelf = weakSelf;
            NSLog(@"Error registering new user data: %@",error);
            if (error) {
                dispatch_async(dispatch_get_main_queue(),^ (void){
@@ -116,12 +114,12 @@ completionBlock: (void (^)(NSDictionary*, NSError *))completionBlock {
            else{
                [[NSUserDefaults standardUserDefaults] setValue:baseUrl forKey:kBaseDspUrl];
                [[NSUserDefaults standardUserDefaults] setValue:[responseDict objectForKey:@"session_id"] forKey:kSessionIdKey];
-               [[NSUserDefaults standardUserDefaults] setValue:strongSelf.emailTextField.text forKey:kUserEmail];
-               [[NSUserDefaults standardUserDefaults] setValue:strongSelf.passwordTextField.text forKey:kPassword];
+               [[NSUserDefaults standardUserDefaults] setValue:self.emailTextField.text forKey:kUserEmail];
+               [[NSUserDefaults standardUserDefaults] setValue:self.passwordTextField.text forKey:kPassword];
                [[NSUserDefaults standardUserDefaults] synchronize];
                
                dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [strongSelf showAddressBookViewController];
+                   [self showAddressBookViewController];
                });
            }
        }];

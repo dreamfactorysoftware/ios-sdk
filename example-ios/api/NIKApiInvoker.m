@@ -90,18 +90,14 @@ static NSInteger __LoadingObjectsCount = 0;
     [self startLoad]; // for network activity indicator
     
     NSDate *date = [NSDate date];
-    __weak NIKApiInvoker* weakSelf = [NIKApiInvoker sharedInstance];
-    __block typeof(completionBlock) blockCompletionBlock = completionBlock;
     [NSURLConnection sendAsynchronousRequest:request
                                        queue:self.queue
                            completionHandler:
      ^(NSURLResponse *response, NSData *response_data, NSError *response_error) {
-         [weakSelf stopLoad];
+         [self stopLoad];
          long statusCode = [(NSHTTPURLResponse*)response statusCode];
          if (response_error) {
              completionBlock(nil, response_error);
-             blockCompletionBlock(nil, response_error);
-             blockCompletionBlock = nil;
              return;
          }
          else if (!NSLocationInRange(statusCode, NSMakeRange(200, 99))){
@@ -111,9 +107,8 @@ static NSInteger __LoadingObjectsCount = 0;
                                                                                        options:kNilOptions
                                                                                          error:&response_error]];
              
-             blockCompletionBlock(nil, response_error);
-             blockCompletionBlock = nil;
-             return;
+             completionBlock(nil, response_error);
+            return;
          }
          else {
              NSDictionary* results = [NSJSONSerialization
@@ -124,9 +119,7 @@ static NSInteger __LoadingObjectsCount = 0;
              if ([[NSUserDefaults standardUserDefaults] boolForKey:@"RVBLogging"]) {
                  NSLog(@"fetched results (%f seconds): %@", [[NSDate date] timeIntervalSinceDate:date], results);
              }
-             blockCompletionBlock(results, nil);
-             blockCompletionBlock = nil;
-             results = nil;
+             completionBlock(results, nil);
          }
      }];
 }
@@ -196,17 +189,7 @@ static NSInteger __LoadingObjectsCount = 0;
             }
             else if ([body isKindOfClass:[NIKFile class]]){
                 NIKFile * file = (NIKFile*) body;
-                
-                NSString *boundary = @"Fo0+BAr";
-                // add the body
-                NSMutableData *postBody = [NSMutableData data];
-                [postBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
-                [postBody appendData:[@"Content-Disposition: form-data; name= \"some_name\"\r\n\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
-                [postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"image_file\"; filename=\"%@\"\r\n", file.name] dataUsingEncoding:NSUTF8StringEncoding]];
-                [postBody appendData:[[NSString stringWithFormat:@"Content-Type: %@\r\n\r\n", file.mimeType] dataUsingEncoding:NSUTF8StringEncoding]];
-                [postBody appendData: file.data];
                 data = file.data;
-                [postBody appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
             }
             else if ([body isKindOfClass:[NSArray class]]){
                 data = [NSJSONSerialization dataWithJSONObject:body
@@ -219,7 +202,6 @@ static NSInteger __LoadingObjectsCount = 0;
             [request setValue:postLength forHTTPHeaderField:@"Content-Length"];
             [request setHTTPBody:data];
             
-            // TODO: make sure that XML doesn't mess it up
             [request setValue:contentType forHTTPHeaderField:@"Content-Type"];
         }
     }
