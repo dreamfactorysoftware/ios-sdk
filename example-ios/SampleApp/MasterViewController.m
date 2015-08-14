@@ -104,8 +104,8 @@ completionBlock: (void (^)(NSDictionary*, NSError *))completionBlock {
           headerParams:headerParams
            contentType:contentType
        completionBlock: ^(NSDictionary *responseDict, NSError  *error) {
-           NSLog(@"Error registering new user data: %@",error);
            if (error) {
+               NSLog(@"Error registering new user data: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"" message:@"Error, invalid password" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
                    [message show];

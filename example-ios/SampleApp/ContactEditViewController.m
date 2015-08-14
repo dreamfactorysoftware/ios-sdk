@@ -298,7 +298,7 @@ static NSString* baseUrl = @"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contacts";
+        NSString *tableName = @"contact";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -321,9 +321,9 @@ static NSString* baseUrl = @"";
         }
         
         // build request body
-        NSDictionary *requestBody = @{@"firstName": [self getTextValue:@"First Name" recordId:contactTextfieldId],
-                                      @"lastName":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
-                                      @"imageUrl":filename,
+        NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
+                                      @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
+                                      @"image_url":filename,
                                       @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
                                       @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
                                       @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
@@ -339,17 +339,14 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error adding new contact to server: %@",error);
-           
            if (error) {
+               NSLog(@"Error adding new contact to server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
-               
            }
            else{
-               [self.contactRecord setId:[responseDict objectForKey:@"contactId"]];
+               [self.contactRecord setId:[responseDict objectForKey:@"id"]];
                
                if(![self.imageUrl  isEqual: @""] && self.profileImage != nil){
                    [self createProfileImageFolderOnServer];
@@ -371,7 +368,7 @@ static NSString* baseUrl = @"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships";
+        NSString *tableName = @"contact_group_relationship";
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@/",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
@@ -386,8 +383,8 @@ static NSString* baseUrl = @"";
         // build request body
         // need to put in any extra field-key pair and avoid NSUrl timeout issue
         // otherwise it drops connection
-        NSDictionary *requestBody = @{@"contactGroupId":self.contactGroupId,
-                                      @"contactId":self.contactRecord.Id};
+        NSDictionary *requestBody = @{@"contact_group_id":self.contactGroupId,
+                                      @"contact_id":self.contactRecord.Id};
         
         [_api restPath:restApiPath
                 method:@"POST"
@@ -396,10 +393,8 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error adding contact group relation to server from contact edit: %@", error);
-           
            if (error) {
+               NSLog(@"Error adding contact group relation to server from contact edit: %@", error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -480,14 +475,11 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error putting contact details back up on server: %@",error);
-           
            if (error) {
+               NSLog(@"Error putting contact details back up on server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
-               
            }
            else{
                // head back up only once all the data has been loaded
@@ -530,10 +522,8 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error creating new profile image folder on server: %@",error);
-           
            if (error) {
+               NSLog(@"Error creating new profile image folder on server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    // need to create a new folder for the user's images
                    [self.navigationController popToRootViewControllerAnimated:YES];
@@ -587,10 +577,8 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error putting profile image on server: %@",error);
-           
            if (error) {
+               NSLog(@"Error putting profile image on server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -617,7 +605,7 @@ static NSString* baseUrl = @"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contacts";
+        NSString *tableName = @"contact";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -634,15 +622,15 @@ static NSString* baseUrl = @"";
         // -1 is just a tag given to the object that holds the contact info
         NSNumber* contactTextfieldId = [NSNumber numberWithInt:-1];
         
-        NSDictionary *requestBody = @{@"firstName": [self getTextValue:@"First Name" recordId:contactTextfieldId],
-                                      @"lastName":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
-                                      @"imageUrl":self.contactRecord.ImageUrl,
+        NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
+                                      @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
+                                      @"image_url":self.contactRecord.ImageUrl,
                                       @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
                                       @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
                                       @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
         // update the contact
-        self.contactRecord.FirstName = [requestBody objectForKey:@"firstName"];
-        self.contactRecord.LastName = [requestBody objectForKey:@"lastName"];
+        self.contactRecord.FirstName = [requestBody objectForKey:@"first_name"];
+        self.contactRecord.LastName = [requestBody objectForKey:@"last_name"];
         self.contactRecord.Notes = [requestBody objectForKey:@"notes"];
         self.contactRecord.Twitter = [requestBody objectForKey:@"twitter"];
         self.contactRecord.Skype = [requestBody objectForKey:@"skype"];
@@ -653,8 +641,8 @@ static NSString* baseUrl = @"";
                   body:requestBody
           headerParams:headerParams
            contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               NSLog(@"Error updating contact info with server: %@",error);
                if (error) {
+                   NSLog(@"Error updating contact info with server: %@",error);
                    dispatch_async(dispatch_get_main_queue(),^ (void){
                        [self.navigationController popToRootViewControllerAnimated:YES];
                    });
@@ -712,8 +700,8 @@ static NSString* baseUrl = @"";
                   body:requestBody
           headerParams:headerParams
            contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               NSLog(@"Error updating contact details on server: %@",error);
                if (error) {
+                   NSLog(@"Error updating contact details on server: %@",error);
                    dispatch_async(dispatch_get_main_queue(),^ (void){
                        [self.navigationController popToRootViewControllerAnimated:YES];
                    });

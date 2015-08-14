@@ -126,7 +126,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_groups";
+        NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -148,9 +148,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error getting address book data: %@",error);
-           
            if (error) {
+               NSLog(@"Error getting address book data: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -160,8 +159,8 @@ static NSString *baseUrl=@"";
                
                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
                    GroupRecord *newRecord=[[GroupRecord alloc]init];
-                   [newRecord setId:[recordInfo objectForKey:@"contactGroupId"]];
-                   [newRecord setName:[recordInfo objectForKey:@"groupName"]];
+                   [newRecord setId:[recordInfo objectForKey:@"id"]];
+                   [newRecord setName:[recordInfo objectForKey:@"name"]];
                    [self.addressBookContentArray addObject:newRecord];
                }
                
@@ -183,15 +182,15 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships";
+        NSString *tableName = @"contact_group_relationship";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
-        // create filter to select all contactrelationships records that
+        // create filter to select all contact_group_relationship records that
         // reference the group being deleted
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contactGroupId=%@", [groupId stringValue]];
+        NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", [groupId stringValue]];
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -208,10 +207,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               
-               NSLog(@"Error removing contact group relation: %@",error);
-               
                if (error) {
+                   NSLog(@"Error removing contact group relation: %@",error);
                    dispatch_async(dispatch_get_main_queue(),^ (void){
                        [self.navigationController popToRootViewControllerAnimated:YES];
                    });
@@ -234,7 +231,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_groups";
+        NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -258,10 +255,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error deleting group: %@",error);
-           
            if (error) {
+               NSLog(@"Error deleting group: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });

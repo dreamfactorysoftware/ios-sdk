@@ -1,0 +1,8 @@
+{
+	"api_name":"add_ios",
+	"name":"Address Book iOS",
+	"description":"A sample address book app for iOS running on DreamFactory.",
+	"is_active":1,
+	"url":"",
+	"is_url_external":0
+}

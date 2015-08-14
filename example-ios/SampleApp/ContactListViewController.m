@@ -334,20 +334,20 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships"; // table name
+        NSString *tableName = @"contact_group_relationship"; // table name
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
         // only get contactrelationships for this group
-        NSString *filter = [NSString stringWithFormat:@"contactGroupId=%@", self.groupRecord.Id];
+        NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", self.groupRecord.Id];
         queryParams[@"filter"] = filter;
         
         // request without related would return just {id, groupId, contactId}
         // set the related field to go get the contact records referenced by
         // each contactrelationships record
-        queryParams[@"related"] = @"contacts_by_contactId";
+        queryParams[@"related"] = @"contact_by_contact_id";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
         [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
@@ -367,7 +367,7 @@ static NSString *baseUrl=@"";
                    NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
                    NSString* message = [decode objectForKey:@"message"];
                    if([message containsString:@"Invalid relationship"]){
-                       NSLog(@"Error: table names in relational calls are case sensetive: %@", message);
+                       NSLog(@"Error: table names in relational calls are case sensitive: %@", message);
                        dispatch_async(dispatch_get_main_queue(),^ (void){
                            [self.navigationController
                             popToRootViewControllerAnimated:YES];
@@ -398,7 +398,7 @@ static NSString *baseUrl=@"";
                 *      record:[
                 *          {
                 *              <relation info>,
-                *              contacts_by_contact_id:{
+                *              contact_by_contact_id:{
                 *                  <contact info>
                 *              }
                 *          },
@@ -408,8 +408,8 @@ static NSString *baseUrl=@"";
                 */
                for (NSDictionary *relationRecord in [responseDict objectForKey:@"record"]) {
                    @autoreleasepool {
-                       NSDictionary* recordInfo = [relationRecord objectForKey:@"contacts_by_contactId"];
-                       NSNumber* contactId = [recordInfo objectForKey:@"contactId"];
+                       NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_by_contact_id"];
+                       NSNumber* contactId = [recordInfo objectForKey:@"id"];
                        if([tmpContactIdList containsObject:contactId]){
                            // a different record already related the group-contact pair
                            continue;
@@ -417,13 +417,13 @@ static NSString *baseUrl=@"";
                        [tmpContactIdList addObject:contactId];
                        
                        ContactRecord* newRecord = [[ContactRecord alloc] init];
-                       [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"firstName"]]];
-                       [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"lastName"]]];
-                       [newRecord setId:[recordInfo objectForKey:@"contactId"]];
+                       [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"first_name"]]];
+                       [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"last_name"]]];
+                       [newRecord setId:[recordInfo objectForKey:@"id"]];
                        [newRecord setNotes:[self removeNull:[recordInfo objectForKey:@"notes"]]];
                        [newRecord setSkype:[self removeNull:[recordInfo objectForKey:@"skype"]]];
                        [newRecord setTwitter:[self removeNull:[recordInfo objectForKey:@"twitter"]]];
-                       [newRecord setImageUrl:[self removeNull:[recordInfo objectForKey:@"imageUrl"]]];
+                       [newRecord setImageUrl:[self removeNull:[recordInfo objectForKey:@"image_url"]]];
                        
                        if([newRecord.LastName length] > 0){
                            [self.displayContentArray addObject:newRecord];
@@ -500,14 +500,14 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships";
+        NSString *tableName = @"contact_group_relationship";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
         // remove only contact-group relationships where contact is the contact to remove
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contactId=%@", [contactId stringValue]];
+        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", [contactId stringValue]];
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -524,9 +524,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error removing contact group relation: %@",error);
            if (error) {
+               NSLog(@"Error removing contact group relation: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -554,7 +553,7 @@ static NSString *baseUrl=@"";
         
         // remove only contactinfo for the contact we want to remove
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contactId=%@", [contactId stringValue]];
+        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", [contactId stringValue]];
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -571,9 +570,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error deleting contact info: %@",error);
-           
            if (error) {
+               NSLog(@"Error deleting contact info: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -619,10 +617,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error deleting profile image folder on server: %@",error);
-           
            if (error) {
+               NSLog(@"Error deleting profile image folder on server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    // could not remove folder
                    [self.navigationController popToRootViewControllerAnimated:YES];
@@ -643,7 +639,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contacts";
+        NSString *tableName = @"contact";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -666,11 +662,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error deleting contact: %@",error);
-           
-           
            if (error) {
+               NSLog(@"Error deleting contact: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });

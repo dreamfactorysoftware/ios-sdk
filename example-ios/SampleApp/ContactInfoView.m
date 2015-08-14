@@ -37,6 +37,7 @@
 
 
 - (void) updateFields {
+    [self PutFieldIn:self.record.Type key:@"Type"];
     [self PutFieldIn:self.record.Phone key:@"Phone" ];
     [self PutFieldIn:self.record.Email key:@"Email" ];
     [self PutFieldIn:self.record.Address key:@"Address" ];
@@ -44,7 +45,6 @@
     [self PutFieldIn:self.record.State key:@"State" ];
     [self PutFieldIn:self.record.Zipcode key:@"Zip" ];
     [self PutFieldIn:self.record.Country key:@"Country" ];
-    [self PutFieldIn:self.record.Type key:@"Type"];
     
     [self reloadInputViews];
     [self setNeedsDisplay];
@@ -55,27 +55,27 @@
 }
 
 - (void) updateRecord {
+    self.record.Type = [self getTextValue:@"Type" ];
+    self.record.Phone = [self getTextValue:@"Phone" ];
+    self.record.Email = [self getTextValue:@"Email" ];
     self.record.Address = [self getTextValue:@"Address" ];
     self.record.City = [self getTextValue:@"City" ];
-    self.record.Country = [self getTextValue:@"Country" ];
-    self.record.Email = [self getTextValue:@"Email" ];
-    self.record.Phone = [self getTextValue:@"Phone" ];
     self.record.State = [self getTextValue:@"State" ];
     self.record.Zipcode = [self getTextValue:@"Zip" ];
-    self.record.Type = [self getTextValue:@"Type" ];
+    self.record.Country = [self getTextValue:@"Country" ];
 }
 
 - (NSDictionary*) buildToDictionary{
-    NSDictionary* dict = @{@"infoId":self.record.Id,
-                           @"address":self.record.Address,
-                           @"contactId":self.record.ContactId ,
-                           @"city":self.record.City,
-                           @"email":self.record.Email,
+    NSDictionary* dict = @{@"id":self.record.Id,
+                           @"contact_id":self.record.ContactId,
+                           @"info_type":self.record.Type,
                            @"phone":self.record.Phone,
+                           @"email":self.record.Email,
+                           @"address":self.record.Address,
+                           @"city":self.record.City,
                            @"state":self.record.State,
                            @"zip":self.record.Zipcode,
-                           @"country":self.record.Country,
-                           @"infoType":self.record.Type
+                           @"country":self.record.Country
                            };
     return dict;
 }

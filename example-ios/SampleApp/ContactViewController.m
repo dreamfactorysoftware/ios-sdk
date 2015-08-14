@@ -407,7 +407,7 @@ static NSString* baseUrl = @"";
         
         // get the contact records
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contactId=%@", contact_record.Id];
+        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", contact_record.Id];
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -424,9 +424,8 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error getting contact info: %@",error);
            if (error) {
+               NSLog(@"Error getting contact info: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -439,21 +438,21 @@ static NSString* baseUrl = @"";
                NSMutableArray* existingIds = [[NSMutableArray alloc] init];
                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
                    @autoreleasepool {
-                       NSNumber* recordId = [recordInfo objectForKey:@"infoId"];
+                       NSNumber* recordId = [recordInfo objectForKey:@"id"];
                        if([existingIds containsObject:recordId]){
                            continue;
                        }
                        ContactDetailRecord* new_record = [[ContactDetailRecord alloc] init];
-                       [new_record setId:[recordInfo objectForKey:@"infoId"]];
+                       [new_record setId:[recordInfo objectForKey:@"id"]];
                        [new_record setAddress:[self removeNull:[recordInfo objectForKey:@"address"]]];
                        [new_record setCity :[self removeNull:[recordInfo objectForKey:@"city"]]];
                        [new_record setCountry:[self removeNull:[recordInfo objectForKey:@"country"]]];
                        [new_record setEmail:[self removeNull:[recordInfo objectForKey:@"email"]]];
-                       [new_record setType:[self removeNull:[recordInfo objectForKey:@"infoType"]]];
+                       [new_record setType:[self removeNull:[recordInfo objectForKey:@"info_type"]]];
                        [new_record setPhone:[self removeNull:[recordInfo objectForKey:@"phone"]]];
                        [new_record setState:[self removeNull:[recordInfo objectForKey:@"state"]]];
                        [new_record setZipcode:[self removeNull:[recordInfo objectForKey:@"zip"]]];
-                       [new_record setContactId:[recordInfo objectForKey:@"contactId"]];
+                       [new_record setContactId:[recordInfo objectForKey:@"contact_id"]];
                        [array addObject:new_record];
                    }
                }
@@ -561,20 +560,20 @@ static NSString* baseUrl = @"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships"; // table name
+        NSString *tableName = @"contact_group_relationship"; // table name
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
         // only get contactrelationships for this contact
-        NSString *filter = [NSString stringWithFormat:@"contactId=%@", self.contactRecord.Id];
+        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", self.contactRecord.Id];
         queryParams[@"filter"] = filter;
         
         // request without related would return just {id, groupId, contactId}
         // set the related field to go get the group records referenced by
         // each contactrelationships record
-        queryParams[@"related"] = @"contact_groups_by_contactGroupId";
+        queryParams[@"related"] = @"contact_group_by_contact_group_id";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
         [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
@@ -589,9 +588,8 @@ static NSString* baseUrl = @"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error getting groups with relation: %@",error);
-           
            if (error) {
+               NSLog(@"Error getting groups with relation: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -608,7 +606,7 @@ static NSString* baseUrl = @"";
                 *      record:[
                 *          {
                 *              <relation info>,
-                *              contact_groups_by_contactGroupId:{
+                *              contact_group_by_contactGroupId:{
                 *                  <group info>
                 *              }
                 *          },
@@ -617,14 +615,14 @@ static NSString* baseUrl = @"";
                 *  }
                 */
                for (NSDictionary *relationRecord in [responseDict objectForKey:@"record"]) {
-                   NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_groups_by_contactGroupId"];
-                   NSNumber* contactId = [recordInfo objectForKey:@"contactGroupId"];
+                   NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_group_by_contact_group_id"];
+                   NSNumber* contactId = [recordInfo objectForKey:@"id"];
                    if([tmpGroupIdList containsObject:contactId]){
                        // a different record already related the group-contact pair
                        continue;
                    }
                    [tmpGroupIdList addObject:contactId];
-                   NSString* groupName = [recordInfo objectForKey:@"groupName"];
+                   NSString* groupName = [recordInfo objectForKey:@"name"];
                    [self.contactGroups addObject:groupName];
                }
                

@@ -77,10 +77,8 @@
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error registering new user data: %@",error);
-           
            if (error) {
+               NSLog(@"Error registering new user data: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });

@@ -311,7 +311,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contacts"; // table name
+        NSString *tableName = @"contact"; // table name
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -319,7 +319,7 @@ static NSString *baseUrl=@"";
         // only need to get the contactId and full contact name
         // set the fields param to give us just the fields we need
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"fields"] = @"contactId,firstName,lastName";
+        queryParams[@"fields"] = @"id,first_name,last_name";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
         [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
@@ -335,8 +335,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error getting all the contacts data: %@",error);
            if (error) {
+               NSLog(@"Error getting all the contacts data: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -345,9 +345,9 @@ static NSString *baseUrl=@"";
                // put the contact ids into an array
                for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
                    ContactRecord* newRecord = [[ContactRecord alloc] init];
-                   [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"firstName"]]];
-                   [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"lastName"]]];
-                   [newRecord setId:[recordInfo objectForKey:@"contactId"]];
+                   [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"first_name"]]];
+                   [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"last_name"]]];
+                   [newRecord setId:[recordInfo objectForKey:@"id"]];
                    
                    if([newRecord.LastName length] > 0){
                        BOOL found = NO;
@@ -413,7 +413,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_groups"; // rest path
+        NSString *tableName = @"contact_group"; // rest path
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
@@ -426,7 +426,7 @@ static NSString *baseUrl=@"";
         
         NSString* contentType = @"application/json";
         // build request body, just need to post the name
-        NSDictionary *requestBody = @{@"groupName": self.groupNameTextField.text};
+        NSDictionary *requestBody = @{@"name": self.groupNameTextField.text};
         
         // the DB success response will contain the id of the new record
         [_api restPath:restApiPath
@@ -436,16 +436,15 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           NSLog(@"Error adding group to server: %@",error);
            if (error) {
+               NSLog(@"Error adding group to server: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
            else{
                // get the id of the new group, then add the relations
-               [self addGroupContactRelations:[responseDict objectForKey:@"contactGroupId"]];
+               [self addGroupContactRelations:[responseDict objectForKey:@"id"]];
            }
        }];
     }
@@ -470,7 +469,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships"; // rest path
+        NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -484,8 +483,8 @@ static NSString *baseUrl=@"";
         NSMutableArray* records = [[NSMutableArray alloc] init];
         
         for(NSNumber* contactId in self.selectedRows){
-            [records addObject:@{@"contactGroupId":groupId,
-                                 @"contactId":contactId
+            [records addObject:@{@"contact_group_id":groupId,
+                                 @"contact_id":contactId
                                  }];
         }
         
@@ -513,9 +512,8 @@ static NSString *baseUrl=@"";
           headerParams:headerParams
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error adding contact group relation to server from group add: %@",error);
-           
            if (error) {
+               NSLog(@"Error adding contact group relation to server from group add: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
@@ -544,7 +542,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db";// your service name here
-        NSString *tableName = @"contact_groups";
+        NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -559,7 +557,7 @@ static NSString *baseUrl=@"";
         
         NSString* contentType = @"application/json";
         
-        NSDictionary *requestBody = @{@"groupName":self.groupNameTextField.text};
+        NSDictionary *requestBody = @{@"name":self.groupNameTextField.text};
         
         // update the contact
         self.groupRecord.Name = self.groupNameTextField.text;
@@ -570,8 +568,8 @@ static NSString *baseUrl=@"";
                   body:requestBody
           headerParams:headerParams
            contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               NSLog(@"Error updating contact info with server: %@",error);
                if (error) {
+                   NSLog(@"Error updating contact info with server: %@",error);
                    dispatch_async(dispatch_get_main_queue(),^ (void){
                        [self.navigationController popToRootViewControllerAnimated:YES];
                    });
@@ -593,14 +591,14 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships"; // rest path
+        NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
         
         // create filter to get only the contact in the group
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contactGroupId=%@", self.groupRecord.Id];
+        NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", self.groupRecord.Id];
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
@@ -616,9 +614,8 @@ static NSString *baseUrl=@"";
                   body:requestBody
           headerParams:headerParams
            contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               
-               NSLog(@"Error getting contact group relations list: %@",error);
                if (error) {
+                   NSLog(@"Error getting contact group relations list: %@",error);
                    dispatch_async(dispatch_get_main_queue(),^ (void){
                        [self.navigationController popToRootViewControllerAnimated:YES];
                    });
@@ -626,8 +623,8 @@ static NSString *baseUrl=@"";
                }else{
                    [self.contactsAlreadyInGroupContentsArray removeAllObjects];
                    for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
-                       [self.contactsAlreadyInGroupContentsArray addObject: [recordInfo objectForKey:@"contactId"]];
-                       [self.selectedRows addObject:[recordInfo objectForKey:@"contactId"]];
+                       [self.contactsAlreadyInGroupContentsArray addObject: [recordInfo objectForKey:@"contact_id"]];
+                       [self.selectedRows addObject:[recordInfo objectForKey:@"contact_id"]];
                    }
                    
                    dispatch_async(dispatch_get_main_queue(),^ (void){
@@ -655,7 +652,7 @@ static NSString *baseUrl=@"";
         
         // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
         NSString *serviceName = @"db"; // your service name here
-        NSString *tableName = @"contact_relationships"; // rest path
+        NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -664,7 +661,7 @@ static NSString *baseUrl=@"";
         // one value for groupId, but many values for contactId
         // instead of making a long SQL query, change what we use as identifiers
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"id_field"] = @"contactGroupId,contactId";
+        queryParams[@"id_field"] = @"contact_group_id,contact_id";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
         [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
@@ -687,7 +684,7 @@ static NSString *baseUrl=@"";
          */
         
         for(NSNumber* recordId in self.contactsAlreadyInGroupContentsArray){
-            [requestRecordsArray addObject:@{@"contactGroupId":self.groupRecord.Id, @"contactId":recordId}];
+            [requestRecordsArray addObject:@{@"contact_group_id":self.groupRecord.Id, @"contact_id":recordId}];
         }
         NSDictionary* requestBody = @{@"record":requestRecordsArray};
         
