@@ -1,120 +1,30 @@
-##DreamFactory iOS SDK
 
-###Getting Started
+## DreamFactory iOS API and sample application
 
-As always, clone this repo
+The DreamFactory iOS API provides easy access to native REST services available in DreamFactory and to other remote web services that you make available in DreamFactory.
 
-####Importing the Xcode Project
+You can find the DreamFactory iOS API and documentation [here](example-ios/api/).
 
-Once your repo is cloned , open SampleApp/TodoList.xcodeproj
+A sample iOS Objective-C application that uses the DreamFactory API is located in [example-ios/](example-ios).
 
-####Basic Usage
+The live API documentation included in the DreamFactory Admin Console is a great way to learn how the DreamFactory REST API works.
+Check out how to use the live API docs [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/API-Docs). You can view and test an example of the live API docs [here](https://dsp-sandman1.cloud.dreamfactory.com/swagger/).
 
-#####User  Login
+## Quickstart
 
-```objectivec
+####Getting DreamFactory on your local machine
 
- 
-    //SWGUserApi 
-	// Creating a user api object
-	SWGUserApi *userApi=[[SWGUserApi alloc]init];
-        [userApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"]; 
-    // set app name header
-        [userApi setBaseUrlPath:”your dsp url”];
-        
-	// create login request
-        SWGLogin *login=[[SWGLogin alloc]init];
-        [login setEmail:”login email”];
-        [login setPassword:”password”];
+To download and install DreamFactory, follow the instructions [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/Usage-Options). Alternatively, you can create a [free hosted developer account](http://www.dreamfactory.com) at www.dreamfactory.com if you don't want to install DreamFactory locally.
 
-	//For complete example please check MasterViewController.m
+Launch the DreamFactory Admin Console by going to localhost:8080 in your favorite browser and logging in. 
 
-    SWGUserApi *userApi=[[SWGUserApi alloc]init];
-        [userApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        if(self.urlTextField.text.length>0)
-        [userApi setBaseUrlPath:self.urlTextField.text];
-        
-        SWGLogin *login=[[SWGLogin alloc]init];
-        [login setEmail:self.emailTextField.text];
-        [login setPassword:self.passwordTextField.text];
-        
-        
-        [self.progressView setHidden:NO]; 
-        [self.activityIndicator startAnimating];
-        
-        [userApi loginWithCompletionBlock:login completionHandler:^(SWGSession *output, NSError *error) {
-            NSLog(@"Error %@",error);
-            NSLog(@"OutPut %@",output._id);
-            dispatch_async(dispatch_get_main_queue(),^ (void){
-                [self.progressView setHidden:YES];
-                [self.activityIndicator stopAnimating];
-                if(output){
-                    NSString *SessionId=output.session_id;
-                    if(self.urlTextField.text.length>0)
-                    [[NSUserDefaults standardUserDefaults] setValue:baseDspUrl forKey:kBaseDspUrl];
-                    [[NSUserDefaults standardUserDefaults] setValue:SessionId forKey:kSessionIdKey];
-                    [[NSUserDefaults standardUserDefaults] setValue:login.email forKey:kUserEmail];
-                    [[NSUserDefaults standardUserDefaults] setValue:login.password forKey:kPassword];
-                    [[NSUserDefaults standardUserDefaults] synchronize];
-                    [self displayInitialViewController];
-                }else{
-                
-                    UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-                    [message show];
-                }
-                
-            });
+Navigate to the Config tab and click on CORS in the left sidebar. To enable [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing) for development purposes, click add, set the host to *, allow all HTTP verbs and check the enabled box. Click update when you are done. More info on setting up CORS is [here](https://github.com/dreamfactorysoftware/dsp-core/wiki/CORs-Configuration).
 
-        }]; 
-	
-```
-### Working with the DB Service
-```objectivec
+####Running the example iOS Address Book app
+From the Apps menu in the DreamFactory Admin Console, click the import tab and import the Address Book package from "https://raw.github.com/dreamfactorysoftware/ios-sdk/master/example-ios/package/add_ios.dfpkg". The Address Book package contains application descriptions, schemas and data used by the iOS application. Set the storage service to local file storage and the storage container to applications. Click the Update button when done.
 
+Almost there! Download this repo to your local machine. Open and run the project in Xcode. You can log in to the app with the username and password you used for the DreamFactory Admin Console. 
 
-//SWGDBApi
-	// create a SWGDBApi object similar to above
-	SWGDbApi *swgDbApi=[[SWGDbApi alloc]init];
-	[swgDbApi setBaseUrlPath:baseUrl];
-	[swgDbApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-	[swgDbApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-	[swgDbApi createRecordWithCompletionBlock:kTableName _id:@"" body:record fields:nil id_field:nil id_type:nil related:@"" completionHandler:^(SWGRecordResponse *output, NSError *error) 	{
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self showProgressView:NO];
-        });
-        if (error) {
-            UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"Error" message:error.localizedDescription delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
-            [message show];
-        }else{
-            TODORecord *newRecord=[[TODORecord alloc]init];
-            [newRecord setRecord_Id:output._id];
-            [newRecord setRecord_Task:record.name];
-            [newRecord setRecord_Complete:output._complete];
-            [self.todoListContentArray addObject:newRecord];
-            dispatch_async(dispatch_get_main_queue(),^ (void){
-                [self.todoListTableView reloadData];
-                [self.todoListTableView setNeedsDisplay];
-            });
-        }
-        
-    }];
-```
-####Working with Files
-```objectivec
+More info on the DreamFactory iOS API can be found [here](example-ios/api/). 
 
-//SWGFilesApi
-	//Here is how to use File API 
-       // create a SWGFilesApi api object similar to above
-       SWGFilesApi *fileApi = [[SWGFilesApi alloc] init];
-    	[fileApi addHeader:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-    	[fileApi addHeader:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
-    	[fileApi setBaseUrlPath:baseDSPUrl];
-    	[fileApi createFileWithCompletionBlock:@"applications" file_path:[NSString stringWithFormat:@"%@/%@",kFolderName,name] check_exist:nil NIKFilebody:nikFile completionHandler:^(SWGFileResponse *output, NSError *error) {
-        dispatch_async(dispatch_get_main_queue(),^ (void){
-            [self showProgressView:NO];
-        });
-        NSLog(@"output %@",output);
-        NSLog(@"Error %@",error);
-
-    }];
-```
+More detailed instructions and a list of API calls used by the "Address Book" sample application are located in the readme [here](example-ios/SampleApp#sampleapp).
