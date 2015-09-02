@@ -6,7 +6,7 @@
 // change these values to match your DSP
 #define kApplicationName @"add_ios"
 #define kSessionIdKey @"SessionId"
-#define kBaseDspUrl @"http://localhost:8888/rest"
+#define kBaseDspUrl @"http://localhost:8080/rest"
 #define kUserEmail @"UserEmail"
 #define kPassword @"UserPassword"
 #define kContainerName @"applications"
