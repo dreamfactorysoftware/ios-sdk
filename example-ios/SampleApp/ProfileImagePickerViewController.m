@@ -27,9 +27,9 @@ static NSString *baseUrl=@"";
 - (void) viewDidLoad {
     [super viewDidLoad];
     
-    // get the base URL (<url to DSP>/rest)
-    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
-    baseUrl=baseDSPUrl;
+    // get the base URL (<base instance url>/api/v2)
+    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
+    baseUrl=baseInstanceUrl;
     
     self.imageListContentArray = [[NSMutableArray alloc] init];
     [self getImageListFromServer];
@@ -122,20 +122,20 @@ static NSString *baseUrl=@"";
 }
 
 - (void) getImageListFromServer {
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     if(self.record == nil){
         return;
     }
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/files/container/application/<folder path>/
-        // here the folder path is profile_images/contactId/
-        NSString* containerName = @"applications";
-        NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", [self.record.Id stringValue]];
+        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/
+        // here the folder path is contactId/
+        NSString* containerName = kContainerName;
+        NSString* folderPath = [NSString stringWithFormat:@"/%@", [self.record.Id stringValue]];
         // note that you need the extra '/' here at the end of the api path because you are
         // targeting a folder not a file
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/",baseUrl,containerName, kApplicationName, folderPath];
+        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/",baseUrl,containerName, folderPath];
         NSLog(@"\nAPI path: %@\n", restApiPath);
         
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
@@ -145,8 +145,8 @@ static NSString *baseUrl=@"";
         
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         NSDictionary* requestBody = nil;

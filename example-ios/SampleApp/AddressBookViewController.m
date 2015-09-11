@@ -24,9 +24,9 @@ static NSString *baseUrl=@"";
 - (void) viewDidLoad{
     [super viewDidLoad];
     
-    // get the base URL (<url to DSP>/rest)
-    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
-    baseUrl=baseDSPUrl;
+    // get the base URL (<base instance url>/api/v2)
+    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
+    baseUrl=baseInstanceUrl;
     
     self.addressBookContentArray = [[NSMutableArray alloc] init];
 }
@@ -118,14 +118,14 @@ static NSString *baseUrl=@"";
 - (void) getAddressBookContentFromServer{
     // get all the groups
     
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
@@ -134,10 +134,10 @@ static NSString *baseUrl=@"";
         // passing no query params will get all the records from a table
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
         
-        // header has session id and application name to validate access
+        // header has session token and application api key to validate access
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
@@ -157,7 +157,7 @@ static NSString *baseUrl=@"";
            else{
                [self.addressBookContentArray removeAllObjects];
                
-               for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
+               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
                    GroupRecord *newRecord=[[GroupRecord alloc]init];
                    [newRecord setId:[recordInfo objectForKey:@"id"]];
                    [newRecord setName:[recordInfo objectForKey:@"name"]];
@@ -175,13 +175,13 @@ static NSString *baseUrl=@"";
 
 - (void) removeContactGroupRelationWithGroupId:(NSNumber*) groupId{
     // remove all contact-group relations for the group being deleted
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group_relationship";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -194,8 +194,8 @@ static NSString *baseUrl=@"";
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
@@ -224,13 +224,13 @@ static NSString *baseUrl=@"";
 - (void) removeGroupFromServer:(NSNumber*) groupId{
     
     // Get the relation all at once
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -242,8 +242,8 @@ static NSString *baseUrl=@"";
         queryParams[@"ids"] = [groupId stringValue];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         id requestBody = nil;

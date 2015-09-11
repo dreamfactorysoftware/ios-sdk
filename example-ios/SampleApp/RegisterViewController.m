@@ -50,25 +50,27 @@
     if(self.emailTextField.text.length>0 && self.passwordTextField.text.length>0){
         // use the generic API invoker
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        NSString *baseUrl = kBaseDspUrl; // <DSP url>/rest
+        NSString *baseUrl = kBaseInstanceUrl; // <base instance url>/api/v2
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"user"; // your service name here
-        NSString *tableName = @"register"; // rest path
-        NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
+        // build rest path for request
+        NSString *resourceName = @"user/register";
+        NSString *restApiPath = [NSString stringWithFormat:@"%@/%@",baseUrl,resourceName];
         NSLog(@"\n%@\n", restApiPath);
         
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // also log in (get session id) when registering
+        // also log in (get session token) when registering
         queryParams[@"login"] = [NSNumber numberWithBool:TRUE];
         
-        // header has session id and application name to validate access
+        // header has session token and application api key to validate access
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
         
         NSString* contentType = @"application/json";
         NSDictionary* requestBody = @{@"email":self.emailTextField.text,
-                                      @"new_password":self.passwordTextField.text};
+                                      @"password":self.passwordTextField.text,
+                                      @"first_name":@"Address",
+                                      @"last_name":@"Book",
+                                      @"name":@"Address Book User"};
         
         [_api restPath:restApiPath
                 method:@"POST"
@@ -83,8 +85,8 @@
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }else{
-               [[NSUserDefaults standardUserDefaults] setValue:baseUrl forKey:kBaseDspUrl];
-               [[NSUserDefaults standardUserDefaults] setValue:[responseDict objectForKey:@"session_id"] forKey:kSessionIdKey];
+               [[NSUserDefaults standardUserDefaults] setValue:baseUrl forKey:kBaseInstanceUrl];
+               [[NSUserDefaults standardUserDefaults] setValue:[responseDict objectForKey:@"session_token"] forKey:kSessionTokenKey];
                [[NSUserDefaults standardUserDefaults] setValue:self.emailTextField.text forKey:kUserEmail];
                [[NSUserDefaults standardUserDefaults] setValue:self.passwordTextField.text forKey:kPassword];
                [[NSUserDefaults standardUserDefaults] synchronize];
