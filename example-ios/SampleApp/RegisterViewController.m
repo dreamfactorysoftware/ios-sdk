@@ -80,7 +80,7 @@
            contentType:contentType
        completionBlock:^(NSDictionary *responseDict, NSError *error) {
            if (error) {
-               NSLog(@"Error registering new user data: %@",error);
+               NSLog(@"Error registering new user: %@",error);
                dispatch_async(dispatch_get_main_queue(),^ (void){
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
