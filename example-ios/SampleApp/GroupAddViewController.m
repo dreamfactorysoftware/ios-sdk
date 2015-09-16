@@ -39,9 +39,9 @@ static NSString *baseUrl=@"";
 - (void) viewDidLoad{
     [super viewDidLoad];
     
-    // make sure we have the base URL for our DSP
-    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
-    baseUrl=baseDSPUrl;
+    // make sure we have the base URL for our instance
+    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
+    baseUrl=baseInstanceUrl;
     
     [self.groupNameTextField setValue:[UIColor colorWithRed:180/255.0 green:180/255.0 blue:180/255.0 alpha:1.0] forKeyPath:@"_placeholderLabel.textColor"];
     
@@ -82,8 +82,8 @@ static NSString *baseUrl=@"";
 }
 
 - (void) prefetch {
-    NSString  *baseDSPUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseDspUrl];
-    baseUrl=baseDSPUrl;
+    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
+    baseUrl=baseInstanceUrl;
     
     self.displayContentArray = [[NSMutableArray alloc] init];
     self.contactsAlreadyInGroupContentsArray = [[NSMutableArray alloc]init];
@@ -302,15 +302,15 @@ static NSString *baseUrl=@"";
 - (void) getContactListFromServer{
     // get all the contacts in the database
     
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         
         // get shared instance
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact"; // table name
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -322,8 +322,8 @@ static NSString *baseUrl=@"";
         queryParams[@"fields"] = @"id,first_name,last_name";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
@@ -343,7 +343,7 @@ static NSString *baseUrl=@"";
            }
            else{
                // put the contact ids into an array
-               for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
+               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
                    ContactRecord* newRecord = [[ContactRecord alloc] init];
                    [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"first_name"]]];
                    [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"last_name"]]];
@@ -406,13 +406,13 @@ static NSString *baseUrl=@"";
 
 - (void) addNewGroupToServer {
     // created a new group, add it to the server
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group"; // rest path
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
         NSLog(@"\n%@\n", restApiPath);
@@ -420,8 +420,8 @@ static NSString *baseUrl=@"";
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         
         NSString* contentType = @"application/json";
@@ -462,13 +462,13 @@ static NSString *baseUrl=@"";
         return;
     }
     
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -477,8 +477,8 @@ static NSString *baseUrl=@"";
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSMutableArray* records = [[NSMutableArray alloc] init];
         
@@ -503,7 +503,7 @@ static NSString *baseUrl=@"";
          *      ]
          *  }
          */
-        NSDictionary *requestBody = @{@"record": records};
+        NSDictionary *requestBody = @{@"resource": records};
         
         [_api restPath:restApiPath
                 method:@"POST"
@@ -535,13 +535,13 @@ static NSString *baseUrl=@"";
         return;
     }
     
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db";// your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group";
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -549,11 +549,12 @@ static NSString *baseUrl=@"";
         
         // set the id of the contact we are looking at
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
+        NSString *bbbb = [self.groupRecord.Id stringValue];
         queryParams[@"ids"] = [self.groupRecord.Id stringValue];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         
@@ -584,13 +585,13 @@ static NSString *baseUrl=@"";
 
 - (void) getContactGroupRelationListFromServer {
     // get the list of contacts already in the group
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -602,8 +603,8 @@ static NSString *baseUrl=@"";
         queryParams[@"filter"] = filter;
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         id requestBody = nil;
@@ -622,7 +623,7 @@ static NSString *baseUrl=@"";
                    
                }else{
                    [self.contactsAlreadyInGroupContentsArray removeAllObjects];
-                   for (NSDictionary *recordInfo in [responseDict objectForKey:@"record"]) {
+                   for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
                        [self.contactsAlreadyInGroupContentsArray addObject: [recordInfo objectForKey:@"contact_id"]];
                        [self.selectedRows addObject:[recordInfo objectForKey:@"contact_id"]];
                    }
@@ -645,13 +646,13 @@ static NSString *baseUrl=@"";
         return;
     }
     
-    NSString  *swgSessionId=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionIdKey];
+    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
     
-    if (swgSessionId.length>0) {
+    if (swgSessionToken.length>0) {
         NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
         
-        // build rest path for request, form is <url to DSP>/rest/serviceName/tableName
-        NSString *serviceName = @"db"; // your service name here
+        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
+        NSString *serviceName = kDbServiceName;
         NSString *tableName = @"contact_group_relationship"; // rest path
         
         NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
@@ -664,8 +665,8 @@ static NSString *baseUrl=@"";
         queryParams[@"id_field"] = @"contact_group_id,contact_id";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-        [headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
         
         NSString* contentType = @"application/json";
         
@@ -673,7 +674,7 @@ static NSString *baseUrl=@"";
         /*
          * Form of request is:
          *  {
-         *      "record":[
+         *      "resource":[
          *          {
          *              "contactGroupId":id,
          *              "contactId":id
@@ -686,7 +687,7 @@ static NSString *baseUrl=@"";
         for(NSNumber* recordId in self.contactsAlreadyInGroupContentsArray){
             [requestRecordsArray addObject:@{@"contact_group_id":self.groupRecord.Id, @"contact_id":recordId}];
         }
-        NSDictionary* requestBody = @{@"record":requestRecordsArray};
+        NSDictionary* requestBody = @{@"resource":requestRecordsArray};
         
         [_api restPath:restApiPath
                 method:@"DELETE"

@@ -19,11 +19,11 @@
  * primary way to access and use the API
  * builds and sends an async NSUrl request
  *
- *  @param path url to service, general form is <base dsp url>/rest/<service>/<path>
+ *  @param path url to service, general form is <base instance url>/api/v2/<service>/<path>
  *  @param method http verb
  *  @param querryParams varies by call, can be put into path instead of here
  *  @param body request body, varies by call
- *  @param headerParams user should pass in the app name and a session ID
+ *  @param headerParams user should pass in the app api key and a session token
  *  @param contentType json or xml
  *  @param completionBlock block to be executed once call is done
  */
@@ -44,11 +44,11 @@
  * This will play nice if you want to roll your own set up or use a
  * third party library like AFNetworking to send the REST requests
  *
- *  @param path url to service, general form is <base dsp url>/rest/<service>/<path>
+ *  @param path url to service, general form is <base instance url>/api/v2/<service>/<path>
  *  @param method http verb
  *  @param querryParams varies by call, can be put into path instead of here
  *  @param body request body, varies by call
- *  @param headerParams user should pass in the app name and a session ID
+ *  @param headerParams user should pass in the app api key and a session token
  *  @param contentType json or xml
  *  @param completionBlock block to be executed once call is done
  */
