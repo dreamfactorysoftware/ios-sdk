@@ -56,7 +56,7 @@ The DreamFactory iOS API is a super light wrapper on NSUrl HTTP requests. All of
 
 The general form of a DreamFactory REST API call is: 
 
-`<rest-verb> http[s]://<server-name>/rest/[<service-api-name>]/[<resource-path>][?<param-name>=<param-value>]`
+`<rest-verb> http[s]://<server-name>/api/v2/[<service-api-name>]/[<resource-path>][?<param-name>=<param-value>]`
 
 The iOS API format is: 
 
@@ -71,17 +71,17 @@ The iOS API format is:
 ```
 
 Breaking down each parameter:
-  - **path** Holds the value of `http[s]://<server-name>/rest/[<service-api-name>]/[<resource-path>]` from the generic call. You can include the query parameters here. However, it is easier and cleaner to pass in the query parameters as a dictionary than it is to format them into the url. 
+  - **path** Holds the value of `http[s]://<server-name>/api/v2/[<service-api-name>]/[<resource-path>]` from the generic call. You can include the query parameters here. However, it is easier and cleaner to pass in the query parameters as a dictionary than it is to format them into the url. 
   - **method** The REST verb.
   - **queryParams** Holds the query parameters.
   - **body** Request body, usually  a dictionary, array or NIKFile.
-  - **headerParams** Users using 1.* need to include the session id and the application name.
+  - **headerParams** Users using 1.* need to include the session token and the application PI key.
   - **contentType** Either json or xml.
   - **completionBlock** Block to be run once the request is completed. 
   
 ### Examples of log in and registration: 
 ``` Objective-C
-// build rest path for request, form is <url to server>/rest/serviceName/resourcePath
+// build rest path for request, form is <url to server>/api/v2/serviceName/resourcePath
 NSString *serviceName = @"user"; // your service name here
 NSString *resourcePath = @"session"; // rest path
 NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, resourcePath];
@@ -94,19 +94,19 @@ NSDictionary* requestBody = @{@"email":self.emailTextField.text,
 
 #####all records in table: 
 ```Objective-C
-// build rest path for request, form is <url to server>/rest/serviceName/tableName
+// build rest path for request, form is <url to server>/api/v2/serviceName/tableName
 NSString *serviceName = @"db"; // your service name here
-NSString *tableName = @"contact_groups";
+NSString *tableName = @"contact_group";
 
 NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
 
 // passing no query params will get all the records from a table
 NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
 
-// header has session id and application name to validate access
+// header has session token and application API key to validate access
 NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-[headerParams setObject:kApplicationName forKey:@"X-DreamFactory-Application-Name"];
-[headerParams setObject:swgSessionId forKey:@"X-DreamFactory-Session-Token"];
+[headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
+[headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
 
 NSString* contentType = @"application/json";
 id requestBody = nil; 
@@ -163,7 +163,7 @@ for(UIView* view in [self.contactEditScrollView subviews]){
     }
 }
 // make an array out of each record to update, then send the whole array
-NSDictionary *requestBody = @{@"record": records};
+NSDictionary *requestBody = @{@"resource": records};
 ```
 
 ###Examples of creating records
@@ -194,7 +194,7 @@ for(NSNumber* contactId in self.selectedRows){
  *      ]
  *  }
  */
-NSDictionary *requestBody = @{@"record": records};
+NSDictionary *requestBody = @{@"resource": records};
 ```
 
 ### Examples of deleting records
@@ -227,7 +227,7 @@ NSMutableArray* requestRecordsArray = [[NSMutableArray alloc] init];
 /*
  * Form of request is:
  *  {
- *      "record":[
+ *      "resource":[
  *          {
  *              "contactGroupId":id,
  *              "contactId":id
@@ -241,7 +241,7 @@ for(NSNumber* recordId in self.contactsAlreadyInGroupContentsArray){
     [requestRecordsArray addObject:@{@"contactGroupId":self.groupRecord.Id, 
                                      @"contactId":recordId}];
 }
-NSDictionary* requestBody = @{@"record":requestRecordsArray};
+NSDictionary* requestBody = @{@"resource":requestRecordsArray};
 ```
 
 ### Examples of working with files and folders
@@ -249,18 +249,15 @@ NSDictionary* requestBody = @{@"record":requestRecordsArray};
 #####getting a file:
 ``` Objective-C
 // build rest path for request, form is:
-// <url to server>/rest/files/container/application/<folder path>/filename
+// <url to server>/api/v2/files/<folder path>/filename
 // here the folder path is profile_images/contactId/
 // the file path does not end in a '/' because we are targeting a file not a folder
-NSString* container_name = @"applications";
 NSString* folder_path = [NSString stringWithFormat:@"profile_images/%@", 
                                         [self.contactRecord.Id stringValue]];
 NSString* file_name = self.contactRecord.ImageUrl;
 
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/%@",
+NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@",
                                                       baseUrl,
-                                                      container_name, 
-                                                      kApplicationName, 
                                                       folder_path, 
                                                       file_name];
 
@@ -280,20 +277,17 @@ NSData *fileData = [[NSData alloc]
 #####creating a file / uploading an image:
 ``` Objective-C
 // build rest path for request, form is:
-// <url to server>/rest/files/container/application/<folder path>/filename
+// <url to server>/api/v2/files/<folder path>/filename
 // here the folder path is profile_images/contactId/
 // the file path does not end in a '/' because we are targeting a file not a folder
-NSString* containerName = @"applications";
 NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
                         [self.contactRecord.Id stringValue]];
 NSString* fileName = @"UserFile1.jpg"; // example default file name
 if([self.imageUrl length] > 0){
   fileName = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
 }
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/%@",
+NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@",
                                                       baseUrl,
-                                                      containerName, 
-                                                      kApplicationName, 
                                                       folderPath, 
                                                       fileName];
 
@@ -307,17 +301,14 @@ NIKFile* file = [[NIKFile alloc] initWithNameData:fileName
 #####getting contents of a folder:
 ``` Objective-C
 // build rest path for request, form is 
-// <url to server>/rest/files/container/application/<folder path>/
+// <url to server>/api/v2/files/<folder path>/
 // here the folder path is profile_images/contactId/
-NSString* containerName = @"applications";
 NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
                         [self.record.Id stringValue]];
 // note that you need the extra '/' here at the end of the api path because you are
 // targeting a folder not a file
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/",
+NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
                                                       baseUrl,
-                                                      containerName, 
-                                                      kApplicationName, 
                                                       folderPath];
                                                       
 NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
@@ -335,35 +326,29 @@ for(NSDictionary* fileDict in [responseDict objectForKey:@"file"]){
 #####creating a folder:
 ``` Objective-C
 // build rest path for request, form is 
-// <url to server>/rest/files/container/application/<folder path>/
+// <url to server>/api/v2/files/<folder path>/
 // here the folder path is profile_images/contactId/
-NSString* containerName = @"applications";
 NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
                         [self.contactRecord.Id stringValue]];
                         
 // note that you need the extra '/' here at the end of the api path because
 // it is targeting a folder, not a file
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/",
+NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
                                                       baseUrl,
-                                                      containerName, 
-                                                      kApplicationName,
                                                       folderPath];
 ```
 
 #####deleting a folder:
 ``` Objective-C
 // build rest path for request, form is 
-// <url to server>/rest/files/container/application/<folder path>/
+// <url to server>/api/v2/files/<folder path>/
 // here the folder path is profile_images/contactId/
-NSString* containerName = @"applications";
 NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
                         [contactId stringValue]];
 // note that you need the extra '/' here at the end of the api path because
 // the url is pointing to a folder
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@/",
+NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
                                                       baseUrl,
-                                                      containerName, 
-                                                      kApplicationName, 
                                                       folderPath];
                                                       
 NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
