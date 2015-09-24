@@ -549,7 +549,6 @@ static NSString *baseUrl=@"";
         
         // set the id of the contact we are looking at
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *bbbb = [self.groupRecord.Id stringValue];
         queryParams[@"ids"] = [self.groupRecord.Id stringValue];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
