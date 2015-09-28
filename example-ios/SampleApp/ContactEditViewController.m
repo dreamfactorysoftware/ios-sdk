@@ -346,8 +346,9 @@ static NSString* baseUrl = @"";
                });
            }
            else{
-               [self.contactRecord setId:[responseDict objectForKey:@"id"]];
-               
+               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
+                   [self.contactRecord setId:[recordInfo objectForKey:@"id"]];
+               }
                if(![self.imageUrl  isEqual: @""] && self.profileImage != nil){
                    [self createProfileImageFolderOnServer];
                }

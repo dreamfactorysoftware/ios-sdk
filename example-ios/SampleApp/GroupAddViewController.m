@@ -442,9 +442,11 @@ static NSString *baseUrl=@"";
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
-           else{
+           else {
                // get the id of the new group, then add the relations
-               [self addGroupContactRelations:[responseDict objectForKey:@"id"]];
+               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
+                   [self addGroupContactRelations:[recordInfo objectForKey:@"id"]];
+               }
            }
        }];
     }
