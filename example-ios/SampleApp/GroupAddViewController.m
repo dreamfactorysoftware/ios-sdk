@@ -496,10 +496,10 @@ static NSString *baseUrl=@"";
         /*
          *  structure of request is:
          *  {
-         *      "records":[
+         *      "resource":[
          *          {
-         *             "contactGroupId":id,
-         *             "contactId":id"
+         *             "contact_group_id":id,
+         *             "contact_id":id"
          *          },
          *          {...}
          *      ]

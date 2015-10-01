@@ -226,20 +226,20 @@ static NSString* baseUrl = @"";
         [self putValueInTextfield:self.contactRecord.Notes key:@"Notes" record:contactTextfieldId];
     }
     
-    UIButton* changeImageButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    int y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
-    changeImageButton.frame = CGRectMake(0, y + 10, self.view.frame.size.width, 40);
+    //UIButton* changeImageButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    //int y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
+    //changeImageButton.frame = CGRectMake(0, y + 10, self.view.frame.size.width, 40);
     
-    changeImageButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [changeImageButton setTitle:@"change image" forState:UIControlStateNormal];
-    [changeImageButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size: 20.0]];
-    [changeImageButton setTitleColor:[UIColor colorWithRed:107/255.0f green:170/255.0f blue:178/255.0f alpha:1] forState:UIControlStateNormal];
+    //changeImageButton.titleLabel.textAlignment = NSTextAlignmentCenter;
+    //[changeImageButton setTitle:@"change image" forState:UIControlStateNormal];
+    //[changeImageButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size: 20.0]];
+    //[changeImageButton setTitleColor:[UIColor colorWithRed:107/255.0f green:170/255.0f blue:178/255.0f alpha:1] forState:UIControlStateNormal];
     
-    [changeImageButton addTarget:self action:@selector(changeImageClicked) forControlEvents:UIControlEventTouchDown];
+    //[changeImageButton addTarget:self action:@selector(changeImageClicked) forControlEvents:UIControlEventTouchDown];
     
-    [changeImageButton setNeedsDisplay];
+    //[changeImageButton setNeedsDisplay];
     
-    [self.contactEditScrollView addSubview:changeImageButton];
+    //[self.contactEditScrollView addSubview:changeImageButton];
     
     // add all the contact info views
     if(self.contactRecord != nil){
@@ -260,7 +260,7 @@ static NSString* baseUrl = @"";
     }
     
     // create button to add a new field
-    y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
+    int y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
     UIButton* addNewFieldButton = [UIButton buttonWithType:UIButtonTypeSystem];
     
     addNewFieldButton.frame=CGRectMake(0, y + 10, self.view.frame.size.width, 40);

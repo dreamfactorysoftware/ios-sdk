@@ -84,7 +84,7 @@ Breaking down each parameter:
 // build rest path for request, form is <url to server>/api/v2/serviceName/resourcePath
 NSString *serviceName = @"user"; // your service name here
 NSString *resourcePath = @"session"; // rest path
-NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, resourcePath];
+NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@", baseUrl, serviceName, resourcePath];
 
 NSDictionary* requestBody = @{@"email":self.emailTextField.text,
                               @"password":self.passwordTextField.text};
@@ -98,7 +98,7 @@ NSDictionary* requestBody = @{@"email":self.emailTextField.text,
 NSString *serviceName = @"db"; // your service name here
 NSString *tableName = @"contact_group";
 
-NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
+NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@", baseUrl, serviceName, tableName];
 
 // passing no query params will get all the records from a table
 NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
@@ -114,28 +114,28 @@ id requestBody = nil;
 
 #####with fields: 
 ```Objective-C
-// only need to get the contactId and full contact name
+// only need to get the contact_id and full contact name
 // set the fields param to give us just the fields we need
-queryParams[@"fields"] = @"contactId,firstName,lastName";
+queryParams[@"fields"] = @"contact_id,first_name,last_name";
 ```
 
 #####with filter: 
 ``` Objective-C
-  // create filter to get only the contact in the group
-  NSString *filter = [NSString stringWithFormat:@"contactGroupId=%@", self.groupRecord.Id];
+  // create filter to get only the contacts in the group
+  NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", self.groupRecord.Id];
   queryParams[@"filter"] = filter;
 ```
 
 #####with relation: 
 ``` Objective-C
-// only get contactrelationships for this contact
-NSString *filter = [NSString stringWithFormat:@"contactId=%@", self.contactRecord.Id];
+// only get contact_group_relationships for this contact
+NSString *filter = [NSString stringWithFormat:@"contact_id=%@", self.contactRecord.Id];
 queryParams[@"filter"] = filter;
 
-// request without related would return just {id, groupId, contactId}
+// request without related would return just {id, contact_group_id, contact_id}
 // set the related field to go get the group records referenced by
-// each contactrelationships record
-queryParams[@"related"] = @"contact_groups_by_contactGroupId";
+// each contact_group_relationship record
+queryParams[@"related"] = @"contact_group_by_contact_group_id";
 ```
 
 ### Examples of updating records
@@ -146,7 +146,7 @@ queryParams[@"related"] = @"contact_groups_by_contactGroupId";
 queryParams[@"ids"] = [self.groupRecord.Id stringValue];
 
 // already know the record id from query, so request is just new name
-NSDictionary *requestBody = @{@"groupName":self.groupNameTextField.text};
+NSDictionary *requestBody = @{@"name":self.groupNameTextField.text};
 ```
 
 #####multiple records:
@@ -171,24 +171,24 @@ NSDictionary *requestBody = @{@"resource": records};
   
 #####single record: 
 ``` Objective-C
-// build reques body, just need to post the name, table is {groupId, groupName}
-NSDictionary *requestBody = @{@"groupName": self.groupNameTextField.text};
+// build request body, just need to post the group name, table is {id, name}
+NSDictionary *requestBody = @{@"name": self.groupNameTextField.text};
 ```
 
 #####multiple records:
 ``` Objective-C
 NSMutableArray* records = [[NSMutableArray alloc] init];
 for(NSNumber* contactId in self.selectedRows){
-    [records addObject:@{@"contactGroupId":groupId,@"contactId":contactId}];
+    [records addObject:@{@"contact_group_id":groupId,@"contact_id":contactId}];
 }
 
 /*
  *  structure of request is:
  *  {
- *      "records":[
+ *      "resource":[
  *          {
- *             "contactGroupId":id,
- *             "contactId":id"
+ *             "contact_group_id":groupId,
+ *             "contact_id":contactId"
  *          },
  *          {...}
  *      ]
@@ -203,9 +203,9 @@ NSDictionary *requestBody = @{@"resource": records};
 
 #####with filter: 
 ```Objective-C
-// create filter to select all contactrelationships records that
+// create filter to select all contact_group_relationship records that
 // reference the group being deleted
-NSString *filter = [NSString stringWithFormat:@"contactGroupId=%@", [groupId stringValue]];
+NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", [groupId stringValue]];
 queryParams[@"filter"] = filter;
 ```
 
@@ -221,7 +221,7 @@ queryParams[@"ids"] = [groupId stringValue];
 // do not know the ID of the record to remove
 // one value for groupId, but many values for contactId
 // instead of making a long SQL query, change what we use as identifiers
-queryParams[@"id_field"] = @"contactGroupId,contactId";
+queryParams[@"id_field"] = @"contact_group_id,contact_id";
 
 NSMutableArray* requestRecordsArray = [[NSMutableArray alloc] init];
 /*
@@ -229,8 +229,8 @@ NSMutableArray* requestRecordsArray = [[NSMutableArray alloc] init];
  *  {
  *      "resource":[
  *          {
- *              "contactGroupId":id,
- *              "contactId":id
+ *              "contact_group_id":groupId,
+ *              "contact_id":contactId
  *          },
  *          {...}
  *      ]
@@ -238,122 +238,10 @@ NSMutableArray* requestRecordsArray = [[NSMutableArray alloc] init];
  */
 
 for(NSNumber* recordId in self.contactsAlreadyInGroupContentsArray){
-    [requestRecordsArray addObject:@{@"contactGroupId":self.groupRecord.Id, 
-                                     @"contactId":recordId}];
+    [requestRecordsArray addObject:@{@"contact_group_id":self.groupRecord.Id, 
+                                     @"contact_id":recordId}];
 }
 NSDictionary* requestBody = @{@"resource":requestRecordsArray};
-```
-
-### Examples of working with files and folders
-
-#####getting a file:
-``` Objective-C
-// build rest path for request, form is:
-// <url to server>/api/v2/files/<folder path>/filename
-// here the folder path is profile_images/contactId/
-// the file path does not end in a '/' because we are targeting a file not a folder
-NSString* folder_path = [NSString stringWithFormat:@"profile_images/%@", 
-                                        [self.contactRecord.Id stringValue]];
-NSString* file_name = self.contactRecord.ImageUrl;
-
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@",
-                                                      baseUrl,
-                                                      folder_path, 
-                                                      file_name];
-
-// request a download from the file
-NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-queryParams[@"include_properties"] = [NSNumber numberWithBool:YES];
-queryParams[@"content"] = [NSNumber numberWithBool:YES];
-queryParams[@"download"] = [NSNumber numberWithBool:YES];
-
-... get the file ...
-// decode the file
-NSData *fileData = [[NSData alloc] 
-                      initWithBase64EncodedString: [responseDict objectForKey:@"content"]
-                      options:NSDataBase64DecodingIgnoreUnknownCharacters];
-```
-
-#####creating a file / uploading an image:
-``` Objective-C
-// build rest path for request, form is:
-// <url to server>/api/v2/files/<folder path>/filename
-// here the folder path is profile_images/contactId/
-// the file path does not end in a '/' because we are targeting a file not a folder
-NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
-                        [self.contactRecord.Id stringValue]];
-NSString* fileName = @"UserFile1.jpg"; // example default file name
-if([self.imageUrl length] > 0){
-  fileName = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
-}
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@",
-                                                      baseUrl,
-                                                      folderPath, 
-                                                      fileName];
-
-// encode the image and send it up in a NIKFile
-NSData* imageData = UIImageJPEGRepresentation(image, 0.1);
-NIKFile* file = [[NIKFile alloc] initWithNameData:fileName 
-                                         mimeType:@"application/octet-stream" 
-                                             data:imageData];
-```
-
-#####getting contents of a folder:
-``` Objective-C
-// build rest path for request, form is 
-// <url to server>/api/v2/files/<folder path>/
-// here the folder path is profile_images/contactId/
-NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
-                        [self.record.Id stringValue]];
-// note that you need the extra '/' here at the end of the api path because you are
-// targeting a folder not a file
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
-                                                      baseUrl,
-                                                      folderPath];
-                                                      
-NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-// only want to get files, not any sub folders
-queryParams[@"include_folders"] = [NSNumber numberWithBool:NO];
-queryParams[@"include_files"] = [NSNumber numberWithBool:YES];
-
-... get the contents of the file ...
-
-for(NSDictionary* fileDict in [responseDict objectForKey:@"file"]){
-  [self.imageListContentArray addObject:[fileDict objectForKey:@"name"]];
-}
-```
-
-#####creating a folder:
-``` Objective-C
-// build rest path for request, form is 
-// <url to server>/api/v2/files/<folder path>/
-// here the folder path is profile_images/contactId/
-NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
-                        [self.contactRecord.Id stringValue]];
-                        
-// note that you need the extra '/' here at the end of the api path because
-// it is targeting a folder, not a file
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
-                                                      baseUrl,
-                                                      folderPath];
-```
-
-#####deleting a folder:
-``` Objective-C
-// build rest path for request, form is 
-// <url to server>/api/v2/files/<folder path>/
-// here the folder path is profile_images/contactId/
-NSString* folderPath = [NSString stringWithFormat:@"profile_images/%@", 
-                        [contactId stringValue]];
-// note that you need the extra '/' here at the end of the api path because
-// the url is pointing to a folder
-NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/",
-                                                      baseUrl,
-                                                      folderPath];
-                                                      
-NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-// delete all files and folders in the target folder
-queryParams[@"force"] = [NSNumber numberWithBool:YES];
 ```
 
 #Additional Resources

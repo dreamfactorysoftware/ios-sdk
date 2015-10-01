@@ -566,13 +566,13 @@ static NSString* baseUrl = @"";
         NSLog(@"\n%@\n", restApiPath);
         
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // only get contactrelationships for this contact
+        // only get contact_group_relationships for this contact
         NSString *filter = [NSString stringWithFormat:@"contact_id=%@", self.contactRecord.Id];
         queryParams[@"filter"] = filter;
         
         // request without related would return just {id, groupId, contactId}
         // set the related field to go get the group records referenced by
-        // each contactrelationships record
+        // each contact_group_relationship record
         queryParams[@"related"] = @"contact_group_by_contact_group_id";
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
