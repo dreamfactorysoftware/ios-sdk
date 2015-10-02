@@ -442,9 +442,11 @@ static NSString *baseUrl=@"";
                    [self.navigationController popToRootViewControllerAnimated:YES];
                });
            }
-           else{
+           else {
                // get the id of the new group, then add the relations
-               [self addGroupContactRelations:[responseDict objectForKey:@"id"]];
+               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
+                   [self addGroupContactRelations:[recordInfo objectForKey:@"id"]];
+               }
            }
        }];
     }
@@ -494,10 +496,10 @@ static NSString *baseUrl=@"";
         /*
          *  structure of request is:
          *  {
-         *      "records":[
+         *      "resource":[
          *          {
-         *             "contactGroupId":id,
-         *             "contactId":id"
+         *             "contact_group_id":id,
+         *             "contact_id":id"
          *          },
          *          {...}
          *      ]
@@ -549,7 +551,6 @@ static NSString *baseUrl=@"";
         
         // set the id of the contact we are looking at
         NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *bbbb = [self.groupRecord.Id stringValue];
         queryParams[@"ids"] = [self.groupRecord.Id stringValue];
         
         NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
