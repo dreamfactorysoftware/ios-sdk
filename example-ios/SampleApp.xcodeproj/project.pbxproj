@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		82099E321C45792F00CFA61D /* RESTEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 82099E311C45792F00CFA61D /* RESTEngine.m */; };
 		8C51788F1B2B5F00002965FC /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C51788E1B2B5F00002965FC /* RegisterViewController.m */; };
 		8C5178911B2B81BF002965FC /* ProfileImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5178901B2B81BF002965FC /* ProfileImagePickerViewController.m */; };
 		8C98A3A41B29F05500F719DD /* ContactInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C98A3A31B29F05500F719DD /* ContactInfoView.m */; };
@@ -49,6 +50,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		82099E301C45792F00CFA61D /* RESTEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTEngine.h; sourceTree = "<group>"; };
+		82099E311C45792F00CFA61D /* RESTEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTEngine.m; sourceTree = "<group>"; };
 		8C51788D1B2B5EEC002965FC /* RegisterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
 		8C51788E1B2B5F00002965FC /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		8C5178901B2B81BF002965FC /* ProfileImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ProfileImagePickerViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -118,6 +121,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		82099E2F1C45790E00CFA61D /* network */ = {
+			isa = PBXGroup;
+			children = (
+				82099E301C45792F00CFA61D /* RESTEngine.h */,
+				82099E311C45792F00CFA61D /* RESTEngine.m */,
+			);
+			name = network;
+			sourceTree = "<group>";
+		};
 		8CA0C58F1B4496EA00EA9CCD /* helperViews */ = {
 			isa = PBXGroup;
 			children = (
@@ -206,6 +218,7 @@
 		8CC634D11B1F812A00425013 /* classes */ = {
 			isa = PBXGroup;
 			children = (
+				82099E2F1C45790E00CFA61D /* network */,
 				8CA0C58F1B4496EA00EA9CCD /* helperViews */,
 				8CAD1EAE1B3DE79F005D59D0 /* images */,
 				8CC6366D1B20BF3C00425013 /* records */,
@@ -374,6 +387,7 @@
 				8C98A3A41B29F05500F719DD /* ContactInfoView.m in Sources */,
 				8CC636591B1FA28000425013 /* AddressBookViewController.m in Sources */,
 				8CC636681B20BC1E00425013 /* ContactListViewController.m in Sources */,
+				82099E321C45792F00CFA61D /* RESTEngine.m in Sources */,
 				8CC636701B21FD0E00425013 /* ContactViewController.m in Sources */,
 				8C51788F1B2B5F00002965FC /* RegisterViewController.m in Sources */,
 				8C5178911B2B81BF002965FC /* ProfileImagePickerViewController.m in Sources */,
