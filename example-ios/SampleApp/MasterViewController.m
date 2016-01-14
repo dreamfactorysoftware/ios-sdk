@@ -10,6 +10,7 @@
 
 @property (weak, nonatomic) IBOutlet UITextField *emailTextField;
 @property (weak, nonatomic) IBOutlet UITextField *passwordTextField;
+@property (weak, nonatomic) IBOutlet UILabel *versionLabel;
 
 - (IBAction)RegisterActionEvent:(id)sender;
 
@@ -22,6 +23,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.versionLabel.text = [NSString stringWithFormat:@"Version %@", kAppVersion];
     
     NSString  *userEmail=[[NSUserDefaults standardUserDefaults] valueForKey:kUserEmail];
     NSString  *userPassword=[[NSUserDefaults standardUserDefaults] valueForKey:kPassword];

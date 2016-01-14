@@ -5,8 +5,9 @@
 #include "ProfileImagePickerViewController.h"
 #import "RESTEngine.h"
 #import "AppDelegate.h"
+#import "PickerSelector.h"
 
-@interface ContactEditViewController ()<UITextFieldDelegate>
+@interface ContactEditViewController ()<UITextFieldDelegate, ContactInfoDelegate, PickerSelectorDelegate>
 
 // all the text fields we programmatically create
 @property(nonatomic, retain) NSMutableDictionary* textFields;
@@ -17,6 +18,7 @@
 // for handling a profile image set up for a new user
 @property(nonatomic, retain) NSString* imageUrl;
 @property(nonatomic, retain) UIImage* profileImage;
+@property (nonatomic, weak) ContactInfoView *selectedContactInfoView;
 
 @end
 
@@ -112,6 +114,20 @@
     }
 }
 
+- (void)onContactTypeClick:(ContactInfoView *)view withTypes:(NSArray *)types
+{
+    PickerSelector *picker = [PickerSelector picker];
+    picker.pickerData = types;
+    picker.delegate = self;
+    [picker showPickerOver:self];
+    self.selectedContactInfoView = view;
+}
+
+- (void)pickerSelector:(PickerSelector *)selector selectedValue:(NSString *)value index:(NSInteger)idx
+{
+    self.selectedContactInfoView.contactType = value;
+}
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
@@ -168,6 +184,7 @@
     
     // build new view
     ContactInfoView* contactInfoView = [[ContactInfoView alloc] initWithFrame:CGRectMake(0, yToInsert, self.contactEditScrollView.frame.size.width, 0)];
+    contactInfoView.delegate = self;
     ContactDetailRecord* record = [[ContactDetailRecord alloc] init];
     record.ContactId = nil;
     
@@ -247,6 +264,7 @@
         for(ContactDetailRecord* record in self.contactDetails){
             int y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
             ContactInfoView* contactInfoView = [[ContactInfoView alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.00, y, self.contactEditScrollView.frame.size.width, 40)];
+            contactInfoView.delegate = self;
             
             contactInfoView.record = record;
             [contactInfoView updateFields];

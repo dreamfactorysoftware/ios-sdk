@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		82099E321C45792F00CFA61D /* RESTEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 82099E311C45792F00CFA61D /* RESTEngine.m */; };
+		823018931C4816EE008A8756 /* PickerSelector.m in Sources */ = {isa = PBXBuildFile; fileRef = 823018921C4816EE008A8756 /* PickerSelector.m */; };
+		823018951C48180B008A8756 /* PickerSelector.xib in Resources */ = {isa = PBXBuildFile; fileRef = 823018941C48180B008A8756 /* PickerSelector.xib */; };
 		8C51788F1B2B5F00002965FC /* RegisterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C51788E1B2B5F00002965FC /* RegisterViewController.m */; };
 		8C5178911B2B81BF002965FC /* ProfileImagePickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C5178901B2B81BF002965FC /* ProfileImagePickerViewController.m */; };
 		8C98A3A41B29F05500F719DD /* ContactInfoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C98A3A31B29F05500F719DD /* ContactInfoView.m */; };
@@ -52,6 +54,9 @@
 /* Begin PBXFileReference section */
 		82099E301C45792F00CFA61D /* RESTEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RESTEngine.h; sourceTree = "<group>"; };
 		82099E311C45792F00CFA61D /* RESTEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RESTEngine.m; sourceTree = "<group>"; };
+		823018911C4816EE008A8756 /* PickerSelector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PickerSelector.h; sourceTree = "<group>"; };
+		823018921C4816EE008A8756 /* PickerSelector.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PickerSelector.m; sourceTree = "<group>"; };
+		823018941C48180B008A8756 /* PickerSelector.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PickerSelector.xib; sourceTree = "<group>"; };
 		8C51788D1B2B5EEC002965FC /* RegisterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RegisterViewController.h; sourceTree = "<group>"; };
 		8C51788E1B2B5F00002965FC /* RegisterViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RegisterViewController.m; sourceTree = "<group>"; };
 		8C5178901B2B81BF002965FC /* ProfileImagePickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ProfileImagePickerViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
@@ -133,10 +138,13 @@
 		8CA0C58F1B4496EA00EA9CCD /* helperViews */ = {
 			isa = PBXGroup;
 			children = (
-				8C98A3A21B29F04500F719DD /* ContactInfoView.h */,
-				8CC2AE051B33488100F648E9 /* CustomNavBar.m */,
 				8CC2AE071B33488D00F648E9 /* CustomNavBar.h */,
+				8CC2AE051B33488100F648E9 /* CustomNavBar.m */,
+				8C98A3A21B29F04500F719DD /* ContactInfoView.h */,
 				8C98A3A31B29F05500F719DD /* ContactInfoView.m */,
+				823018911C4816EE008A8756 /* PickerSelector.h */,
+				823018921C4816EE008A8756 /* PickerSelector.m */,
+				823018941C48180B008A8756 /* PickerSelector.xib */,
 			);
 			name = helperViews;
 			sourceTree = "<group>";
@@ -311,7 +319,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0610;
-				ORGANIZATIONNAME = "connor foody";
+				ORGANIZATIONNAME = dreamfactory;
 				TargetAttributes = {
 					8CC634A11B1F7C0E00425013 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -355,6 +363,7 @@
 				8CC634B31B1F7C0E00425013 /* Images.xcassets in Resources */,
 				8CAD1EAD1B3DE56C005D59D0 /* twitter2.png in Resources */,
 				8CAD1EAA1B3DE56C005D59D0 /* mail.png in Resources */,
+				823018951C48180B008A8756 /* PickerSelector.xib in Resources */,
 				8CAD1EA51B3DE56C005D59D0 /* chat.png in Resources */,
 				8CAD1EAB1B3DE56C005D59D0 /* phone1.png in Resources */,
 			);
@@ -388,6 +397,7 @@
 				8CC636591B1FA28000425013 /* AddressBookViewController.m in Sources */,
 				8CC636681B20BC1E00425013 /* ContactListViewController.m in Sources */,
 				82099E321C45792F00CFA61D /* RESTEngine.m in Sources */,
+				823018931C4816EE008A8756 /* PickerSelector.m in Sources */,
 				8CC636701B21FD0E00425013 /* ContactViewController.m in Sources */,
 				8C51788F1B2B5F00002965FC /* RegisterViewController.m in Sources */,
 				8C5178911B2B81BF002965FC /* ProfileImagePickerViewController.m in Sources */,

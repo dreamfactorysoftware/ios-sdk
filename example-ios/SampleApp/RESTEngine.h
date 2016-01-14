@@ -10,6 +10,8 @@
 
 // change these values to match your instance
 
+#define kAppVersion @"2.0.2"
+
 // API key for your app goes here, see apps tab in admin console
 #define kApiKey @"47f611bfd5da6bc33e01a473142ea048409adb970839c95fa32af28e4c002e79"
 #define kSessionTokenKey @"SessionToken"

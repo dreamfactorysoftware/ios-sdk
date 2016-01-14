@@ -72,7 +72,7 @@
 }
 
 - (void) buildLogo{
-    UIImage* dfLogo = [UIImage imageNamed:@"dreamfactory-logo-horiz-filled.png"];
+    UIImage* dfLogo = [UIImage imageNamed:@"DreamFactory-logo-horiz-filled.png"];
     // calc new size
     // new height = (imagewidth / newWidth) * imageheight
     UIImage* resizable = [dfLogo resizableImageWithCapInsets:UIEdgeInsetsMake(0, 0, 0, 0) resizingMode:UIImageResizingModeStretch];

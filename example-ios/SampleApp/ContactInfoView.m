@@ -3,13 +3,18 @@
 #import "ContactInfoView.h"
 
 @interface ContactInfoView ()<UITextFieldDelegate>
-@property(nonatomic, retain) NSMutableDictionary* textFields;
+
+@property (nonatomic, retain) NSMutableDictionary* textFields;
+@property (nonatomic, strong) NSArray *contactTypes;
+
 @end
 
 @implementation ContactInfoView
 
 - (id) initWithFrame:(CGRect) frame{
     self = [super initWithFrame:frame];
+    
+    self.contactTypes = @[@"work",@"home",@"mobile",@"other"];
     
     [self buildContactTextFields:@[@"Type", @"Phone", @"Email", @"Address", @"City", @"State", @"Zip", @"Country"] y:0];
     
@@ -99,7 +104,29 @@
         [self.textFields setObject:textfield forKey:field];
         
         y += 40;
+        
+        if([field isEqualToString:@"Type"]) {
+            textfield.enabled = NO;
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+            button.frame = textfield.frame;
+            [button setTitle:@"" forState:UIControlStateNormal];
+            button.backgroundColor = [UIColor clearColor];
+            [button addTarget:self action:@selector(onContactTypeClick) forControlEvents:UIControlEventTouchDown];
+            [self addSubview:button];
+            textfield.text = self.contactTypes[0];
+        }
     }
+}
+
+- (void)onContactTypeClick
+{
+    [self.delegate onContactTypeClick:self withTypes:self.contactTypes];
+}
+
+- (void)setContactType:(NSString *)contactType
+{
+    _contactType = [contactType copy];
+    ((UITextField *)self.textFields[@"Type"]).text = contactType;
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
