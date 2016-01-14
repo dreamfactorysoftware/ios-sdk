@@ -2,7 +2,7 @@
 
 #import "ContactInfoView.h"
 
-@interface ContactInfoView ()
+@interface ContactInfoView ()<UITextFieldDelegate>
 @property(nonatomic, retain) NSMutableDictionary* textFields;
 @end
 
@@ -92,6 +92,7 @@
         textfield.backgroundColor = [UIColor whiteColor];
         
         textfield.layer.cornerRadius = 5;
+        textfield.delegate = self;
    
         [self addSubview:textfield];
         
@@ -99,6 +100,12 @@
         
         y += 40;
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 @end

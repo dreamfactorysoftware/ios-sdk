@@ -2,10 +2,9 @@
 
 #import "AddressBookViewController.h"
 #import "ContactListViewController.h"
-#import "MasterViewController.h"
 #import "AddressBookRecord.h"
 #import "GroupAddViewController.h"
-#import "NIKApiInvoker.h"
+#import "RESTEngine.h"
 #import "AppDelegate.h"
 
 
@@ -19,14 +18,9 @@
 @end
 
 @implementation AddressBookViewController
-static NSString *baseUrl=@"";
 
 - (void) viewDidLoad{
     [super viewDidLoad];
-    
-    // get the base URL (<base instance url>/api/v2)
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
     
     self.addressBookContentArray = [[NSMutableArray alloc] init];
 }
@@ -73,7 +67,7 @@ static NSString *baseUrl=@"";
         // can not delete group until all references to it are removed
         // remove relations -> remove group
         // pass record ID so it knows what group we are removing
-        [self removeContactGroupRelationWithGroupId:record.Id];
+        [self removeGroupFromServer:record.Id];
         
         [self.addressBookContentArray removeObjectAtIndex:indexPath.row];
         [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -118,151 +112,37 @@ static NSString *baseUrl=@"";
 - (void) getAddressBookContentFromServer{
     // get all the groups
     
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
+    [[RESTEngine sharedEngine] getAddressBookContentFromServerWithSuccess:^(NSDictionary *response) {
         
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+        [self.addressBookContentArray removeAllObjects];
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group";
+        for (NSDictionary *recordInfo in response [@"resource"]) {
+            GroupRecord *newRecord=[[GroupRecord alloc]init];
+            [newRecord setId:[recordInfo objectForKey:@"id"]];
+            [newRecord setName:[recordInfo objectForKey:@"name"]];
+            [self.addressBookContentArray addObject:newRecord];
+        }
         
-        NSString *restApiPath = [NSString stringWithFormat:@"%@/%@/%@",baseUrl,serviceName, tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        // passing no query params will get all the records from a table
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        // header has session token and application api key to validate access
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error getting address book data: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               [self.addressBookContentArray removeAllObjects];
-               
-               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
-                   GroupRecord *newRecord=[[GroupRecord alloc]init];
-                   [newRecord setId:[recordInfo objectForKey:@"id"]];
-                   [newRecord setName:[recordInfo objectForKey:@"name"]];
-                   [self.addressBookContentArray addObject:newRecord];
-               }
-               
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.addressBookTableView reloadData];
-                   [self.addressBookTableView setNeedsDisplay];
-               });
-           }
-       }];
-    }
-}
-
-- (void) removeContactGroupRelationWithGroupId:(NSNumber*) groupId{
-    // remove all contact-group relations for the group being deleted
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group_relationship";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        // create filter to select all contact_group_relationship records that
-        // reference the group being deleted
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", [groupId stringValue]];
-        queryParams[@"filter"] = filter;
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               if (error) {
-                   NSLog(@"Error removing contact group relation: %@",error);
-                   dispatch_async(dispatch_get_main_queue(),^ (void){
-                       [self.navigationController popToRootViewControllerAnimated:YES];
-                   });
-               }
-               else {
-                   // once the references to the group are removed, can remove group record
-                   [self removeGroupFromServer:groupId];
-               }
-           }];
-    }
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.addressBookTableView reloadData];
+            [self.addressBookTableView setNeedsDisplay];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error getting address book data: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) removeGroupFromServer:(NSNumber*) groupId{
     
-    // Get the relation all at once
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        // delete the record by the record ID
-        // form is "ids":"1,2,3"
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"ids"] = [groupId stringValue];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error deleting group: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-       }];
-    }
+   [[RESTEngine sharedEngine] removeGroupFromServerWithGroupId:groupId success:nil failure:^(NSError *error) {
+       NSLog(@"Error deleting group: %@",error);
+       dispatch_async(dispatch_get_main_queue(),^ (void){
+           [self.navigationController popToRootViewControllerAnimated:YES];
+       });
+   }];
 }
 
 - (void) showContactListViewController{

@@ -1,14 +1,12 @@
 #import <Foundation/Foundation.h>
 #include "ContactEditViewController.h"
-#include "MasterViewController.h"
 #include "ContactDetailRecord.h"
 #include "ContactInfoView.h"
 #include "ProfileImagePickerViewController.h"
-#import "NIKApiInvoker.h"
-#import "NIKFile.h"
+#import "RESTEngine.h"
 #import "AppDelegate.h"
 
-@interface ContactEditViewController ()
+@interface ContactEditViewController ()<UITextFieldDelegate>
 
 // all the text fields we programmatically create
 @property(nonatomic, retain) NSMutableDictionary* textFields;
@@ -22,7 +20,6 @@
 
 @end
 
-static NSString* baseUrl = @"";
 
 @implementation ContactEditViewController
 
@@ -30,10 +27,6 @@ static NSString* baseUrl = @"";
 // need to create all the records and such first
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    // get the base URL
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
     
     // Build the view programmatically
     self.contactEditScrollView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
@@ -106,9 +99,9 @@ static NSString* baseUrl = @"";
     if(self.contactRecord != nil){
         // if we are editing an existing contact
         if(![self.imageUrl  isEqual: @""] && self.profileImage != nil){
-            [self putLocalImageOnServer:self.profileImage updateContact:YES];
+            [self putLocalImageOnServer:self.profileImage];
         }
-        else{
+        else {
             [self UpdateContactWithServer];
         }
     }
@@ -117,6 +110,12 @@ static NSString* baseUrl = @"";
         // the contact to any groups
         [self addContactToServer];
     }
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void) putValueInTextfield:(NSString*)value key:(NSString*)key record:(NSNumber*)record {
@@ -201,6 +200,7 @@ static NSString* baseUrl = @"";
         textfield.backgroundColor = [UIColor whiteColor];
         
         textfield.layer.cornerRadius = 5;
+        textfield.delegate = self;
         
         [self.contactEditScrollView addSubview:textfield];
         
@@ -289,429 +289,203 @@ static NSString* baseUrl = @"";
 }
 
 - (void) addContactToServer {
-    // need to create contact first, then can add contactInfo and group relationships
+    // set up the contact name
+    NSString* filename = @"";
+    if([self.imageUrl length] > 0){
+        filename = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
+    }
     
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
+    // id given to object holding contact info
+    NSNumber* contactTextfieldId = [NSNumber numberWithInt:-1];
     
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    // build request body
+    NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
+                                  @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
+                                  @"image_url":filename,
+                                  @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
+                                  @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
+                                  @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
+    
+    
+    [[RESTEngine sharedEngine] addContactToServerWithDetails:requestBody success:^(NSDictionary *response) {
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        
-        // id given to object holding contact info
-        NSNumber* contactTextfieldId = [NSNumber numberWithInt:-1];
-        
-        // set up the contact name
-        NSString* filename = @"";
-        if([self.imageUrl length] > 0){
-            filename = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
+        for (NSDictionary *recordInfo in response[@"resource"]) {
+            [self.contactRecord setId:[recordInfo objectForKey:@"id"]];
         }
         
-        // build request body
-        NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
-                                      @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
-                                      @"image_url":filename,
-                                      @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
-                                      @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
-                                      @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
+        if(![self.imageUrl  isEqual: @""] && self.profileImage != nil){
+            [self createProfileImageFolderOnServer];
+        } else {
+            [self addContactGroupRelationToServer];
+        }
         
-        // build the contact and fill it so we don't have to reload when we go up a level
-        self.contactRecord = [[ContactRecord alloc] init];
-        // add record to the contact list above
-        
-        [_api restPath:restApiPath
-                method:@"POST"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error adding new contact to server: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
-                   [self.contactRecord setId:[recordInfo objectForKey:@"id"]];
-               }
-               if(![self.imageUrl  isEqual: @""] && self.profileImage != nil){
-                   [self createProfileImageFolderOnServer];
-               }
-               else{
-                   [self addContactGroupRelationToServer];
-               }
-           }
-       }];
-    }
+    } failure:^(NSError *error) {
+        NSLog(@"Error adding new contact to server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) addContactGroupRelationToServer {
-    // put the contact-group relation up on server
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] addContactGroupRelationToServerWithContactId:self.contactRecord.Id groupId:self.contactGroupId success:^(NSDictionary *response) {
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group_relationship";
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@/",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
+        [self addContactInfoToServer];
         
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        
-        // build request body
-        // need to put in any extra field-key pair and avoid NSUrl timeout issue
-        // otherwise it drops connection
-        NSDictionary *requestBody = @{@"contact_group_id":self.contactGroupId,
-                                      @"contact_id":self.contactRecord.Id};
-        
-        [_api restPath:restApiPath
-                method:@"POST"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error adding contact group relation to server from contact edit: %@", error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-               
-           }else{
-               [self addContactInfoToServer];
-           }
-       }];
-    }
+    } failure:^(NSError *error) {
+        NSLog(@"Error adding contact group relation to server from contact edit: %@", error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 
 - (void) addContactInfoToServer{
-    // create contact info records
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
+    // build request body
+    NSMutableArray* records = [[NSMutableArray alloc] init];
+    /*
+     * Format is:
+     *  {
+     *      "resource":[
+     *          {...},
+     *          {...}
+     *      ]
+     *  }
+     *
+     */
     
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_info";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        
-        // build request body
-        NSMutableArray* records = [[NSMutableArray alloc] init];
-        /*
-         * Format is:
-         *  {
-         *      "resource":[
-         *          {...},
-         *          {...}
-         *      ]
-         *  }
-         *
-         */
-        
-        // fill body with contact details
-        for(UIView* view in [self.contactEditScrollView subviews]){
-            if([view isKindOfClass:[ContactInfoView class]]){
-                ContactInfoView* contactInfoView = (ContactInfoView*) view;
-                if(contactInfoView.record.Id == nil){
-                    contactInfoView.record.Id = [NSNumber numberWithInt:0];
-                    contactInfoView.record.ContactId = self.contactRecord.Id;
-                    [contactInfoView updateRecord];
-                    [records addObject: [contactInfoView buildToDictionary]];
-                    [self.contactDetails addObject:contactInfoView.record];
-                }
+    // fill body with contact details
+    for(UIView* view in [self.contactEditScrollView subviews]){
+        if([view isKindOfClass:[ContactInfoView class]]){
+            ContactInfoView* contactInfoView = (ContactInfoView*) view;
+            if(contactInfoView.record.Id == nil){
+                contactInfoView.record.Id = [NSNumber numberWithInt:0];
+                contactInfoView.record.ContactId = self.contactRecord.Id;
+                [contactInfoView updateRecord];
+                [records addObject: [contactInfoView buildToDictionary]];
+                [self.contactDetails addObject:contactInfoView.record];
             }
         }
-        
-        // make sure we don't try to put contact info up on the server if we don't have any
-        // need to check down here because of the way they are set up
-        if([records count] == 0){
-            dispatch_async(dispatch_get_main_queue(), ^ (void){
-                [self waitToGoBack];
-            });
-            return;
-            
-        }
-        
-        NSDictionary *requestBody = @{@"resource": records};
-        
-        [_api restPath:restApiPath
-                method:@"POST"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error putting contact details back up on server: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               // head back up only once all the data has been loaded
-               dispatch_async(dispatch_get_main_queue(), ^ (void){
-                   [self waitToGoBack];
-               });
-           }
-       }];
     }
+    
+    // make sure we don't try to put contact info up on the server if we don't have any
+    // need to check down here because of the way they are set up
+    if([records count] == 0){
+        dispatch_async(dispatch_get_main_queue(), ^ (void){
+            [self waitToGoBack];
+        });
+        return;
+        
+    }
+    
+    [[RESTEngine sharedEngine] addContactInfoToServer:records success:^(NSDictionary *response) {
+        // head back up only once all the data has been loaded
+        dispatch_async(dispatch_get_main_queue(), ^ (void){
+            [self waitToGoBack];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error putting contact details back up on server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) createProfileImageFolderOnServer{
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/
-        // here the folder path is contactId/
-        NSString* containerName = kContainerName;
-        NSString* folderPath = [NSString stringWithFormat:@"/%@", [self.contactRecord.Id stringValue]];
-        // note that you need the extra '/' here at the end of the api path because
-        // it is targeting a folder, not a file
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/",baseUrl,containerName, folderPath];
-        NSLog(@"\nAPI path: %@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        NSDictionary* requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"POST"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error creating new profile image folder on server: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   // need to create a new folder for the user's images
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   // if we created the profile image folder successfully, go create
-                   // the image
-                   [self putLocalImageOnServer:self.profileImage updateContact:NO];
-               });
-           }
-       }];
+    NSString* fileName = @"UserFile1.jpg"; // default file name
+    if([self.imageUrl length] > 0){
+        fileName = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
     }
+    
+    [[RESTEngine sharedEngine] addContactImageWithContactId:self.contactRecord.Id image:self.profileImage imageName:fileName success:^(NSDictionary *response) {
+        
+        [self addContactGroupRelationToServer];
+        
+    } failure:^(NSError *error) {
+        NSLog(@"Error creating new profile image folder on server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            // need to create a new folder for the user's images
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
-- (void) putLocalImageOnServer:(UIImage*) image updateContact:(BOOL)updateContact{
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/filename
-        // here the folder path is contactId/
-        // the file path does not end in a '/' because we are targeting a file not a folder
-        NSString* containerName = kContainerName;
-        NSString* folderPath = [NSString stringWithFormat:@"/%@", [self.contactRecord.Id stringValue]];
-        NSString* fileName = @"UserFile1.jpg"; // default file name
-        if([self.imageUrl length] > 0){
-            fileName = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
-        }
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@",baseUrl,containerName, folderPath, fileName];
-        NSLog(@"\nAPI path: %@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/octet-stream";
-        
-        // encode the image and send it up in a NIKFile
-        NSData* imageData = UIImageJPEGRepresentation(image, 0.1);
-        NIKFile* file = [[NIKFile alloc] initWithNameData:fileName mimeType:@"application/octet-stream" data:imageData];
-        
-        [_api restPath:restApiPath
-                method:@"POST"
-           queryParams:queryParams
-                  body:file
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error putting profile image on server: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               if(updateContact){
-                   self.contactRecord.ImageUrl = fileName;
-                   [self UpdateContactWithServer];
-               }
-               else{
-                   [self addContactGroupRelationToServer];
-               }
-           }
-       }];
+- (void) putLocalImageOnServer:(UIImage*) image {
+    NSString* fileName = @"UserFile1.jpg"; // default file name
+    if([self.imageUrl length] > 0){
+        fileName = [NSString stringWithFormat:@"%@.jpg", self.imageUrl];
     }
+    
+    [[RESTEngine sharedEngine] putImageToFolderWithPath:self.contactRecord.Id.stringValue image:image fileName:fileName success:^(NSDictionary *response) {
+        
+        self.contactRecord.ImageUrl = fileName;
+        [self UpdateContactWithServer];
+        
+    } failure:^(NSError *error) {
+        NSLog(@"Error putting profile image on server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) UpdateContactWithServer {
-    // Update an existing contact with the server
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
+    // -1 is just a tag given to the object that holds the contact info
+    NSNumber* contactTextfieldId = [NSNumber numberWithInt:-1];
     
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
+                                  @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
+                                  //@"image_url":self.contactRecord.ImageUrl,
+                                  @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
+                                  @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
+                                  @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
+    
+    // update the contact
+    self.contactRecord.FirstName = [requestBody objectForKey:@"first_name"];
+    self.contactRecord.LastName = [requestBody objectForKey:@"last_name"];
+    self.contactRecord.Notes = [requestBody objectForKey:@"notes"];
+    self.contactRecord.Twitter = [requestBody objectForKey:@"twitter"];
+    self.contactRecord.Skype = [requestBody objectForKey:@"skype"];
+    
+    [[RESTEngine sharedEngine] updateContactWithContactId:self.contactRecord.Id contactDetails:requestBody success:^(NSDictionary *response) {
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact";
+        [self UpdateContactInfoWithServer];
         
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        // set the id of the contact we are looking at
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"ids"] = [self.contactRecord.Id stringValue];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        // -1 is just a tag given to the object that holds the contact info
-        NSNumber* contactTextfieldId = [NSNumber numberWithInt:-1];
-        
-        NSDictionary *requestBody = @{@"first_name": [self getTextValue:@"First Name" recordId:contactTextfieldId],
-                                      @"last_name":[self getTextValue:@"Last Name" recordId:contactTextfieldId],
-                                      //@"image_url":self.contactRecord.ImageUrl,
-                                      @"notes":[self getTextValue:@"Notes" recordId:contactTextfieldId],
-                                      @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
-                                      @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
-        // update the contact
-        self.contactRecord.FirstName = [requestBody objectForKey:@"first_name"];
-        self.contactRecord.LastName = [requestBody objectForKey:@"last_name"];
-        self.contactRecord.Notes = [requestBody objectForKey:@"notes"];
-        self.contactRecord.Twitter = [requestBody objectForKey:@"twitter"];
-        self.contactRecord.Skype = [requestBody objectForKey:@"skype"];
-        
-        [_api restPath:restApiPath
-                method:@"PATCH"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               if (error) {
-                   NSLog(@"Error updating contact info with server: %@",error);
-                   dispatch_async(dispatch_get_main_queue(),^ (void){
-                       [self.navigationController popToRootViewControllerAnimated:YES];
-                   });
-               }
-               else{
-                   [self UpdateContactInfoWithServer];
-               }
-           }];
-    }
+    } failure:^(NSError *error) {
+        NSLog(@"Error updating contact info with server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) UpdateContactInfoWithServer{
-    // Update contact info
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_info"; // rest path
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        
-        // build request body
-        NSMutableArray* records = [[NSMutableArray alloc] init];
-        for(UIView* view in [self.contactEditScrollView subviews]){
-            if([view isKindOfClass:[ContactInfoView class]]){
-                ContactInfoView* contactInfoView = (ContactInfoView*) view;
-                if(contactInfoView.record.ContactId != nil){
-                    [contactInfoView updateRecord];
-                    [records addObject: [contactInfoView buildToDictionary]];
-                }
+    // build request body
+    NSMutableArray* records = [[NSMutableArray alloc] init];
+    for(UIView* view in [self.contactEditScrollView subviews]){
+        if([view isKindOfClass:[ContactInfoView class]]){
+            ContactInfoView* contactInfoView = (ContactInfoView*) view;
+            if(contactInfoView.record.ContactId != nil){
+                [contactInfoView updateRecord];
+                [records addObject: [contactInfoView buildToDictionary]];
             }
         }
-        if([records count] == 0){
-            // if we have no records to update, check if we have any records to add
-            [self addContactInfoToServer];
-            return;
-        }
-        
-        NSDictionary *requestBody = @{@"resource": records};
-        
-        [_api restPath:restApiPath
-                method:@"PATCH"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType completionBlock:^(NSDictionary *responseDict, NSError *error) {
-               if (error) {
-                   NSLog(@"Error updating contact details on server: %@",error);
-                   dispatch_async(dispatch_get_main_queue(),^ (void){
-                       [self.navigationController popToRootViewControllerAnimated:YES];
-                   });
-               }
-               else{
-                   [self addContactInfoToServer];
-               }
-           }];
     }
+    if([records count] == 0){
+        // if we have no records to update, check if we have any records to add
+        [self addContactInfoToServer];
+        return;
+    }
+    
+    [[RESTEngine sharedEngine] updateContactInfo:records success:^(NSDictionary *response) {
+        [self addContactInfoToServer];
+    } failure:^(NSError *error) {
+        NSLog(@"Error updating contact details on server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) waitToGoBack{

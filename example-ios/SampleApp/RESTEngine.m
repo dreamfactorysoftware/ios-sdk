@@ -63,7 +63,6 @@
 
 @interface RESTEngine ()
 
-@property (nonatomic, copy) NSString *sessionToken;
 @property (nonatomic, strong, readonly) NSDictionary *headerParams;
 @property (nonatomic, strong, readonly) NSDictionary *sessionHeaderParams;
 @property (nonatomic, strong) NIKApiInvoker *api;

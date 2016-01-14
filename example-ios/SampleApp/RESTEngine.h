@@ -24,7 +24,7 @@ typedef void (^FailureBlock)(NSError *error);
 
 @interface RESTEngine : NSObject
 
-@property (nonatomic, copy, readonly) NSString *sessionToken;
+@property (nonatomic, copy) NSString *sessionToken;
 
 + (instancetype)sharedEngine;
 
