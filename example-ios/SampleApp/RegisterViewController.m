@@ -60,6 +60,8 @@
         } failure:^(NSError *error) {
             NSLog(@"Error registering new user: %@",error);
             dispatch_async(dispatch_get_main_queue(),^ (void){
+                UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                [message show];
                 [self.navigationController popToRootViewControllerAnimated:YES];
             });
         }];

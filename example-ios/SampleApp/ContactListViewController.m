@@ -423,6 +423,8 @@
             if([message containsString:@"Invalid relationship"]){
                 NSLog(@"Error: table names in relational calls are case sensitive: %@", message);
                 dispatch_async(dispatch_get_main_queue(),^ (void){
+                    UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                    [message show];
                     [self.navigationController
                      popToRootViewControllerAnimated:YES];
                 });
@@ -432,6 +434,8 @@
         
         NSLog(@"Error getting contacts with relation: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -447,6 +451,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error deleting contact: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];

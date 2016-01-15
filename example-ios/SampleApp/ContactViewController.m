@@ -426,6 +426,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error getting contact info: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -521,6 +523,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error getting groups with relation: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];

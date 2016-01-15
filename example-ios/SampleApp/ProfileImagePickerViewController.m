@@ -138,6 +138,8 @@
         // else report normally
         NSLog(@"Error getting profile image list data from server: %@", error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];

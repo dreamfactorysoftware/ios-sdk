@@ -360,6 +360,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error getting all the contacts data: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -373,6 +375,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error adding group to server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -390,6 +394,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error updating contact info with server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -411,6 +417,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error getting contact group relations list: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];

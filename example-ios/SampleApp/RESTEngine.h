@@ -24,6 +24,25 @@
 typedef void (^SuccessBlock)(NSDictionary *response);
 typedef void (^FailureBlock)(NSError *error);
 
+@interface NSError (APIMessage)
+
+- (NSString *)errorMessage;
+
+@end
+
+@implementation NSError (APIMessage)
+
+- (NSString *)errorMessage
+{
+    NSString *errorMessage = self.userInfo[@"error"][@"message"];
+    if(!errorMessage) {
+        errorMessage = @"Unknown error occurred";
+    }
+    return errorMessage;
+}
+
+@end
+
 @interface RESTEngine : NSObject
 
 @property (nonatomic, copy) NSString *sessionToken;

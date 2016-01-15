@@ -340,6 +340,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error adding new contact to server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -353,6 +355,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error adding contact group relation to server from contact edit: %@", error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -405,6 +409,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error putting contact details back up on server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -423,7 +429,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error creating new profile image folder on server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
-            // need to create a new folder for the user's images
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -443,6 +450,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error putting profile image on server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -473,6 +482,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error updating contact info with server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -501,6 +512,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error updating contact details on server: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];

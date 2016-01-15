@@ -130,6 +130,8 @@
     } failure:^(NSError *error) {
         NSLog(@"Error getting address book data: %@",error);
         dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
             [self.navigationController popToRootViewControllerAnimated:YES];
         });
     }];
@@ -140,6 +142,8 @@
    [[RESTEngine sharedEngine] removeGroupFromServerWithGroupId:groupId success:nil failure:^(NSError *error) {
        NSLog(@"Error deleting group: %@",error);
        dispatch_async(dispatch_get_main_queue(),^ (void){
+           UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+           [message show];
            [self.navigationController popToRootViewControllerAnimated:YES];
        });
    }];

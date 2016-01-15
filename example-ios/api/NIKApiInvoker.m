@@ -97,7 +97,15 @@ static NSInteger __LoadingObjectsCount = 0;
          [self stopLoad];
          long statusCode = [(NSHTTPURLResponse*)response statusCode];
          if (response_error) {
-             completionBlock(nil, response_error);
+             NSDictionary* results = [NSJSONSerialization
+                                      JSONObjectWithData:response_data
+                                      options:kNilOptions
+                                      error:nil];
+             if (results != nil) {
+                 completionBlock(nil, [NSError errorWithDomain:response_error.domain code:response_error.code userInfo:results]);
+             } else {
+                 completionBlock(nil, response_error);
+             }
              return;
          }
          else if (!NSLocationInRange(statusCode, NSMakeRange(200, 99))){

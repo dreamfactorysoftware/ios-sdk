@@ -82,7 +82,7 @@
         } failure:^(NSError *error) {
             NSLog(@"Error logging in user: %@",error);
             dispatch_async(dispatch_get_main_queue(),^ (void){
-                UIAlertView *message=[[UIAlertView alloc]initWithTitle:@"" message:@"Error, invalid password" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles: nil];
+                UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
                 [message show];
             });
         }];
