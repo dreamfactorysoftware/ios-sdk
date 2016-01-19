@@ -371,6 +371,10 @@
     // created a new group, add it to the server
     
     [[RESTEngine sharedEngine] addGroupToServerWithName:self.groupNameTextField.text contactIds:self.selectedRows success:^(NSDictionary *response) {
+        // go to previous screen
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.navigationController popViewControllerAnimated:YES];
+        });
         
     } failure:^(NSError *error) {
         NSLog(@"Error adding group to server: %@",error);

@@ -20,8 +20,7 @@
 
 + (instancetype) pickerWithNibName:(NSString*)nibName {
     PickerSelector *instance = [[self alloc] initWithNibName:nibName bundle:[NSBundle bundleForClass:[PickerSelector class]]];
-    instance.pickerData = [NSMutableArray arrayWithCapacity:0];
-    instance.numberOfComponents = 1;
+    instance.pickerData = [NSMutableArray arrayWithCapacity:4];
     
     return instance;
 }
@@ -84,24 +83,8 @@
 - (IBAction)setAction:(id)sender
 {
     if (self.delegate && self.pickerData.count > 0) {
-        NSMutableString *str = [NSMutableString stringWithString:@""];
-        for (int i = 0; i < self.numberOfComponents; i++) {
-            if (self.numberOfComponents == 1) {
-                [str appendString:self.pickerData[[self.pickerView selectedRowInComponent:0]]];
-            }else{
-                NSMutableArray *componentData = self.pickerData[i];
-                [str appendString:componentData[[self.pickerView selectedRowInComponent:i]]];
-                if (i<self.numberOfComponents-1) {
-                    [str appendString:@" "];
-                }
-            }
-        }
-        
-        
-        if ([self.delegate respondsToSelector:@selector(pickerSelector:selectedValue:index:)]) {
-            [self.delegate pickerSelector:self selectedValue:str index:[self.pickerView selectedRowInComponent:0]];
-        }
-        
+        NSInteger index = [self.pickerView selectedRowInComponent:0];
+        [self.delegate pickerSelector:self selectedValue:self.pickerData[index] index:index];
     }
     
     [self dismissPicker];
@@ -126,47 +109,21 @@
     }];
 }
 
-#pragma mark - picker delegate and datasource
+#pragma mark - picker datasource
 
 - (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView
 {
-    return self.numberOfComponents;
+    return 1;
 }
 
 - (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component
 {
-    if (self.numberOfComponents > 1) {
-        NSMutableArray *comp = self.pickerData[component];
-        return comp.count;
-    }
     return self.pickerData.count;
 }
 
 - (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component
 {
-    if (self.numberOfComponents > 1) {
-        NSMutableArray *comp = self.pickerData[component];
-        return comp[row];
-    }
     return self.pickerData[row];
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component
-{
-    if (self.delegate && self.pickerData.count > 0) {
-        NSMutableString *str = [NSMutableString stringWithString:@""];
-        for (int i = 0; i < self.numberOfComponents; i++) {
-            if (self.numberOfComponents == 1) {
-                [str appendString:self.pickerData[[self.pickerView selectedRowInComponent:0]]];
-            } else {
-                NSMutableArray *componentData = self.pickerData[i];
-                [str appendString:componentData[[self.pickerView selectedRowInComponent:i]]];
-                if (i<self.numberOfComponents-1) {
-                    [str appendString:@" "];
-                }
-            }
-        }
-    }
 }
 
 @end

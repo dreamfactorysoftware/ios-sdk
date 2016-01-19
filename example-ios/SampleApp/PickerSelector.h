@@ -32,7 +32,6 @@
 @property (nonatomic, strong) UIView *background;
 @property (nonatomic, strong) NSArray *pickerData;
 @property (nonatomic, weak) id<PickerSelectorDelegate> delegate;
-@property (nonatomic, assign) int numberOfComponents;
 
 + (instancetype) picker;
 - (void) showPickerOver:(UIViewController *)parent;

@@ -324,6 +324,8 @@
                                   @"twitter":[self getTextValue:@"Twitter" recordId:contactTextfieldId],
                                   @"skype":[self getTextValue:@"Skype" recordId:contactTextfieldId]};
     
+    // build the contact and fill it so we don't have to reload when we go up a level
+    self.contactRecord = [[ContactRecord alloc] init];
     
     [[RESTEngine sharedEngine] addContactToServerWithDetails:requestBody success:^(NSDictionary *response) {
         
@@ -342,7 +344,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }
@@ -398,7 +400,6 @@
             [self waitToGoBack];
         });
         return;
-        
     }
     
     [[RESTEngine sharedEngine] addContactInfoToServer:records success:^(NSDictionary *response) {
@@ -411,7 +412,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }
@@ -431,7 +432,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }
@@ -452,7 +453,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }
@@ -484,7 +485,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }
@@ -514,7 +515,7 @@
         dispatch_async(dispatch_get_main_queue(),^ (void){
             UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
             [message show];
-            [self.navigationController popToRootViewControllerAnimated:YES];
+            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
         });
     }];
 }

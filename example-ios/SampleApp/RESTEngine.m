@@ -156,7 +156,7 @@
                        @"last_name": @"Book",
                        @"name": @"Address Book User"};
     
-    [self callApiWithPath:[Routing userWithResourceName:@"session"] method:@"POST" queryParams:queryParams body:requestBody headerParams:self.headerParams success:successBlock failure:failureBlock];
+    [self callApiWithPath:[Routing userWithResourceName:@"register"] method:@"POST" queryParams:queryParams body:requestBody headerParams:self.headerParams success:successBlock failure:failureBlock];
 }
 
 #pragma mark - Group methods
@@ -423,7 +423,7 @@
     id body = @{@"contact_group_id": groupId,
                @"contact_id": contactId};
     
-    [self callApiWithPath:[Routing userWithResourceName:@"contact_group_relationship"] method:@"POST" queryParams:nil body:body headerParams:self.headerParams success:successBlock failure:failureBlock];
+    [self callApiWithPath:[Routing serviceWithTableName:@"contact_group_relationship"] method:@"POST" queryParams:nil body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }
 
 - (void)addContactInfoToServer:(NSArray *)info success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
