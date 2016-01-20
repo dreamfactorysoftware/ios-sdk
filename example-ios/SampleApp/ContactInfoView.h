@@ -20,6 +20,7 @@
 @property (nonatomic, weak) id<ContactInfoDelegate> delegate;
 @property (nonatomic, copy) NSString *contactType;
 
+- (void)setTextFieldsDelegate:(id<UITextFieldDelegate>) delegate;
 - (void) updateFields;
 - (void) updateRecord;
 - (NSDictionary*) buildToDictionary;

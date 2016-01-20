@@ -16,14 +16,20 @@
 @property(nonatomic, retain) NSMutableArray* addedContactInfo;
 
 // for handling a profile image set up for a new user
-@property(nonatomic, retain) NSString* imageUrl;
-@property(nonatomic, retain) UIImage* profileImage;
+@property (nonatomic, retain) NSString* imageUrl;
+@property (nonatomic, retain) UIImage* profileImage;
 @property (nonatomic, weak) ContactInfoView *selectedContactInfoView;
+@property (nonatomic, weak) UITextField *activeTextField;
 
 @end
 
 
 @implementation ContactEditViewController
+
+- (void)dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 // when adding view controller, need to calc how big it has to be ahead of time
 // need to create all the records and such first
@@ -52,6 +58,7 @@
     
     [self.view reloadInputViews];
     [self.contactEditScrollView reloadInputViews];
+    [self registerForKeyboardNotifications];
 }
 
 - (void) viewWillDisappear:(BOOL)animated{
@@ -70,6 +77,42 @@
     [navBar showDone];
     [navBar.doneButton addTarget:self action:@selector(hitSaveButton) forControlEvents:UIControlEventTouchDown];
     [navBar enableAllTouch];
+}
+
+- (void)registerForKeyboardNotifications
+{
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWasShown:)
+                                                 name:UIKeyboardDidShowNotification object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(keyboardWillBeHidden:)
+                                                 name:UIKeyboardWillHideNotification object:nil];
+    
+}
+
+- (void)keyboardWasShown:(NSNotification*)aNotification
+{
+    NSDictionary* info = [aNotification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(self.contactEditScrollView.contentInset.top, 0.0, kbSize.height, 0.0);
+    self.contactEditScrollView.contentInset = contentInsets;
+    self.contactEditScrollView.scrollIndicatorInsets = contentInsets;
+    
+    // If active text field is hidden by keyboard, scroll it so it's visible
+    CGRect aRect = self.view.frame;
+    aRect.size.height -= kbSize.height;
+    if (!CGRectContainsPoint(aRect, self.activeTextField.frame.origin) ) {
+        [self.contactEditScrollView scrollRectToVisible:self.activeTextField.frame animated:YES];
+    }
+}
+
+- (void)keyboardWillBeHidden:(NSNotification*)aNotification
+{
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(self.contactEditScrollView.contentInset.top, 0.0, 0.0, 0.0);
+    self.contactEditScrollView.contentInset = contentInsets;
+    self.contactEditScrollView.scrollIndicatorInsets = contentInsets;
 }
 
 - (void) addItemViewController:(ProfileImagePickerViewController *)controller didFinishEnteringItem:(NSString *)item {
@@ -134,6 +177,16 @@
     return YES;
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField
+{
+    self.activeTextField = textField;
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textField
+{
+    self.activeTextField = nil;
+}
+
 - (void) putValueInTextfield:(NSString*)value key:(NSString*)key record:(NSNumber*)record {
     if([value length] > 0){
         NSMutableDictionary* dict = [self.textFields objectForKey:record];
@@ -185,6 +238,7 @@
     // build new view
     ContactInfoView* contactInfoView = [[ContactInfoView alloc] initWithFrame:CGRectMake(0, yToInsert, self.contactEditScrollView.frame.size.width, 0)];
     contactInfoView.delegate = self;
+    [contactInfoView setTextFieldsDelegate:self];
     ContactDetailRecord* record = [[ContactDetailRecord alloc] init];
     record.ContactId = nil;
     
@@ -265,6 +319,7 @@
             int y = CGRectGetMaxY(((UIView*)[self.contactEditScrollView.subviews lastObject]).frame);
             ContactInfoView* contactInfoView = [[ContactInfoView alloc] initWithFrame:CGRectMake(self.view.frame.size.width * 0.00, y, self.contactEditScrollView.frame.size.width, 40)];
             contactInfoView.delegate = self;
+            [contactInfoView setTextFieldsDelegate:self];
             
             contactInfoView.record = record;
             [contactInfoView updateFields];
@@ -526,7 +581,7 @@
                     }
                 }];
                 if (shouldBreak) {
-                    break;
+                    return;
                 }
                 
                 [contactInfoView updateRecord];

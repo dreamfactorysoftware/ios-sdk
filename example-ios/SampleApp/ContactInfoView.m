@@ -51,6 +51,12 @@
     }
 }
 
+- (void)setTextFieldsDelegate:(id<UITextFieldDelegate>)delegate
+{
+    [self.textFields enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        ((UITextField *)obj).delegate = delegate;
+    }];
+}
 
 - (void) updateFields {
     [self PutFieldIn:self.record.Type key:@"Type"];
@@ -86,11 +92,11 @@
 - (void)validateInfoWithResult:(void (^)(BOOL, NSString *))result
 {
     NSString *email = [self getTextValue:@"Email"];
-    if(email.length == 0 || [email isValidEmail]) {
-        return result(true, nil);
-    } else {
+    if(email.length != 0 && ![email isValidEmail]) {
         return result(false, @"Not a valid email");
     }
+    
+    return result(true, nil);
 }
 
 - (NSDictionary*) buildToDictionary{
@@ -120,7 +126,6 @@
         textfield.backgroundColor = [UIColor whiteColor];
         
         textfield.layer.cornerRadius = 5;
-        textfield.delegate = self;
    
         [self addSubview:textfield];
         
@@ -150,12 +155,6 @@
 {
     _contactType = [contactType copy];
     ((UITextField *)self.textFields[@"Type"]).text = contactType;
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField
-{
-    [textField resignFirstResponder];
-    return YES;
 }
 
 @end
