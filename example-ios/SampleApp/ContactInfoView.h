@@ -23,6 +23,7 @@
 - (void) updateFields;
 - (void) updateRecord;
 - (NSDictionary*) buildToDictionary;
+- (void)validateInfoWithResult:(void (^)(BOOL valid, NSString *message))result;
 
 @end
 #endif

@@ -59,12 +59,12 @@ static NSInteger __LoadingObjectsCount = 0;
                                                    body:body
                                            headerParams:headerParams
                                             contentType:contentType];
-
+    
     /*******************************************************************
-     * 
-     *  NOTE: apple added App Transport Security in iOS 9.0+ to improve 
-     *          security. As of this writing (7/15) all plain text http 
-     *          connections fail by default. For more info about App 
+     *
+     *  NOTE: apple added App Transport Security in iOS 9.0+ to improve
+     *          security. As of this writing (7/15) all plain text http
+     *          connections fail by default. For more info about App
      *          Transport Security and how to handle this issue here:
      *          https://developer.apple.com/library/prerelease/ios/technotes/App-Transport-Security-Technote/index.html
      *
@@ -78,8 +78,8 @@ static NSInteger __LoadingObjectsCount = 0;
             NSError *error = nil;
             NSDictionary* results = [NSJSONSerialization
                                      JSONObjectWithData:data
-                                                options:kNilOptions
-                                                    error:&error];
+                                     options:kNilOptions
+                                     error:&error];
             completionBlock(results, nil);
         }
     }
@@ -97,12 +97,16 @@ static NSInteger __LoadingObjectsCount = 0;
          [self stopLoad];
          long statusCode = [(NSHTTPURLResponse*)response statusCode];
          if (response_error) {
-             NSDictionary* results = [NSJSONSerialization
-                                      JSONObjectWithData:response_data
-                                      options:kNilOptions
-                                      error:nil];
-             if (results != nil) {
-                 completionBlock(nil, [NSError errorWithDomain:response_error.domain code:response_error.code userInfo:results]);
+             if (response_data) {
+                 NSDictionary* results = [NSJSONSerialization
+                                          JSONObjectWithData:response_data
+                                          options:kNilOptions
+                                          error:nil];
+                 if (results != nil) {
+                     completionBlock(nil, [NSError errorWithDomain:response_error.domain code:response_error.code userInfo:results]);
+                 } else {
+                     completionBlock(nil, response_error);
+                 }
              } else {
                  completionBlock(nil, response_error);
              }
@@ -116,13 +120,13 @@ static NSInteger __LoadingObjectsCount = 0;
                                                                                          error:&response_error]];
              
              completionBlock(nil, response_error);
-            return;
+             return;
          }
          else {
              NSDictionary* results = [NSJSONSerialization
-                                              JSONObjectWithData:response_data
-                                              options:kNilOptions
-                                              error:&response_error];
+                                      JSONObjectWithData:response_data
+                                      options:kNilOptions
+                                      error:&response_error];
              
              if ([[NSUserDefaults standardUserDefaults] boolForKey:@"RVBLogging"]) {
                  NSLog(@"fetched results (%f seconds): %@", [[NSDate date] timeIntervalSinceDate:date], results);

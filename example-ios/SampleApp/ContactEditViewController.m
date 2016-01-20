@@ -383,9 +383,25 @@
     for(UIView* view in [self.contactEditScrollView subviews]){
         if([view isKindOfClass:[ContactInfoView class]]){
             ContactInfoView* contactInfoView = (ContactInfoView*) view;
-            if(contactInfoView.record.Id == nil){
+            if(contactInfoView.record.Id == nil || [contactInfoView.record.Id isEqualToNumber:@0]){
                 contactInfoView.record.Id = [NSNumber numberWithInt:0];
                 contactInfoView.record.ContactId = self.contactRecord.Id;
+                
+                __block BOOL shouldBreak = NO;
+                [contactInfoView validateInfoWithResult:^(BOOL valid, NSString *message) {
+                    shouldBreak = !valid;
+                    if(!valid) {
+                        dispatch_async(dispatch_get_main_queue(),^ (void){
+                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                            [alert show];
+                            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
+                        });
+                    }
+                }];
+                if (shouldBreak) {
+                    return;
+                }
+                
                 [contactInfoView updateRecord];
                 [records addObject: [contactInfoView buildToDictionary]];
                 [self.contactDetails addObject:contactInfoView.record];
@@ -497,8 +513,26 @@
         if([view isKindOfClass:[ContactInfoView class]]){
             ContactInfoView* contactInfoView = (ContactInfoView*) view;
             if(contactInfoView.record.ContactId != nil){
+                
+                __block BOOL shouldBreak = NO;
+                [contactInfoView validateInfoWithResult:^(BOOL valid, NSString *message) {
+                    shouldBreak = !valid;
+                    if(!valid) {
+                        dispatch_async(dispatch_get_main_queue(),^ (void){
+                            UIAlertView *alert = [[UIAlertView alloc]initWithTitle:@"" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                            [alert show];
+                            [((AppDelegate *)[[UIApplication sharedApplication] delegate]).globalToolBar enableAllTouch];
+                        });
+                    }
+                }];
+                if (shouldBreak) {
+                    break;
+                }
+                
                 [contactInfoView updateRecord];
-                [records addObject: [contactInfoView buildToDictionary]];
+                if(![contactInfoView.record.Id isEqualToNumber:@0]) {
+                    [records addObject: [contactInfoView buildToDictionary]];
+                }
             }
         }
     }

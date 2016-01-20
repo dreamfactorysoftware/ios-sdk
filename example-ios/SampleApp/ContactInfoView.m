@@ -2,6 +2,17 @@
 
 #import "ContactInfoView.h"
 
+@implementation NSString (emailValidation)
+
+-(BOOL)isValidEmail
+{
+    NSString *emailRegex = @"^.+@([A-Za-z0-9-]+\\.)+[A-Za-z]{2}[A-Za-z]*$";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:self];
+}
+
+@end
+
 @interface ContactInfoView ()<UITextFieldDelegate>
 
 @property (nonatomic, retain) NSMutableDictionary* textFields;
@@ -68,6 +79,18 @@
     self.record.State = [self getTextValue:@"State" ];
     self.record.Zipcode = [self getTextValue:@"Zip" ];
     self.record.Country = [self getTextValue:@"Country" ];
+}
+
+// validate email only
+// other validations can be added, e.g. phone number, address
+- (void)validateInfoWithResult:(void (^)(BOOL, NSString *))result
+{
+    NSString *email = [self getTextValue:@"Email"];
+    if(email.length == 0 || [email isValidEmail]) {
+        return result(true, nil);
+    } else {
+        return result(false, @"Not a valid email");
+    }
 }
 
 - (NSDictionary*) buildToDictionary{
