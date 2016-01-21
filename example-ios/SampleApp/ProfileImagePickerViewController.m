@@ -1,12 +1,8 @@
 #import <Foundation/Foundation.h>
 
 #import "ProfileImagePickerViewController.h"
-#import "MasterViewController.h"
-#import "NIKFile.h"
-#import "NIKApiInvoker.h"
+#import "RESTEngine.h"
 #import "AppDelegate.h"
-
-static NSString *baseUrl=@"";
 
 @interface ProfileImagePickerViewController ()
 
@@ -26,10 +22,6 @@ static NSString *baseUrl=@"";
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    // get the base URL (<base instance url>/api/v2)
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
     
     self.imageListContentArray = [[NSMutableArray alloc] init];
     [self getImageListFromServer];
@@ -122,74 +114,35 @@ static NSString *baseUrl=@"";
 }
 
 - (void) getImageListFromServer {
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    if(self.record == nil){
-        return;
-    }
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] getImageListFromServerWithContactId:self.record.Id success:^(NSDictionary *response) {
+        [self.imageListContentArray removeAllObjects];
         
-        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/
-        // here the folder path is contactId/
-        NSString* containerName = kContainerName;
-        NSString* folderPath = [NSString stringWithFormat:@"/%@", [self.record.Id stringValue]];
-        // note that you need the extra '/' here at the end of the api path because you are
-        // targeting a folder not a file
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/",baseUrl,containerName, folderPath];
-        NSLog(@"\nAPI path: %@\n", restApiPath);
+        for(NSDictionary* fileDict in response[@"file"]){
+            [self.imageListContentArray addObject:[fileDict objectForKey:@"name"]];
+        }
         
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // only want to get files, not any sub folders
-        queryParams[@"include_folders"] = [NSNumber numberWithBool:NO];
-        queryParams[@"include_files"] = [NSNumber numberWithBool:YES];
-        
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        NSDictionary* requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           
-           if (error) {
-               // check if the error is file not found
-               if(error.code == 404){
-                   NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
-                   NSString* message = [decode objectForKey:@"message"];
-                   if([message containsString:@"does not exist in storage"]){
-                       NSLog(@"Warning: Error getting profile image list data from server: %@", message);
-                       return;
-                   }
-               }
-               // else report normally
-               NSLog(@"Error getting profile image list data from server: %@", error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           
-           NSLog(@"Error getting profile image list data from server: %@", error);
-           
-           [self.imageListContentArray removeAllObjects];
-           
-           for(NSDictionary* fileDict in [responseDict objectForKey:@"file"]){
-               [self.imageListContentArray addObject:[fileDict objectForKey:@"name"]];
-           }
-           
-           dispatch_async(dispatch_get_main_queue(),^ (void){
-               [self.imageListTableView reloadData];
-               [self.imageListTableView setNeedsDisplay];
-           });
-       }];
-    }
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.imageListTableView reloadData];
+            [self.imageListTableView setNeedsDisplay];
+        });
+    } failure:^(NSError *error) {
+        // check if the error is file not found
+        if(error.code == 404){
+            NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
+            NSString* message = [decode objectForKey:@"message"];
+            if([message containsString:@"does not exist in storage"]){
+                NSLog(@"Warning: Error getting profile image list data from server: %@", message);
+                return;
+            }
+        }
+        // else report normally
+        NSLog(@"Error getting profile image list data from server: %@", error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 @end

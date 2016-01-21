@@ -1,10 +1,9 @@
 #import <Foundation/Foundation.h>
 
 #include "ContactViewController.h"
-#include "MasterViewController.h"
 #include "ContactDetailRecord.h"
 #include "ContactEditViewController.h"
-#import "NIKApiInvoker.h"
+#import "RESTEngine.h"
 #import "AppDelegate.h"
 
 @interface ContactViewController ()
@@ -27,8 +26,6 @@
 
 @property(nonatomic) BOOL cancled;
 @end
-
-static NSString* baseUrl = @"";
 
 @implementation ContactViewController
 
@@ -74,8 +71,6 @@ static NSString* baseUrl = @"";
     // view gets pushed, unlocks viewLock -> first page of view gets built as animation comes in
     // group list gets added once its done -> picture comes in
     // TODO: double check that deadlock can't happen here
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
     
     self.contactDetails = [[NSMutableArray alloc] init];
     self.contactGroups = [[NSMutableArray alloc] init];
@@ -393,85 +388,53 @@ static NSString* baseUrl = @"";
 }
 
 - (void) getContactInfoFromServer:(ContactRecord*)contact_record {
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] getContactInfoFromServerWithContactId:contact_record.Id success:^(NSDictionary *response) {
+        NSMutableArray* array = [[NSMutableArray alloc] init];
+        // put the contact ids into an array
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_info"; // rest path
+        // double check we don't fetch any repeats
+        NSMutableArray* existingIds = [[NSMutableArray alloc] init];
+        for (NSDictionary *recordInfo in response[@"resource"]) {
+            @autoreleasepool {
+                NSNumber* recordId = [recordInfo objectForKey:@"id"];
+                if([existingIds containsObject:recordId]){
+                    continue;
+                }
+                ContactDetailRecord* new_record = [[ContactDetailRecord alloc] init];
+                [new_record setId:[recordInfo objectForKey:@"id"]];
+                [new_record setAddress:[self removeNull:[recordInfo objectForKey:@"address"]]];
+                [new_record setCity :[self removeNull:[recordInfo objectForKey:@"city"]]];
+                [new_record setCountry:[self removeNull:[recordInfo objectForKey:@"country"]]];
+                [new_record setEmail:[self removeNull:[recordInfo objectForKey:@"email"]]];
+                [new_record setType:[self removeNull:[recordInfo objectForKey:@"info_type"]]];
+                [new_record setPhone:[self removeNull:[recordInfo objectForKey:@"phone"]]];
+                [new_record setState:[self removeNull:[recordInfo objectForKey:@"state"]]];
+                [new_record setZipcode:[self removeNull:[recordInfo objectForKey:@"zip"]]];
+                [new_record setContactId:[recordInfo objectForKey:@"contact_id"]];
+                [array addObject:new_record];
+            }
+        }
+        // tell the contact list what group it is looking at
+        self.contactDetails = array;
         
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
         
-        // get the contact records
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", contact_record.Id];
-        queryParams[@"filter"] = filter;
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error getting contact info: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               NSMutableArray* array = [[NSMutableArray alloc] init];
-               // put the contact ids into an array
-               
-               // double check we don't fetch any repeats
-               NSMutableArray* existingIds = [[NSMutableArray alloc] init];
-               for (NSDictionary *recordInfo in [responseDict objectForKey:@"resource"]) {
-                   @autoreleasepool {
-                       NSNumber* recordId = [recordInfo objectForKey:@"id"];
-                       if([existingIds containsObject:recordId]){
-                           continue;
-                       }
-                       ContactDetailRecord* new_record = [[ContactDetailRecord alloc] init];
-                       [new_record setId:[recordInfo objectForKey:@"id"]];
-                       [new_record setAddress:[self removeNull:[recordInfo objectForKey:@"address"]]];
-                       [new_record setCity :[self removeNull:[recordInfo objectForKey:@"city"]]];
-                       [new_record setCountry:[self removeNull:[recordInfo objectForKey:@"country"]]];
-                       [new_record setEmail:[self removeNull:[recordInfo objectForKey:@"email"]]];
-                       [new_record setType:[self removeNull:[recordInfo objectForKey:@"info_type"]]];
-                       [new_record setPhone:[self removeNull:[recordInfo objectForKey:@"phone"]]];
-                       [new_record setState:[self removeNull:[recordInfo objectForKey:@"state"]]];
-                       [new_record setZipcode:[self removeNull:[recordInfo objectForKey:@"zip"]]];
-                       [new_record setContactId:[recordInfo objectForKey:@"contact_id"]];
-                       [array addObject:new_record];
-                   }
-               }
-               // tell the contact list what group it is looking at
-               self.contactDetails = array;
-               
-               
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   self.waitReady = YES;
-                   [self.waitLock signal];
-                   [self.waitLock unlock];
-               });
-           }
-       }];
-    }
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            self.waitReady = YES;
+            [self.waitLock signal];
+            [self.waitLock unlock];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error getting contact info: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) getProfilePictureFromServer:(UIImageView*) image_display{
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
+    
     if(self.contactRecord.ImageUrl == nil ||[self.contactRecord.ImageUrl isEqual:@""]){
         dispatch_async(dispatch_get_main_queue(), ^{
             [image_display setImage:[UIImage imageNamed:@"default_portrait.png"]];
@@ -481,159 +444,90 @@ static NSString* baseUrl = @"";
         return;
     }
     
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] getProfileImageFromServerWithContactId:self.contactRecord.Id fileName:self.contactRecord.ImageUrl success:^(NSDictionary *response) {
         
-        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/filename
-        // here the folder path is contactId/
-        // the file path does not end in a '/' because we are targeting a file not a folder
-        NSString* container_name = kContainerName;
-        NSString* folder_path = [NSString stringWithFormat:@"/%@", [self.contactRecord.Id stringValue]];
-        NSString* file_name = self.contactRecord.ImageUrl;
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/%@",baseUrl,container_name, folder_path, file_name];
-        NSLog(@"\nAPI path: %@\n", restApiPath);
-        
-        // request a download from the file
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        queryParams[@"include_properties"] = [NSNumber numberWithBool:YES];
-        queryParams[@"content"] = [NSNumber numberWithBool:YES];
-        queryParams[@"download"] = [NSNumber numberWithBool:YES];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           NSLog(@"Error getting profile image data from server: %@",error);
-           
-           dispatch_async(dispatch_get_main_queue(),^ (void){
-               UIImage* image = nil;
-               
-               @try {
-                   NSData *fileData = [[NSData alloc] initWithBase64EncodedString:[responseDict objectForKey:@"content"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
-                   image = [UIImage imageWithData:fileData];
-               }
-               @catch (NSException *exception) {
-                   NSLog(@"\nWARN: Could not load image off of server, loading default\n");
-                   image = [UIImage imageNamed:@"default_portrait.png"];
-                   
-               }
-               @finally {
-                   if(image == nil || image.CGImage == nil){
-                       NSLog(@"\nERROR: Could not make a profile image\n");
-                   }
-               }
-               
-               if(error || image == nil || image.CGImage == nil){
-                   image = [UIImage imageNamed:@"default_portrait.png"];
-               }
-               
-               [image_display setImage:image];
-               [image_display setContentMode:UIViewContentModeScaleAspectFit];
-               
-               [self.contactDetailScrollView addSubview:image_display];
-           });
-       }];
-    }
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIImage* image = nil;
+            
+            @try {
+                NSData *fileData = [[NSData alloc] initWithBase64EncodedString:response [@"content"] options:NSDataBase64DecodingIgnoreUnknownCharacters];
+                image = [UIImage imageWithData:fileData];
+            }
+            @catch (NSException *exception) {
+                NSLog(@"\nWARN: Could not load image off of server, loading default\n");
+                image = [UIImage imageNamed:@"default_portrait.png"];
+                
+            }
+            @finally {
+                if(image == nil || image.CGImage == nil){
+                    NSLog(@"\nERROR: Could not make a profile image\n");
+                }
+            }
+            
+            [image_display setImage:image];
+            [image_display setContentMode:UIViewContentModeScaleAspectFit];
+            
+            [self.contactDetailScrollView addSubview:image_display];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error getting profile image data from server: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            NSLog(@"\nWARN: Could not load image off of server, loading default\n");
+            UIImage* image= [UIImage imageNamed:@"default_portrait.png"];
+            
+            [image_display setImage:image];
+            [image_display setContentMode:UIViewContentModeScaleAspectFit];
+            [self.contactDetailScrollView addSubview:image_display];
+        });
+    }];
 }
 
 - (void) getContactsListFromServerWithRelation{
-    // get all the group the contact is in using relational queries
-    
-    // get the base URL
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
-    
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] getContactGroupsWithContactId:self.contactRecord.Id success:^(NSDictionary *response) {
+        [self.contactGroups removeAllObjects];
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group_relationship"; // table name
+        // handle repeat contact-group relationships
+        NSMutableArray* tmpGroupIdList = [[NSMutableArray alloc] init];
         
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
+        /*
+         *  Structure of reply is:
+         *  {
+         *      record:[
+         *          {
+         *              <relation info>,
+         *              contact_group_by_contactGroupId:{
+         *                  <group info>
+         *              }
+         *          },
+         *          ...
+         *      ]
+         *  }
+         */
+        for (NSDictionary *relationRecord in response[@"resource"]) {
+            NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_group_by_contact_group_id"];
+            NSNumber* contactId = [recordInfo objectForKey:@"id"];
+            if([tmpGroupIdList containsObject:contactId]){
+                // a different record already related the group-contact pair
+                continue;
+            }
+            [tmpGroupIdList addObject:contactId];
+            NSString* groupName = [recordInfo objectForKey:@"name"];
+            [self.contactGroups addObject:groupName];
+        }
         
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // only get contact_group_relationships for this contact
-        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", self.contactRecord.Id];
-        queryParams[@"filter"] = filter;
-        
-        // request without related would return just {id, groupId, contactId}
-        // set the related field to go get the group records referenced by
-        // each contact_group_relationship record
-        queryParams[@"related"] = @"contact_group_by_contact_group_id";
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error getting groups with relation: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               [self.contactGroups removeAllObjects];
-               
-               // handle repeat contact-group relationships
-               NSMutableArray* tmpGroupIdList = [[NSMutableArray alloc] init];
-               
-               /*
-                *  Structure of reply is:
-                *  {
-                *      record:[
-                *          {
-                *              <relation info>,
-                *              contact_group_by_contactGroupId:{
-                *                  <group info>
-                *              }
-                *          },
-                *          ...
-                *      ]
-                *  }
-                */
-               for (NSDictionary *relationRecord in [responseDict objectForKey:@"resource"]) {
-                   NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_group_by_contact_group_id"];
-                   NSNumber* contactId = [recordInfo objectForKey:@"id"];
-                   if([tmpGroupIdList containsObject:contactId]){
-                       // a different record already related the group-contact pair
-                       continue;
-                   }
-                   [tmpGroupIdList addObject:contactId];
-                   NSString* groupName = [recordInfo objectForKey:@"name"];
-                   [self.contactGroups addObject:groupName];
-               }
-               
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   self.groupReady = YES;
-                   [self.groupLock signal];
-                   [self.groupLock unlock];
-               });
-           }
-       }];
-    }
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            self.groupReady = YES;
+            [self.groupLock signal];
+            [self.groupLock unlock];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error getting groups with relation: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 @end

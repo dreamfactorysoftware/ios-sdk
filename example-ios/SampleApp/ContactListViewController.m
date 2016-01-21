@@ -2,16 +2,13 @@
 
 #import "ContactListViewController.h"
 #import "ContactEditViewController.h"
-#import "MasterViewController.h"
 #import "AddressBookRecord.h"
 #import "ContactDetailRecord.h"
 #import "ContactRecord.h"
 #import "ContactViewController.h"
 #import "GroupAddViewController.h"
-#import "NIKApiInvoker.h"
+#import "RESTEngine.h"
 #import "AppDelegate.h"
-
-static NSString *baseUrl=@"";
 
 @interface ContactListViewController ()
 
@@ -47,11 +44,6 @@ static NSString *baseUrl=@"";
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    
-    
-    // get the base URL
-    NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-    baseUrl=baseInstanceUrl;
     
     self.displayContentArray = [[NSMutableArray alloc] init];
     
@@ -261,7 +253,7 @@ static NSString *baseUrl=@"";
             }
             // need to delete everything with references to contact before
             // removing contact its self
-            [self removeContactGroupRelationWithContactId:record.Id];
+            [self removeContactWithContactId:record.Id];
             
             [self.displayContentArray removeObjectAtIndex:indexPath.row];
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
@@ -281,7 +273,7 @@ static NSString *baseUrl=@"";
             // delete the contact
             // delete contact relation -> delete contact info -> delete profile images ->
             // delete contact
-            [self removeContactGroupRelationWithContactId:record.Id];
+            [self removeContactWithContactId:record.Id];
         }
     }
 }
@@ -319,363 +311,150 @@ static NSString *baseUrl=@"";
 }
 
 - (void) getContactsListFromServerWithRelation{
-    // get all the contacts in the group using relational queries
-    
-    // get the base URL
-    if([baseUrl isEqualToString:@""]){
-        NSString  *baseInstanceUrl=[[NSUserDefaults standardUserDefaults] valueForKey:kBaseInstanceUrl];
-        baseUrl=baseInstanceUrl;
-    }
-    
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+    [[RESTEngine sharedEngine] getContactsListFromServerWithRelationWithGroupId:self.groupRecord.Id success:^(NSDictionary *response) {
+        self.alphabetArray = [[NSMutableArray alloc] init];
+        self.contactSectionsDictionary = [[NSMutableDictionary alloc] init];
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group_relationship"; // table name
+        [self.displayContentArray removeAllObjects];
+        [self.contactSectionsDictionary removeAllObjects];
+        [self.alphabetArray removeAllObjects];
         
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
+        // handle repeat contact-group relationships
+        NSMutableArray* tmpContactIdList = [[NSMutableArray alloc] init];
         
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // only get contact_group_relationships for this group
-        NSString *filter = [NSString stringWithFormat:@"contact_group_id=%@", self.groupRecord.Id];
-        queryParams[@"filter"] = filter;
+        /*
+         *  Structure of reply is:
+         *  {
+         *      record:[
+         *          {
+         *              <relation info>,
+         *              contact_by_contact_id:{
+         *                  <contact info>
+         *              }
+         *          },
+         *          ...
+         *      ]
+         *  }
+         */
+        for (NSDictionary *relationRecord in response [@"resource"]) {
+            @autoreleasepool {
+                NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_by_contact_id"];
+                NSNumber* contactId = [recordInfo objectForKey:@"id"];
+                if([tmpContactIdList containsObject:contactId]){
+                    // a different record already related the group-contact pair
+                    continue;
+                }
+                [tmpContactIdList addObject:contactId];
+                
+                ContactRecord* newRecord = [[ContactRecord alloc] init];
+                [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"first_name"]]];
+                [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"last_name"]]];
+                [newRecord setId:[recordInfo objectForKey:@"id"]];
+                [newRecord setNotes:[self removeNull:[recordInfo objectForKey:@"notes"]]];
+                [newRecord setSkype:[self removeNull:[recordInfo objectForKey:@"skype"]]];
+                [newRecord setTwitter:[self removeNull:[recordInfo objectForKey:@"twitter"]]];
+                [newRecord setImageUrl:[self removeNull:[recordInfo objectForKey:@"image_url"]]];
+                
+                if([newRecord.LastName length] > 0){
+                    [self.displayContentArray addObject:newRecord];
+                    BOOL found = NO;
+                    for(NSString* key in [self.contactSectionsDictionary allKeys]){
+                        @autoreleasepool {
+                            if([key caseInsensitiveCompare:[newRecord.LastName substringToIndex:1] ] == 0 ){
+                                // contact fits in one of the buckets already in the dictionary
+                                NSMutableArray* section = [self.contactSectionsDictionary objectForKey:key];
+                                [section addObject:newRecord];
+                                found = YES;
+                                break;
+                            }
+                        }
+                    }
+                    if(!found){
+                        // add new key
+                        NSString* key = [[newRecord.LastName substringToIndex:1] uppercaseString];
+                        self.contactSectionsDictionary[key] = [[NSMutableArray alloc] initWithObjects:newRecord, nil];
+                    }
+                }
+            }
+        }
         
-        // request without related would return just {id, groupId, contactId}
-        // set the related field to go get the contact records referenced by
-        // each contact_group_relationship record
-        queryParams[@"related"] = @"contact_by_contact_id";
+        // sort the sections in the dictionary by lastName, firstName
+        NSMutableDictionary* tmp = [[NSMutableDictionary alloc] init];
         
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
+        for(NSString* key in [self.contactSectionsDictionary allKeys]){
+            @autoreleasepool {
+                NSMutableArray* unsorted = [self.contactSectionsDictionary objectForKey:key];
+                NSArray* sorted = [unsorted sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                    
+                    ContactRecord* one = (ContactRecord*) obj1;
+                    ContactRecord* two = (ContactRecord*) obj2;
+                    if([[one LastName] isEqual:[two LastName]]){
+                        NSString* first = [one FirstName];
+                        NSString* second = [two FirstName];
+                        return [first compare:second];
+                    }
+                    NSString* first = [(ContactRecord*)obj1 LastName];
+                    NSString* second = [(ContactRecord*)obj2 LastName];
+                    return [first compare:second];
+                }];
+                tmp[key] = [sorted mutableCopy];
+            }
+        }
         
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        [_api restPath:restApiPath
-                method:@"GET"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               if(error.code == 400){
-                   NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
-                   NSString* message = [decode objectForKey:@"message"];
-                   if([message containsString:@"Invalid relationship"]){
-                       NSLog(@"Error: table names in relational calls are case sensitive: %@", message);
-                       dispatch_async(dispatch_get_main_queue(),^ (void){
-                           [self.navigationController
-                            popToRootViewControllerAnimated:YES];
-                       });
-                       return;
-                   }
-               }
-               
-               NSLog(@"Error getting contacts with relation: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               self.alphabetArray = [[NSMutableArray alloc] init];
-               self.contactSectionsDictionary = [[NSMutableDictionary alloc] init];
-               
-               [self.displayContentArray removeAllObjects];
-               [self.contactSectionsDictionary removeAllObjects];
-               [self.alphabetArray removeAllObjects];
-               
-               // handle repeat contact-group relationships
-               NSMutableArray* tmpContactIdList = [[NSMutableArray alloc] init];
-               
-               /*
-                *  Structure of reply is:
-                *  {
-                *      record:[
-                *          {
-                *              <relation info>,
-                *              contact_by_contact_id:{
-                *                  <contact info>
-                *              }
-                *          },
-                *          ...
-                *      ]
-                *  }
-                */
-               for (NSDictionary *relationRecord in [responseDict objectForKey:@"resource"]) {
-                   @autoreleasepool {
-                       NSDictionary* recordInfo = [relationRecord objectForKey:@"contact_by_contact_id"];
-                       NSNumber* contactId = [recordInfo objectForKey:@"id"];
-                       if([tmpContactIdList containsObject:contactId]){
-                           // a different record already related the group-contact pair
-                           continue;
-                       }
-                       [tmpContactIdList addObject:contactId];
-                       
-                       ContactRecord* newRecord = [[ContactRecord alloc] init];
-                       [newRecord setFirstName:[self removeNull:[recordInfo objectForKey:@"first_name"]]];
-                       [newRecord setLastName:[self removeNull:[recordInfo objectForKey:@"last_name"]]];
-                       [newRecord setId:[recordInfo objectForKey:@"id"]];
-                       [newRecord setNotes:[self removeNull:[recordInfo objectForKey:@"notes"]]];
-                       [newRecord setSkype:[self removeNull:[recordInfo objectForKey:@"skype"]]];
-                       [newRecord setTwitter:[self removeNull:[recordInfo objectForKey:@"twitter"]]];
-                       [newRecord setImageUrl:[self removeNull:[recordInfo objectForKey:@"image_url"]]];
-                       
-                       if([newRecord.LastName length] > 0){
-                           [self.displayContentArray addObject:newRecord];
-                           BOOL found = NO;
-                           for(NSString* key in [self.contactSectionsDictionary allKeys]){
-                               @autoreleasepool {
-                                   if([key caseInsensitiveCompare:[newRecord.LastName substringToIndex:1] ] == 0 ){
-                                       // contact fits in one of the buckets already in the dictionary
-                                       NSMutableArray* section = [self.contactSectionsDictionary objectForKey:key];
-                                       [section addObject:newRecord];
-                                       found = YES;
-                                       break;
-                                   }
-                               }
-                           }
-                           if(!found){
-                               // add new key
-                               NSString* key = [[newRecord.LastName substringToIndex:1] uppercaseString];
-                               self.contactSectionsDictionary[key] = [[NSMutableArray alloc] initWithObjects:newRecord, nil];
-                           }
-                       }
-                   }
-               }
-           
-               // sort the sections in the dictionary by lastName, firstName
-               NSMutableDictionary* tmp = [[NSMutableDictionary alloc] init];
-               
-               for(NSString* key in [self.contactSectionsDictionary allKeys]){
-                   @autoreleasepool {
-                       NSMutableArray* unsorted = [self.contactSectionsDictionary objectForKey:key];
-                       NSArray* sorted = [unsorted sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                           
-                           ContactRecord* one = (ContactRecord*) obj1;
-                           ContactRecord* two = (ContactRecord*) obj2;
-                           if([[one LastName] isEqual:[two LastName]]){
-                               NSString* first = [one FirstName];
-                               NSString* second = [two FirstName];
-                               return [first compare:second];
-                           }
-                           NSString* first = [(ContactRecord*)obj1 LastName];
-                           NSString* second = [(ContactRecord*)obj2 LastName];
-                           return [first compare:second];
-                       }];
-                       tmp[key] = [sorted mutableCopy];
-                   }
-               }
-               
-               self.contactSectionsDictionary = tmp;
-               
-               self.alphabetArray = [[[self.contactSectionsDictionary allKeys] sortedArrayUsingSelector:@selector(compare:)] mutableCopy];
-               
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   if(!self.viewReady){
-                       self.viewReady = YES;
-                       [self.viewLock signal];
-                       [self.viewLock unlock];
-                   }
-                   else{
-                       [self.contactListTableView reloadData];
-                       [self.contactListTableView setNeedsDisplay];
-                   }
-               });
-           }
-       }];
-    }
-}
-
-- (void) removeContactGroupRelationWithContactId:(NSNumber*) contactId{
-    
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
+        self.contactSectionsDictionary = tmp;
         
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_group_relationship";
+        self.alphabetArray = [[[self.contactSectionsDictionary allKeys] sortedArrayUsingSelector:@selector(compare:)] mutableCopy];
         
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            if(!self.viewReady){
+                self.viewReady = YES;
+                [self.viewLock signal];
+                [self.viewLock unlock];
+            }
+            else{
+                [self.contactListTableView reloadData];
+                [self.contactListTableView setNeedsDisplay];
+            }
+        });
+    } failure:^(NSError *error) {
+        if(error.code == 400){
+            NSDictionary* decode = [[error.userInfo objectForKey:@"error"] firstObject];
+            NSString* message = [decode objectForKey:@"message"];
+            if([message containsString:@"Invalid relationship"]){
+                NSLog(@"Error: table names in relational calls are case sensitive: %@", message);
+                dispatch_async(dispatch_get_main_queue(),^ (void){
+                    UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+                    [message show];
+                    [self.navigationController
+                     popToRootViewControllerAnimated:YES];
+                });
+                return;
+            }
+        }
         
-        // remove only contact-group relationships where contact is the contact to remove
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", [contactId stringValue]];
-        queryParams[@"filter"] = filter;
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error removing contact group relation: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }
-           else{
-               [self removeContactInfoWithContactId:contactId];
-           }
-       }];
-    }
-}
-
-- (void) removeContactInfoWithContactId:(NSNumber*) contactId{
-    
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact_info";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        // remove only contactinfo for the contact we want to remove
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        NSString *filter = [NSString stringWithFormat:@"contact_id=%@", [contactId stringValue]];
-        queryParams[@"filter"] = filter;
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error deleting contact info: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-               
-           }else{
-               [self removeImageFileFolderFromServerWithContactId:contactId];
-           }
-       }];
-    }
-}
-
-- (void) removeImageFileFolderFromServerWithContactId:(NSNumber*) contactId{
-    // try to remove image folder if one was created
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/files/container/<folder path>/
-        // here the folder path is contactId/
-        NSString* containerName = kContainerName;
-        NSString* folderPath = [NSString stringWithFormat:@"/%@", [contactId stringValue]];
-        // note that you need the extra '/' here at the end of the api path because
-        // the url is pointing to a folder
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/files/%@/%@/",baseUrl,containerName, folderPath];
-        NSLog(@"\nAPI path: %@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // delete all files and folders in the target folder
-        queryParams[@"force"] = [NSNumber numberWithBool:YES];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        NSDictionary* requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error deleting profile image folder on server: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   // could not remove folder
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-           }else{
-               [self removeContactWithContactId:contactId];
-           }
-       }];
-    }
+        NSLog(@"Error getting contacts with relation: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        });
+    }];
 }
 
 - (void) removeContactWithContactId:(NSNumber*) contactId{
-    // finally remove the contact from the database
-    NSString  *swgSessionToken=[[NSUserDefaults standardUserDefaults] valueForKey:kSessionTokenKey];
-    
-    if (swgSessionToken.length>0) {
-        NIKApiInvoker *_api = [NIKApiInvoker sharedInstance];
-        
-        // build rest path for request, form is <base instance url>/api/v2/<serviceName>/_table/<tableName>
-        NSString *serviceName = kDbServiceName;
-        NSString *tableName = @"contact";
-        
-        NSString *restApiPath = [NSString stringWithFormat:  @"%@/%@/%@",baseUrl,serviceName,tableName];
-        NSLog(@"\n%@\n", restApiPath);
-        
-        NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
-        // remove contact by record ID
-        queryParams[@"ids"] = [contactId stringValue];
-        
-        NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
-        [headerParams setObject:kApiKey forKey:@"X-DreamFactory-Api-Key"];
-        [headerParams setObject:swgSessionToken forKey:@"X-DreamFactory-Session-Token"];
-        
-        NSString* contentType = @"application/json";
-        id requestBody = nil;
-        
-        [_api restPath:restApiPath
-                method:@"DELETE"
-           queryParams:queryParams
-                  body:requestBody
-          headerParams:headerParams
-           contentType:contentType
-       completionBlock:^(NSDictionary *responseDict, NSError *error) {
-           if (error) {
-               NSLog(@"Error deleting contact: %@",error);
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.navigationController popToRootViewControllerAnimated:YES];
-               });
-               
-           }else{
-               dispatch_async(dispatch_get_main_queue(),^ (void){
-                   [self.contactListTableView reloadData];
-                   [self.contactListTableView setNeedsDisplay];
-               });
-           }
-       }];
-    }
+    // remove the contact from the database
+    [[RESTEngine sharedEngine] removeContactWithContactId:contactId success:^(NSDictionary *response) {
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            [self.contactListTableView reloadData];
+            [self.contactListTableView setNeedsDisplay];
+        });
+    } failure:^(NSError *error) {
+        NSLog(@"Error deleting contact: %@",error);
+        dispatch_async(dispatch_get_main_queue(),^ (void){
+            UIAlertView *message= [[UIAlertView alloc]initWithTitle:@"" message:error.errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil];
+            [message show];
+        });
+    }];
 }
 
 - (void) showContactViewController: (ContactRecord*) record {

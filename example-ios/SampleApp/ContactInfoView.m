@@ -2,14 +2,30 @@
 
 #import "ContactInfoView.h"
 
-@interface ContactInfoView ()
-@property(nonatomic, retain) NSMutableDictionary* textFields;
+@implementation NSString (emailValidation)
+
+-(BOOL)isValidEmail
+{
+    NSString *emailRegex = @"^.+@([A-Za-z0-9-]+\\.)+[A-Za-z]{2}[A-Za-z]*$";
+    NSPredicate *emailTest = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", emailRegex];
+    return [emailTest evaluateWithObject:self];
+}
+
+@end
+
+@interface ContactInfoView ()<UITextFieldDelegate>
+
+@property (nonatomic, retain) NSMutableDictionary* textFields;
+@property (nonatomic, strong) NSArray *contactTypes;
+
 @end
 
 @implementation ContactInfoView
 
 - (id) initWithFrame:(CGRect) frame{
     self = [super initWithFrame:frame];
+    
+    self.contactTypes = @[@"work",@"home",@"mobile",@"other"];
     
     [self buildContactTextFields:@[@"Type", @"Phone", @"Email", @"Address", @"City", @"State", @"Zip", @"Country"] y:0];
     
@@ -35,6 +51,12 @@
     }
 }
 
+- (void)setTextFieldsDelegate:(id<UITextFieldDelegate>)delegate
+{
+    [self.textFields enumerateKeysAndObjectsUsingBlock:^(id  _Nonnull key, id  _Nonnull obj, BOOL * _Nonnull stop) {
+        ((UITextField *)obj).delegate = delegate;
+    }];
+}
 
 - (void) updateFields {
     [self PutFieldIn:self.record.Type key:@"Type"];
@@ -63,6 +85,18 @@
     self.record.State = [self getTextValue:@"State" ];
     self.record.Zipcode = [self getTextValue:@"Zip" ];
     self.record.Country = [self getTextValue:@"Country" ];
+}
+
+// validate email only
+// other validations can be added, e.g. phone number, address
+- (void)validateInfoWithResult:(void (^)(BOOL, NSString *))result
+{
+    NSString *email = [self getTextValue:@"Email"];
+    if(email.length != 0 && ![email isValidEmail]) {
+        return result(false, @"Not a valid email");
+    }
+    
+    return result(true, nil);
 }
 
 - (NSDictionary*) buildToDictionary{
@@ -98,7 +132,29 @@
         [self.textFields setObject:textfield forKey:field];
         
         y += 40;
+        
+        if([field isEqualToString:@"Type"]) {
+            textfield.enabled = NO;
+            UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+            button.frame = textfield.frame;
+            [button setTitle:@"" forState:UIControlStateNormal];
+            button.backgroundColor = [UIColor clearColor];
+            [button addTarget:self action:@selector(onContactTypeClick) forControlEvents:UIControlEventTouchDown];
+            [self addSubview:button];
+            textfield.text = self.contactTypes[0];
+        }
     }
+}
+
+- (void)onContactTypeClick
+{
+    [self.delegate onContactTypeClick:self withTypes:self.contactTypes];
+}
+
+- (void)setContactType:(NSString *)contactType
+{
+    _contactType = [contactType copy];
+    ((UITextField *)self.textFields[@"Type"]).text = contactType;
 }
 
 @end
