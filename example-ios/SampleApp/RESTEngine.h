@@ -8,14 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-// change these values to match your instance
-
 #define kAppVersion @"2.0.2"
 
+// change kApiKey and kBaseInstanceUrl to match your app and instance
+
 // API key for your app goes here, see apps tab in admin console
-#define kApiKey @"47f611bfd5da6bc33e01a473142ea048409adb970839c95fa32af28e4c002e79"
+#define kApiKey @"e917301b79a9da1e9dd90f0d8e1cf4aecb4a6295785167a80759aaacf1190ede"
 #define kSessionTokenKey @"SessionToken"
-#define kBaseInstanceUrl @"https://df-test-gm.enterprise.dreamfactory.com/api/v2"
+#define kBaseInstanceUrl @"http://localhost:8080/api/v2"
 #define kDbServiceName @"db/_table"
 #define kUserEmail @"UserEmail"
 #define kPassword @"UserPassword"
