@@ -100,7 +100,7 @@
 }
 
 - (NSDictionary*) buildToDictionary{
-    NSDictionary* dict = @{@"id":self.record.Id,
+    NSMutableDictionary* dict = [[NSMutableDictionary alloc] initWithDictionary:@{
                            @"contact_id":self.record.ContactId,
                            @"info_type":self.record.Type,
                            @"phone":self.record.Phone,
@@ -110,7 +110,11 @@
                            @"state":self.record.State,
                            @"zip":self.record.Zipcode,
                            @"country":self.record.Country
-                           };
+                           }];
+    if (self.record.Id.integerValue != 0)  {
+        dict[@"id"] = self.record.Id;
+    }
+    
     return dict;
 }
 
