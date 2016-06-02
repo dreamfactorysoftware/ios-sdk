@@ -90,7 +90,9 @@
     }
     return self;
 }
-
+- (BOOL) isConfigured {
+    return ![@"" isEqualToString:kApiKey];
+}
 - (NSString *)sessionToken
 {
     if (_sessionToken == nil) {

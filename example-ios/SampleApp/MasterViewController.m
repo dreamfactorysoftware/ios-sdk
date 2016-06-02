@@ -42,7 +42,6 @@
     CustomNavBar* navBar = bar.globalToolBar;
     [navBar.backButton addTarget:self action:@selector(hitBackButton) forControlEvents:UIControlEventTouchDown];    
 }
-
 - (void) hitBackButton{
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -58,6 +57,13 @@
     [navBar showDoneButton:NO];
     [navBar reloadInputViews];
 }
+- (void) viewDidAppear:(BOOL)animated {
+    if (![[RESTEngine sharedEngine] isConfigured]) {
+        NSString* msg = @"RESTEngine is not configured.\n\nPlease see README.md.";
+        [[[UIAlertView alloc]initWithTitle:nil message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles: nil] show];
+    }
+}
+
 
 - (IBAction)RegisterActionEvent:(id)sender {
     [self showRegisterViewController];
