@@ -29,7 +29,7 @@
     self.backButton.frame = CGRectMake(self.frame.size.width * .1, 20, 50, 20);
     [self.backButton setTitleColor:[UIColor colorWithRed:216/255.0f green:122/255.0f blue:39/255.0f alpha:1] forState:UIControlStateNormal];
     [self.backButton.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Regular" size: 17.0]];
-    [self.backButton setTitle:@"back" forState:UIControlStateNormal];
+    [self.backButton setTitle:@"Back" forState:UIControlStateNormal];
     self.backButton.center = CGPointMake(self.frame.size.width * .1, 40);
     
     [self addSubview:self.backButton];
@@ -52,7 +52,7 @@
     [self.editButton setTitleColor:[UIColor colorWithRed:241/255.0f green:141/255.0f blue:42/255.0f alpha:1] forState:UIControlStateNormal];
 
     [self.editButton.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Regular" size: 17.0] ];
-    [self.editButton setTitle:@"edit" forState:UIControlStateNormal];
+    [self.editButton setTitle:@"Edit" forState:UIControlStateNormal];
     self.editButton.center = CGPointMake(self.frame.size.width * .93, 40);
     
     [self addSubview:self.editButton];
@@ -64,7 +64,7 @@
     [self.doneButton setTitleColor: [UIColor colorWithRed:102/255.0f green:187/255.0f blue:176/255.0f alpha:1] forState:UIControlStateNormal];
     [self.doneButton setTitleColor:[UIColor colorWithRed:241/255.0f green:141/255.0f blue:42/255.0f alpha:1] forState:UIControlStateNormal];
     [self.doneButton.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size: 17.0]];
-    [self.doneButton setTitle:@"done" forState:UIControlStateNormal];
+    [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
     self.doneButton.center = CGPointMake(self.frame.size.width * .93, 40);
 
     [self addSubview:self.doneButton];

@@ -90,7 +90,9 @@
     }
     return self;
 }
-
+- (BOOL) isConfigured {
+    return ![@"" isEqualToString:kApiKey];
+}
 - (NSString *)sessionToken
 {
     if (_sessionToken == nil) {
@@ -134,6 +136,19 @@
         }
     }];
 }
+
+#pragma mark - Helpers for POST/PUT/PATCH entity wrapping
+
+- (NSDictionary *) toResourceArray:(NSDictionary *) entity {
+    // DreamFactory REST API body with {"resource" = [ { record } ] }
+    NSDictionary *jsonResource = @{@"resource" : @[entity]};
+    return jsonResource;
+}
+- (NSDictionary *) toResourceArrayFromArray:(NSArray *)jsonArray {
+    NSDictionary *jsonResource = @{@"resource" : jsonArray};
+    return jsonResource;
+}
+
 
 #pragma mark - Authorization methods
 
@@ -195,7 +210,7 @@
 
 - (void)addGroupToServerWithName:(NSString *)name contactIds:(NSArray *)contactIds success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
-    id body = @{@"name": name};
+    id body = [self toResourceArray:@{@"name": name}];
     
     [self callApiWithPath:[Routing serviceWithTableName:@"contact_group"] method:@"POST" queryParams:nil body:body headerParams:self.sessionHeaderParams success:^(NSDictionary *response) {
         // get the id of the new group, then add the relations
@@ -252,8 +267,8 @@
     
     // update name
     NSDictionary *queryParams = @{@"ids": groupId};
-    id body = @{@"name": name};
-    
+    id body = [self toResourceArray:@{@"name": name}];
+
     [self callApiWithPath:[Routing serviceWithTableName:@"contact_group"] method:@"PATCH" queryParams:queryParams body:body headerParams:self.sessionHeaderParams success:^(NSDictionary *response) {
         
         [self removeGroupContactRelationsForGroupWithId:groupId contactIds:removedContactIds success:^(NSDictionary *response) {
@@ -410,8 +425,8 @@
 - (void)addContactToServerWithDetails:(NSDictionary *)contactDetails success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
     // need to create contact first, then can add contactInfo and group relationships
-    id body = contactDetails;
-    
+    id body = [self toResourceArray:contactDetails];
+
     [self callApiWithPath:[Routing serviceWithTableName:@"contact"] method:@"POST" queryParams:nil body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }
 
@@ -420,15 +435,16 @@
     // build request body
     // need to put in any extra field-key pair and avoid NSUrl timeout issue
     // otherwise it drops connection
-    id body = @{@"contact_group_id": groupId,
-               @"contact_id": contactId};
-    
+    NSDictionary* bodyData = @{@"contact_group_id": groupId,
+                               @"contact_id": contactId};
+    id body = [self toResourceArray:bodyData];
+
     [self callApiWithPath:[Routing serviceWithTableName:@"contact_group_relationship"] method:@"POST" queryParams:nil body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }
 
 - (void)addContactInfoToServer:(NSArray *)info success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
-    id body = @{@"resource": info};
+    id body = [self toResourceArrayFromArray:info];
     
     [self callApiWithPath:[Routing serviceWithTableName:@"contact_info"] method:@"POST" queryParams:nil body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }
@@ -456,14 +472,14 @@
 {
     // set the id of the contact we are looking at
     NSDictionary *queryParams = @{@"ids": contactId.stringValue};
-    id body = contactDetails;
+    id body = [self toResourceArray:contactDetails];
     
     [self callApiWithPath:[Routing serviceWithTableName:@"contact"] method:@"PATCH" queryParams:queryParams body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }
 
 - (void)updateContactInfo: (NSArray *)info success:(SuccessBlock)successBlock failure:(FailureBlock)failureBlock
 {
-    id body = @{@"resource": info};
+    id body = [self toResourceArrayFromArray:info];
     
     [self callApiWithPath:[Routing serviceWithTableName:@"contact_info"] method:@"PATCH" queryParams:nil body:body headerParams:self.sessionHeaderParams success:successBlock failure:failureBlock];
 }

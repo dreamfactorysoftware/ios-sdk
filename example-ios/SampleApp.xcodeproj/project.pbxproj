@@ -318,7 +318,7 @@
 		8CC6349A1B1F7C0E00425013 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = dreamfactory;
 				TargetAttributes = {
 					8CC634A11B1F7C0E00425013 = {
@@ -455,6 +455,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -522,6 +523,7 @@
 				INFOPLIST_FILE = SampleApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "dreamfactory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SampleApp;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -536,6 +538,7 @@
 				INFOPLIST_FILE = SampleApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "dreamfactory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SampleApp;
 			};
 			name = Release;
@@ -553,8 +556,9 @@
 				);
 				INFOPLIST_FILE = SampleAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "dreamfactory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SampleAppTests;
-				SDKROOT = iphoneos8.1;
+				SDKROOT = iphoneos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
 			};
 			name = Debug;
@@ -568,8 +572,9 @@
 				);
 				INFOPLIST_FILE = SampleAppTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "dreamfactory.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = SampleAppTests;
-				SDKROOT = iphoneos8.1;
+				SDKROOT = iphoneos;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SampleApp.app/SampleApp";
 			};
 			name = Release;

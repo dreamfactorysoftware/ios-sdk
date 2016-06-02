@@ -12,10 +12,10 @@
 
 // change kApiKey and kBaseInstanceUrl to match your app and instance
 
-// API key for your app goes here, see apps tab in admin console
-#define kApiKey @"e917301b79a9da1e9dd90f0d8e1cf4aecb4a6295785167a80759aaacf1190ede"
-#define kSessionTokenKey @"SessionToken"
+// Set your service instance and API key here. See: README.md or https://github.com/dreamfactorysoftware/ios-sdk
 #define kBaseInstanceUrl @"http://localhost:8080/api/v2"
+#define kApiKey @""
+#define kSessionTokenKey @"SessionToken"
 #define kDbServiceName @"db/_table"
 #define kUserEmail @"UserEmail"
 #define kPassword @"UserPassword"
@@ -48,6 +48,8 @@ typedef void (^FailureBlock)(NSError *error);
 @property (nonatomic, copy) NSString *sessionToken;
 
 + (instancetype)sharedEngine;
+
+- (BOOL) isConfigured;
 
 /**
  Sign in user
