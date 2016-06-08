@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-#define kAppVersion @"2.0.3"
+#define kAppVersion @"2.0.4"
 
 // change kApiKey and kBaseInstanceUrl to match your app and instance
 
